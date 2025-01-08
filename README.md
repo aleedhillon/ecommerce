@@ -1,66 +1,127 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# E-Commerce with POS
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Features
 
-## About Laravel
+### Frontend (Website) features:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+-   [ ] Home-page
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+    -   [ ] Navigation
+    -   [ ] Sliders
+    -   [ ] Products (Trending, Features, Category-wise)
+    -   [ ] Hot Deals
+    -   [ ] Flash sales
+    -   [ ] Just for you
+    -   [ ] Campaign
+    -   [ ] Advertisement (Static banner, One-time popup - GIF, etc)
+    -   [ ] Search
+    -   [ ] Recently sold products
+    -   [ ] Best seller
+    -   [ ] Kids zone
+    -   [ ] Featured category/products
+    -   [ ] Footer (Navigation, Payment method banner, Social media links, Mobile app QR codes, etc)
+    -   [ ] Live customer support (Chat popup)
+    -   [ ] Subscribe to newsletter form
+    -   [ ] Sitemap
+    -   [ ] Become a seller
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+-   [ ] Help and Support Center
+-   [ ] Return and Refunds
+-   [ ] Contact us page
+-   [ ] About-us (T&C, Privacy policy, FAQ, etc)
+-   [ ] Subscribe to newsletter
+-   [ ] Blogs
+-   [ ] Product explore/search page (with filter, sorting, searching, pagination, etc)
+-   [ ] Product detail page
+-   [ ] Product search, filter (based on color, price, category, etc)
+-   [ ] Cart system
+-   [ ] Order system
+-   [ ] Order Tracking with current status
+-   [ ] Payment methods (Stripe, SSLCommerze, AmaarPay, Paddle, Razor, etc)
+-   [ ] Invoice and Receipts
+-   [ ] Notifications (Push, Email, SMS, etc)
+-   [ ] Multi language (URL based e.g. www.site.com/en/products, bookmarkable)
+-   [ ] RTL (For middle-east customer base)
+-   [ ] Themes (Dark, Colorization if wanted)
+-   [ ] POS Layout
+-   [ ] Referral, Reward, Digital Wallet
+-   [ ] Partnership & Vendor Program
+-   [ ] Product review and user feedback (rating)
+-   [ ] Login and Registration
+-   [ ] Two factor authentication, Email verification, Forgot password
+-   [ ] Social media Login (Using Google, Facebook, GitHub, etc)
 
-## Learning Laravel
+### Admin Panel:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+-   [ ] Product (with variations for colors, size, weight, etc attributes)
+-   [ ] Product stock, lot, and stock alerts
+-   [ ] Category, Sub-category, Tag
+-   [ ] Product bulk import/export to excel,sql,etc
+-   [ ] Realtime notification
+-   [ ] Realtime sales report
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+-   [ ] User management
+-   [ ] Role management
+-   [ ] Permission management
+-   [ ] Site settings
+-   [ ] Multi-language
+-   [ ] Dark theme
+-   [ ] Theme system for front-end
+-   [ ] Paid Plugin system (as wordpress or akaunting)
+-   [ ] Re-usable media library (File manager)
+-   [ ] User and Admin Activity Log
+-   [ ] User ban and restrictions
+-   [ ] Multi currency system (with conversion rate module)
+-   [ ] Inventory module
+-   [ ] Warehouse module
+-   [ ] Transportation
+-   [ ] Product delivery
+-   [ ] Warranty & Guarranty
+-   [ ] Product servicing/troubleshooting
+-   [ ] Accounting module
+-   [ ] Planning, Goals, Targets
+-   [ ] Asset management (with depreciations)
+-   [ ] Utilities
+    -   [ ] Todo (& Reminders)
+    -   [ ] Calender (English, Bengali, Arabic, etc)
+    -   [ ] Note taking (With export and backup facility)
+    -   [ ] Image editor (crop, resize, rotation, etc)
+-   [ ] CRM
+    -   [ ] Customer database with necessary tools to operate
+    -   [ ] Lead generation, analysis, behavior research
+-   [ ] Marketing Tools
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    -   [ ] Email marketing
+    -   [ ] SMS marketing and vendors setup
+    -   [ ] Social media marketing
 
-## Laravel Sponsors
+-   [ ] Human Resource
+    -   [ ] Career page, job posting, filtering, interviews, etc
+    -   [ ] Employees (Registration, Appointment, ID Card, Dept.)
+    -   [ ] Payroll (Salary calculation, Leave, Attendance, Pay-checks, etc)
+    -   [ ] Performance tracking, feedback, training
+    -   [ ] Resign, Suspend, Final-Settlements
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Dev related:
 
-### Premium Partners
+-   [ ] Error tracking realtime via Slack notification
+-   [ ] Sentry integration
+-   [ ] Monitoring using Laravel telescope, pulse, etc
+-   [ ] Tracking health using health monitor and set alerts
+-   [ ] Automated backup mechanism
+-   [ ] Containerization using Docker
+-   [ ] Auto scaling based on user load
+-   [ ] CDN, Storage services, CI/CD pipeline integration
+-   [ ] Automated End-to-End tests using Playwright
+-   [ ] Common attacks and security measure (SQL injection, XSS, CSRF, CORS, etc)
+-   [x] Other tools and practices
+    -   Laravel Debugbar
+    -   Vite, PostCSS, Mailhog, Pint, PEST
+    -   Version controlling: Git & GitHub
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### REST API Development
 
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+-   [ ] Swagger (Open API) endpoints generation
+-   [ ] JWT authentication & authorization with refresh-token (Using Sanctum)
+-   [ ] If requried, implement OAuth 2.0 using Laravel Passport package
+-   [ ] Use API versioning and appropriate HTTP status codes
