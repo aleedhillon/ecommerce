@@ -43,7 +43,7 @@ class ProductStoreRequest extends FormRequest
             'description' => 'nullable',
             'other_info' => 'nullable',
             'pro_thumbnail' => 'nullable',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ];
     }
 }

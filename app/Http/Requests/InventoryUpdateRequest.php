@@ -24,7 +24,7 @@ class InventoryUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string' . $this->id,
+            'name' => 'required|string'.$this->id,
             'code' => 'required|unique:inventories,code',
             'is_active' => 'nullable|boolean',
         ];

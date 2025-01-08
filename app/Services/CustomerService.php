@@ -1,12 +1,13 @@
 <?php
+
 namespace App\Services;
 
-use App\Models\Customer;
-use App\Services\ServiceTrait;
 use App\Interfaces\CustomerServiceInterface;
+use App\Models\Customer;
 
 class CustomerService implements CustomerServiceInterface
 {
     use ServiceTrait;
+
     public $model = Customer::class;
 }

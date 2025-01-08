@@ -24,7 +24,7 @@ class UnitUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string' . $this->id,
+            'name' => 'required|string'.$this->id,
             'short_name' => 'nullable',
             'is_active' => 'nullable|boolean',
         ];

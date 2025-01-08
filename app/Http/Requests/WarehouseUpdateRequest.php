@@ -24,7 +24,7 @@ class WarehouseUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string' . $this->id,
+            'name' => 'required|string'.$this->id,
             'code' => 'required',
             'address' => 'nullable',
             'description' => 'nullable',

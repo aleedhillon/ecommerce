@@ -29,8 +29,8 @@ class ProductUpdateRequest extends FormRequest
             'tax_id' => 'required|exists:taxes,id',
             'brand_id' => 'nullable|exists:brands,id',
             'tag_id' => 'nullable|exists:tags,id',
-            'added_by' => "nullable|exists:users,id",
-            'product_name' => 'required' . $this->id,
+            'added_by' => 'nullable|exists:users,id',
+            'product_name' => 'required'.$this->id,
             'price' => 'required',
             'discount_price' => 'nullable',
             'title' => 'nullable|string',
@@ -43,7 +43,7 @@ class ProductUpdateRequest extends FormRequest
             'description' => 'nullable',
             'other_info' => 'nullable',
             'pro_thumbnail' => 'nullable',
-            'is_active' => 'nullable|boolean'
+            'is_active' => 'nullable|boolean',
         ];
     }
 }

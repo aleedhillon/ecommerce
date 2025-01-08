@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Models\Category;
-use App\Services\ServiceTrait;
 use App\Interfaces\CategoryServiceInterface;
+use App\Models\Category;
 
 class CategoryService implements CategoryServiceInterface
 {
     use ServiceTrait;
+
     public $model = Category::class;
 }

@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Shopping;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,6 +17,7 @@ class ShoppingFactory extends Factory
     public function definition()
     {
         $customer_ids = \App\Models\Customer::pluck('id')->toArray();
+
         return [
             'customer_id' => $this->faker->randomElement($customer_ids),
             'total' => $this->faker->randomFloat(2, 100, 5000),

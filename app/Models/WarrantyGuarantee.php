@@ -10,5 +10,5 @@ class WarrantyGuarantee extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name','type','duration','description','is_active'];
+    protected $fillable = ['name', 'type', 'duration', 'description', 'is_active'];
 }

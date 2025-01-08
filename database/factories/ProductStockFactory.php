@@ -18,6 +18,7 @@ class ProductStockFactory extends Factory
     {
         $product_ids = \App\Models\Product::pluck('id')->toArray();
         $warehouse_ids = \App\Models\Warehouse::pluck('id')->toArray();
+
         return [
             'product_id' => $this->faker->randomElement($product_ids),
             'warehouse_id' => $this->faker->randomElement($warehouse_ids),

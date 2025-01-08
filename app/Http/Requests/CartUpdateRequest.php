@@ -26,7 +26,7 @@ class CartUpdateRequest extends FormRequest
         return [
             'shopping_id' => 'required|exists:shoppings,id',
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer' . $this->id,
+            'quantity' => 'required|integer'.$this->id,
         ];
     }
 }

@@ -2,6 +2,4 @@
 
 namespace App\Interfaces;
 
-interface CouponServiceInterface extends BaseServiceInterface
-{
-}
+interface CouponServiceInterface extends BaseServiceInterface {}

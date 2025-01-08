@@ -2,7 +2,4 @@
 
 namespace App\Interfaces;
 
-interface TaxServiceInterface extends BaseServiceInterface
-{
-
-}
+interface TaxServiceInterface extends BaseServiceInterface {}

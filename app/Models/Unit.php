@@ -9,5 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Unit extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['name','short_name','is_active'];
+
+    protected $fillable = ['name', 'short_name', 'is_active'];
 }

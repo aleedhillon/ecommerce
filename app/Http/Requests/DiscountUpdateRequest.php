@@ -24,7 +24,7 @@ class DiscountUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string' . $this->id,
+            'name' => 'required|string'.$this->id,
             'description' => 'nullable',
             'dis_percent' => 'required',
             'is_active' => 'nullable|boolean',

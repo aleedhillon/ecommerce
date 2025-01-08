@@ -9,5 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Tax extends Model
 {
     use HasFactory, SoftDeletes;
+
     protected $fillable = ['name', 'type'];
 }

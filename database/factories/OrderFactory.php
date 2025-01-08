@@ -18,6 +18,7 @@ class OrderFactory extends Factory
     {
         $userIds = \App\Models\User::pluck('id')->toArray();
         $payment_ids = \App\Models\Payments::pluck('id')->toArray();
+
         return [
             'user_id' => $this->faker->randomElement($userIds),
             'payment_id' => $this->faker->randomElement($payment_ids),

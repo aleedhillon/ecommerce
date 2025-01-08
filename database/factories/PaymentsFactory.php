@@ -17,6 +17,7 @@ class PaymentsFactory extends Factory
     public function definition()
     {
         $order_ids = \App\Models\Order::pluck('id')->toArray();
+
         return [
             'order_id' => $this->faker->randomElement($order_ids),
             'amount' => $this->faker->randomFloat(2, 100, 5000),

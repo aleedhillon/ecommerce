@@ -24,7 +24,7 @@ class CouponUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required|min:6|unique:coupons,code'. $this->id,
+            'code' => 'required|min:6|unique:coupons,code'.$this->id,
             'categories' => 'nullable|string',
             'valid_from' => 'date',
             'valid_to' => 'required|date',
@@ -33,7 +33,7 @@ class CouponUpdateRequest extends FormRequest
             'amount' => 'required',
             'minimum_order' => 'required',
             'use_limit' => 'required',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ];
     }
 }

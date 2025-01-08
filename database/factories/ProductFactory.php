@@ -22,6 +22,7 @@ class ProductFactory extends Factory
         $taxIds = \App\Models\Tax::pluck('id')->toArray();
         $brandIds = \App\Models\Brand::pluck('id')->toArray();
         $userIds = \App\Models\User::pluck('id')->toArray();
+
         return [
             'category_id' => $this->faker->randomElement($categoryIds),
             'sub_category_id' => $this->faker->randomElement($subCategoryIds),

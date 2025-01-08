@@ -24,7 +24,7 @@ class SupplierUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string' . $this->id,
+            'name' => 'required|string'.$this->id,
             'phone' => 'required',
             'secur_number' => 'required',
             'nid_number' => 'required|integer',
@@ -35,7 +35,7 @@ class SupplierUpdateRequest extends FormRequest
             'zip_code' => 'nullable',
             'group' => 'nullable',
             'land_mark' => 'nullable',
-            'is_active' => 'nullable|boolean'
+            'is_active' => 'nullable|boolean',
         ];
     }
 }

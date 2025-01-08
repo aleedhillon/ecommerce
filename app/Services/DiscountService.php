@@ -1,12 +1,13 @@
 <?php
+
 namespace App\Services;
 
-use App\Models\Discount;
-use App\Services\ServiceTrait;
 use App\Interfaces\DiscountServiceInterface;
+use App\Models\Discount;
 
 class DiscountService implements DiscountServiceInterface
 {
     use ServiceTrait;
+
     public $model = Discount::class;
 }

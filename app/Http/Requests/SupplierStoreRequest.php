@@ -35,7 +35,7 @@ class SupplierStoreRequest extends FormRequest
             'zip_code' => 'nullable',
             'group' => 'nullable',
             'land_mark' => 'nullable',
-            'is_active' => 'nullable|boolean'
+            'is_active' => 'nullable|boolean',
         ];
     }
 }

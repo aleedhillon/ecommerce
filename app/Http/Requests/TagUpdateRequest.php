@@ -24,8 +24,8 @@ class TagUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique:tags,name,' . $this->id,
-            'is_active' => 'boolean'
+            'name' => 'required|string|unique:tags,name,'.$this->id,
+            'is_active' => 'boolean',
         ];
     }
 }

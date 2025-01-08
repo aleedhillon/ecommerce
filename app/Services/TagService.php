@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Models\Tag;
-use App\Services\ServiceTrait;
 use App\Interfaces\TagServiceInterface;
+use App\Models\Tag;
 
 class TagService implements TagServiceInterface
 {
     use ServiceTrait;
+
     public $model = Tag::class;
 }

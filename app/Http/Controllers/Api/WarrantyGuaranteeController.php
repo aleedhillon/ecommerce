@@ -17,27 +17,35 @@ class WarrantyGuaranteeController extends Controller
     {
         $this->warrantyService = $warrantyService;
     }
+
     public function index()
     {
         return $this->warrantyService->all();
     }
+
     public function store(WarrantyGuaranteeStoreRequest $request)
     {
         $warranty = $this->warrantyService->store($request->validated());
-        return ApiResponse::created($warranty, "Warranty created successully!");
+
+        return ApiResponse::created($warranty, 'Warranty created successully!');
     }
+
     public function show(WarrantyGuarantee $warranty)
     {
         return $this->warrantyService->find($warranty);
     }
+
     public function update(WarrantyGuaranteeUpdateRequest $request, WarrantyGuarantee $warranty)
     {
         $warranty = $this->warrantyService->update($request->validated(), $warranty);
-        return ApiResponse::updated($warranty, "Warranty update successully!");
+
+        return ApiResponse::updated($warranty, 'Warranty update successully!');
     }
+
     public function destroy(WarrantyGuarantee $warranty)
     {
         $warranty = $this->warrantyService->delete($warranty);
-        return ApiResponse::created($warranty, "Warranty deleted successully!");
+
+        return ApiResponse::created($warranty, 'Warranty deleted successully!');
     }
 }

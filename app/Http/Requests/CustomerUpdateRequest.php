@@ -24,7 +24,7 @@ class CustomerUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string'. $this->id,
+            'name' => 'required|string'.$this->id,
             'phone' => 'required',
             'email' => 'nullable|email',
             'address' => 'required|string',
@@ -32,7 +32,7 @@ class CustomerUpdateRequest extends FormRequest
             'country' => 'nullable',
             'zip_code' => 'nullable',
             'land_mark' => 'nullable',
-            'is_active' => 'nullable|boolean'
+            'is_active' => 'nullable|boolean',
         ];
     }
 }

@@ -1,12 +1,13 @@
 <?php
+
 namespace App\Services;
 
-use App\Models\Unit;
-use App\Services\ServiceTrait;
 use App\Interfaces\UnitServiceInterface;
+use App\Models\Unit;
 
 class UnitService implements UnitServiceInterface
 {
     use ServiceTrait;
+
     public $model = Unit::class;
 }

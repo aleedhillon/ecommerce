@@ -25,7 +25,7 @@ class SubCategoryUpdateRequest extends FormRequest
     {
         return [
             'category_id' => 'required|exists:categories,id',
-            'name' => 'required|string|unique:sub_categories,name,'. $this->id,
+            'name' => 'required|string|unique:sub_categories,name,'.$this->id,
             'description' => 'nullable|string',
             'photo' => 'nullable|string',
             'is_active' => 'nullable|boolean',

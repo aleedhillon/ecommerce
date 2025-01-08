@@ -17,6 +17,7 @@ class SubCategoryFactory extends Factory
     public function definition()
     {
         $categoryIds = \App\Models\Category::pluck('id')->toArray();
+
         return [
             'category_id' => $this->faker->randomElement($categoryIds),
             'name' => $this->faker->bothify('SC - ##??'),

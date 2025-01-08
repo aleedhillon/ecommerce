@@ -11,6 +11,6 @@ class Coupon extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'code', 'valid_from', 'valid_to', 'type', 'amount', 'minimum_order', 'use_limit'
+        'code', 'valid_from', 'valid_to', 'type', 'amount', 'minimum_order', 'use_limit',
     ];
 }

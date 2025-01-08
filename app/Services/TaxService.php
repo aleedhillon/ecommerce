@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Models\Tax;
-use App\Services\ServiceTrait;
 use App\Interfaces\TaxServiceInterface;
+use App\Models\Tax;
 
 class TaxService implements TaxServiceInterface
 {
     use ServiceTrait;
+
     public $model = Tax::class;
 }

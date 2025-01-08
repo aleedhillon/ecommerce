@@ -33,7 +33,7 @@ class CouponStoreRequest extends FormRequest
             'amount' => 'required',
             'minimum_order' => 'required',
             'use_limit' => 'required',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ];
     }
 }

@@ -25,7 +25,7 @@ class TagStoreRequest extends FormRequest
     {
         return [
             'name' => 'required|string|unique:tags,name',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ];
     }
 }

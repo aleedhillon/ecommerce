@@ -32,7 +32,7 @@ class CustomerStoreRequest extends FormRequest
             'country' => 'nullable',
             'zip_code' => 'nullable',
             'land_mark' => 'nullable',
-            'is_active' => 'nullable|boolean'
+            'is_active' => 'nullable|boolean',
         ];
     }
 }

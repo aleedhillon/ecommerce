@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use Hamcrest\Type\IsBoolean;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TagResource extends JsonResource
@@ -16,9 +15,9 @@ class TagResource extends JsonResource
     public function toArray($request)
     {
         return [
-           'id' => $this->id,
-           'name' => $this->name,
-           'is_active' => (bool) $this->is_active,
+            'id' => $this->id,
+            'name' => $this->name,
+            'is_active' => (bool) $this->is_active,
         ];
     }
 }

@@ -18,6 +18,7 @@ class CartFactory extends Factory
     {
         $shopping_ids = \App\Models\Shopping::pluck('id')->toArray();
         $product_ids = \App\Models\Product::pluck('id')->toArray();
+
         return [
             'shopping_id' => $this->faker->randomElement($shopping_ids),
             'product_id' => $this->faker->randomElement($product_ids),
