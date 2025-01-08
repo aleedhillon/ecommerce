@@ -1,10 +1,10 @@
 # E-Commerce with POS
 
-## Features
+## Multi-tenant, Multi-vendor E-commerce with POS
 
 ### Frontend (Website) features:
 
--   [ ] Home-page
+-   [ ] Home-page / Landing page
 
     -   [ ] Navigation
     -   [ ] Sliders
@@ -125,3 +125,27 @@
 -   [ ] JWT authentication & authorization with refresh-token (Using Sanctum)
 -   [ ] If requried, implement OAuth 2.0 using Laravel Passport package
 -   [ ] Use API versioning and appropriate HTTP status codes
+
+
+
+# Strategies:
+
+Full-fledge: SaaS (Platform -> Addons/plugin, Themes, Subscription -> user domain/sub-domain, etc)
+
+    - Main App +
+    - Multitenancy -> Module
+    - Plugins system -> Module
+    - Theme system -> Module
+    - Super-super-admin panel -> Module
+
+CodeCanyone:
+
+App:
+-----
+Frontend (Professional UiUx Figma, Responsive, Approval req.)
+Admin panel
+Super admin panel 
+
+    - Core
+    - Basic
+    - ...
