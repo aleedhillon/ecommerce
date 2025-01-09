@@ -15,12 +15,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        \App\Models\User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+        ]);
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        \App\Models\User::factory(5)->create();
+
         $this->call(CouponTableSeeder::class);
         $this->call(CategoryTableSeeder::class);
         $this->call(BrandTableSeeder::class);
@@ -30,6 +31,6 @@ class DatabaseSeeder extends Seeder
         $this->call(TagTableSeeder::class);
         $this->call(TaxTableSeeder::class);
         $this->call(ProductTableSeeder::class);
-        $this->call(ProductStockTableSeeder::class);
+        // $this->call(ProductStockTableSeeder::class);
     }
 }
