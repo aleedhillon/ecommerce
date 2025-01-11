@@ -36,7 +36,10 @@ createInertiaApp({
             .use(AppState)
             .use(PrimeVue, {
                 theme: {
-                    preset: Noir
+                    preset: Noir,
+                    options: {
+                        darkModeSelector: '.app-dark'
+                    }
                 }
             })
             .mount(el);
