@@ -1,5 +1,6 @@
 <template>
     <AuthenticatedLayout>
+
         <div class="card">
             <Toolbar class="mb-6">
                 <template #start>
@@ -55,6 +56,7 @@
         </div>
         <!-- Create Dialog -->
         <Dialog v-model:visible="categoryDialog" :style="{ width: '450px' }" header="Category Details" :modal="true">
+            {{ category }}
             <div class="flex flex-col gap-6">
                 <div>
                     <label for="name" class="block font-bold mb-2">Name</label>
@@ -68,7 +70,8 @@
                     <label for="is_active" class="block font-bold mb-2">Status</label>
                     <Dropdown v-model="category.is_active" :options="statuses" optionLabel="label" optionValue="value"
                         placeholder="Select a status" class="w-full" />
-                    <small v-if="submitted && !category.is_active" class="text-red-500">Status is required.</small>
+                    <small v-if="submitted && (category.is_active == null)" class="text-red-500">Status is
+                        required.</small>
                 </div>
             </div>
             <div class="flex flex-col gap-6 mt-3">
@@ -77,7 +80,7 @@
                     <label for="thumbnail" class="block font-bold mb-2">Thumbnail</label>
                     <FileUpload mode="basic" name="thumbnail" customUpload @select="handleThumbnailUpload" :auto="true"
                         accept="image/*" chooseLabel="Choose Image" class="w-full" />
-                    <small v-if="submitted && !category.thumbnail" class="text-red-500">Thumbnail is required.</small>
+                    <!-- <small v-if="submitted && !category.thumbnail" class="text-red-500">Thumbnail is required.</small> -->
                 </div>
                 <div>
                     <img v-if="category.thumbnail || thumbnailPreview" :src="thumbnailPreview ?? category.thumbnail"
@@ -133,11 +136,13 @@ const categoryDialog = ref(false);
 const deleteCategoryDialog = ref(false);
 const deleteCategoriesDialog = ref(false);
 
-const category = useForm({
+const init = {
     name: null,
     is_active: null,
     thumbnail: null,
-});
+};
+
+const category = ref({ ...init });
 
 const selectedCategories = ref();
 const filters = ref({
@@ -154,8 +159,7 @@ const thumbnailPreview = ref(null);
 
 const handleThumbnailUpload = (event) => {
     const file = event.files[0];
-    category.thumbnail = file;
-
+    category.value.thumbnail = file;
     const reader = new FileReader();
 
     reader.onload = async (e) => {
@@ -165,10 +169,11 @@ const handleThumbnailUpload = (event) => {
 };
 
 const openNew = () => {
-    category.value = {};
+    category.value = { ...init };
     submitted.value = false;
     categoryDialog.value = true;
 };
+
 const hideDialog = () => {
     categoryDialog.value = false;
     submitted.value = false;
@@ -176,7 +181,8 @@ const hideDialog = () => {
 
 const saveCategory = () => {
     submitted.value = true;
-    category.post(route('categories.store'), {
+    const categoryForm = useForm({ ...category.value });
+    categoryForm.post(route('categories.store'), {
         onSuccess: () => {
             hideDialog();
             category.value = {};
@@ -189,14 +195,18 @@ const saveCategory = () => {
 };
 
 const isEdit = ref(false);
+const editingId = ref(null);
 
-const updateCategory = (editingId) => {
+const updateCategory = () => {
     submitted.value = true;
-    const url = route('categories.update', { category: editingId });
-    category.patch(url), {
-        onSuccess: () => {
+    const url = route('categories.update', { category: editingId.value });
+
+    const categoryUpdateForm = useForm({ ...category.value });
+    categoryUpdateForm.put(url), {
+        onSuccess: (res) => {
+            console.log(res);
             hideDialog();
-            category.value = {};
+            category.value = { ...init };
             toast.add({ severity: 'success', summary: 'Successful', detail: 'Category Updated', life: 3000 });
         },
         onError: () => {
@@ -209,14 +219,19 @@ const editCategory = (prod) => {
     categoryDialog.value = true;
     isEdit.value = true;
 
-    category.name = prod.name;
-    category.is_active = prod.is_active ? true : false;
-    category.thumbnail = prod.thumbnail;
+    category.value = {
+        name: prod.name,
+        is_active: prod.is_active ? true : false,
+        thumbnail: prod.thumbnail,
+    };
+    editingId.value = prod.id;
 };
+
 const confirmDeleteCategory = (prod) => {
     category.value = prod;
     deleteCategoryDialog.value = true;
 };
+
 const deleteCategory = () => {
     categories.value = categories.value.filter(val => val.id !== category.value.id);
     deleteCategoryDialog.value = false;
@@ -227,9 +242,11 @@ const deleteCategory = () => {
 const exportCSV = () => {
     dt.value.exportCSV();
 };
+
 const confirmDeleteSelected = () => {
     deleteCategoriesDialog.value = true;
 };
+
 const deleteSelectedCategories = () => {
     categories.value = categories.value.filter(val => !selectedCategories.value.includes(val));
     deleteCategoriesDialog.value = false;

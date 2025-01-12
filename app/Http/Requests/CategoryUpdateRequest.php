@@ -24,8 +24,8 @@ class CategoryUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255|unique:categories,name,'.$this->id,
-            'thumbnail' => 'nullable|file|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'name' => 'required|string|max:255|unique:categories,name,' . $this->category->id,
+            'thumbnail' => 'nullable|max:2048',
             'is_active' => 'boolean',
         ];
     }

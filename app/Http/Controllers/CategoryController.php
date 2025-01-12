@@ -67,8 +67,6 @@ class CategoryController extends Controller
             $data['thumbnail'] = $request->file('thumbnail')->store('categories');
         }
         $category->update($data);
-
-        return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
     }
 
     /**
