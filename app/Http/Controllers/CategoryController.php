@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CategoryStoreRequest;
+use App\Http\Requests\CategoryUpdateRequest;
 use Inertia\Inertia;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -37,7 +38,7 @@ class CategoryController extends Controller
             $data['thumbnail'] = $request->file('thumbnail')->store('categories');
         }
         Category::create($data);
-        return redirect()->route('categories.index')->with('success', 'Category created successfully123.');
+        return redirect()->route('categories.index')->with('success', 'Category created successfully');
     }
 
     /**
@@ -59,9 +60,14 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CategoryUpdateRequest $request, Category $category)
     {
-        //
+        $data = $request->validated();
+        if ($request->file('thumbnail')) {
+            $data['thumbnail'] = $request->file('thumbnail')->store('categories');
+        }
+        $category->update($data);
+        return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
     }
 
     /**

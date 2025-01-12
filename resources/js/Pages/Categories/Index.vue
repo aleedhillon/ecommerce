@@ -53,7 +53,6 @@
                 </Column>
             </DataTable>
         </div>
-
         <!-- Create Dialog -->
         <Dialog v-model:visible="categoryDialog" :style="{ width: '450px' }" header="Category Details" :modal="true">
             <div class="flex flex-col gap-6">
@@ -73,6 +72,7 @@
                 </div>
             </div>
             <div class="flex flex-col gap-6 mt-3">
+
                 <div>
                     <label for="thumbnail" class="block font-bold mb-2">Thumbnail</label>
                     <FileUpload mode="basic" name="thumbnail" customUpload @select="handleThumbnailUpload" :auto="true"
@@ -80,14 +80,15 @@
                     <small v-if="submitted && !category.thumbnail" class="text-red-500">Thumbnail is required.</small>
                 </div>
                 <div>
-                    <img v-if="category.thumbnail && thumbnailPreview" :src="thumbnailPreview" alt="Image"
-                        class="shadow-md rounded-xl w-full sm:w-64" style="filter: grayscale(100%)" />
+                    <img v-if="category.thumbnail || thumbnailPreview" :src="thumbnailPreview ?? category.thumbnail"
+                        alt="Image" class="shadow-md rounded-xl w-full" style="filter: grayscale(100%)" />
                 </div>
             </div>
 
             <template #footer>
                 <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
-                <Button label="Save" icon="pi pi-check" @click="saveCategory" />
+                <Button label="Save" icon="pi pi-check" @click="saveCategory" v-if="!isEdit" />
+                <Button label="Update" icon="pi pi-check" @click="updateCategory" v-if="isEdit" />
             </template>
         </Dialog>
 
@@ -172,11 +173,13 @@ const hideDialog = () => {
     categoryDialog.value = false;
     submitted.value = false;
 };
+
 const saveCategory = () => {
     submitted.value = true;
     category.post(route('categories.store'), {
         onSuccess: () => {
             hideDialog();
+            category.value = {};
             toast.add({ severity: 'success', summary: 'Successful', detail: 'Category Created', life: 3000 });
         },
         onError: () => {
@@ -184,10 +187,31 @@ const saveCategory = () => {
         },
     });
 };
+
+const isEdit = ref(false);
+
+const updateCategory = (editingId) => {
+    submitted.value = true;
+    const url = route('categories.update', { category: editingId });
+    category.patch(url), {
+        onSuccess: () => {
+            hideDialog();
+            category.value = {};
+            toast.add({ severity: 'success', summary: 'Successful', detail: 'Category Updated', life: 3000 });
+        },
+        onError: () => {
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Something went wrong', life: 3000 });
+        },
+    };
+};
+
 const editCategory = (prod) => {
-    category.name = prod.name
-    category.is_active = prod.is_active
-    category.thumbnail = prod.thumbnail
+    categoryDialog.value = true;
+    isEdit.value = true;
+
+    category.name = prod.name;
+    category.is_active = prod.is_active ? true : false;
+    category.thumbnail = prod.thumbnail;
 };
 const confirmDeleteCategory = (prod) => {
     category.value = prod;
