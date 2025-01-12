@@ -1,10 +1,12 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Models\User;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Models\Category;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Application;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CategoryController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -25,10 +27,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/categories', function () {
-    return Inertia::render('Categories/Index', [
-        'categories' => User::all()
-    ]);
-});
+Route::resource('categories', CategoryController::class);
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

@@ -55,9 +55,7 @@ export function useLayout() {
     const isDarkTheme = computed(() => layoutConfig.darkTheme);
 
     const getPrimary = computed(() => {
-        // return layoutConfig.primary
-        return 'green';
-        // return 'yellow';
+        return layoutConfig.primary
     });
 
     const getSurface = computed(() => layoutConfig.surface);

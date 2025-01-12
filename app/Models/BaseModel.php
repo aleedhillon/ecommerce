@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Models;
+
+use DateTimeInterface;
+use Illuminate\Database\Eloquent\Model;
+
+class BaseModel extends Model
+{
+    /**
+     * Format the date when the model is serialized.
+     *
+     * @param  \DateTimeInterface  $date
+     * @return string
+     */
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
+}
