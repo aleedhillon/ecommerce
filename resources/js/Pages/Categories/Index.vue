@@ -1,6 +1,5 @@
 <template>
     <AuthenticatedLayout>
-
         <div class="card">
             <Toolbar class="mb-6">
                 <template #start>
@@ -10,13 +9,13 @@
                 </template>
 
                 <template #end>
-                    <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import" customUpload
-                        chooseLabel="Import" class="mr-2" auto :chooseButtonProps="{ severity: 'secondary' }" />
+                    <!-- <FileUpload mode="basic" :maxFileSize="1000000" label="Import" customUpload chooseLabel="Import"
+                        class="mr-2" auto :chooseButtonProps="{ severity: 'secondary' }" /> -->
                     <Button label="Export" icon="pi pi-upload" severity="secondary" @click="exportCSV($event)" />
                 </template>
             </Toolbar>
 
-            <DataTable ref="dt" v-model:selection="selectedCategories" :value="categories" dataKey="id"
+            <DataTable ref="dt" v-model:selection="selectedCategories" :value="categories.data" dataKey="id"
                 :paginator="true" :rows="10" :filters="filters"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
@@ -54,9 +53,10 @@
                 </Column>
             </DataTable>
         </div>
-        <!-- Create Dialog -->
-        <Dialog v-model:visible="categoryDialog" :style="{ width: '450px' }" header="Category Details" :modal="true">
-            {{ category }}
+
+        <!-- Create & Edit Form Dialog -->
+        <Dialog v-model:visible="categoryDialog" maximizable :style="{ width: '600px' }" header="Category Details"
+            pt:mask:class="backdrop-blur-sm">
             <div class="flex flex-col gap-6">
                 <div>
                     <label for="name" class="block font-bold mb-2">Name</label>
@@ -68,8 +68,8 @@
             <div class="flex flex-col gap-6 mt-3">
                 <div>
                     <label for="is_active" class="block font-bold mb-2">Status</label>
-                    <Dropdown v-model="category.is_active" :options="statuses" optionLabel="label" optionValue="value"
-                        placeholder="Select a status" class="w-full" />
+                    <Select v-model="category.is_active" :options="statuses" optionLabel="label" optionValue="value"
+                        placeholder="Select a status" class="w-full" :required="true" />
                     <small v-if="submitted && (category.is_active == null)" class="text-red-500">Status is
                         required.</small>
                 </div>
@@ -89,13 +89,16 @@
             </div>
 
             <template #footer>
-                <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
-                <Button label="Save" icon="pi pi-check" @click="saveCategory" v-if="!isEdit" />
-                <Button label="Update" icon="pi pi-check" @click="updateCategory" v-if="isEdit" />
+                <div class="mt-3">
+                    <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
+                    <Button label="Save" icon="pi pi-check" @click="saveCategory" v-if="!isEdit" />
+                    <Button label="Update" icon="pi pi-check" @click="updateCategory" v-if="isEdit" />
+                </div>
             </template>
         </Dialog>
 
-        <Dialog v-model:visible="deleteCategoryDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <!-- Single Delete -->
+        <Dialog v-model:visible="deleteCategoryDialog" :style="{ width: '450px' }" header="Confirm">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
                 <span v-if="category">Are you sure you want to delete <b>{{ category.name }}</b>?</span>
@@ -106,7 +109,8 @@
             </template>
         </Dialog>
 
-        <Dialog v-model:visible="deleteCategoriesDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <!-- Bulk Delete -->
+        <Dialog v-model:visible="deleteCategoriesDialog" :style="{ width: '450px' }" header="Confirm">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
                 <span v-if="category">Are you sure you want to delete the selected categories?</span>
@@ -124,10 +128,14 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { ref, defineProps } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
-import { useForm } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
+import { Select } from 'primevue';
+import { usePage } from '@inertiajs/vue3';
 
-const props = defineProps({
-    categories: Array,
+const { props } = usePage();
+
+const vueProps = defineProps({
+    categories: Object,
 });
 
 const toast = useToast();
@@ -138,7 +146,7 @@ const deleteCategoriesDialog = ref(false);
 
 const init = {
     name: null,
-    is_active: null,
+    is_active: 1,
     thumbnail: null,
 };
 
@@ -151,8 +159,8 @@ const filters = ref({
 const submitted = ref(false);
 
 const statuses = [
-    { label: 'Active', value: true },
-    { label: 'Inactive', value: false },
+    { label: 'Active', value: 1 },
+    { label: 'Inactive', value: 0 },
 ];
 
 const thumbnailPreview = ref(null);
@@ -172,6 +180,7 @@ const openNew = () => {
     category.value = { ...init };
     submitted.value = false;
     categoryDialog.value = true;
+    thumbnailPreview.value = null;
 };
 
 const hideDialog = () => {
@@ -186,7 +195,9 @@ const saveCategory = () => {
         onSuccess: () => {
             hideDialog();
             category.value = {};
-            toast.add({ severity: 'success', summary: 'Successful', detail: 'Category Created', life: 3000 });
+            thumbnailPreview.value = null;
+            const message = props.flash.success;
+            toast.add({ severity: 'success', summary: 'Successful', detail: message, life: 3000 });
         },
         onError: () => {
             toast.add({ severity: 'error', summary: 'Error', detail: 'Something went wrong', life: 3000 });
@@ -202,41 +213,48 @@ const updateCategory = () => {
     const url = route('categories.update', { category: editingId.value });
 
     const categoryUpdateForm = useForm({ ...category.value });
-    categoryUpdateForm.put(url), {
-        onSuccess: (res) => {
-            console.log(res);
+
+    categoryUpdateForm.put(url, {
+        onSuccess: () => {
             hideDialog();
+            thumbnailPreview.value = null;
             category.value = { ...init };
-            toast.add({ severity: 'success', summary: 'Successful', detail: 'Category Updated', life: 3000 });
+            const message = props.flash.success;
+            toast.add({ severity: 'success', summary: 'Successful', detail: message, life: 3000 });
         },
         onError: () => {
-            toast.add({ severity: 'error', summary: 'Error', detail: 'Something went wrong', life: 3000 });
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Something went wrong, please try again!', life: 3000 });
         },
-    };
+    });
+
 };
 
 const editCategory = (prod) => {
     categoryDialog.value = true;
+    thumbnailPreview.value = null;
     isEdit.value = true;
 
     category.value = {
         name: prod.name,
-        is_active: prod.is_active ? true : false,
+        is_active: prod.is_active,
         thumbnail: prod.thumbnail,
     };
     editingId.value = prod.id;
 };
 
 const confirmDeleteCategory = (prod) => {
-    category.value = prod;
     deleteCategoryDialog.value = true;
+    category.value = {};
+    editingId.value = prod.id;
 };
 
 const deleteCategory = () => {
-    categories.value = categories.value.filter(val => val.id !== category.value.id);
     deleteCategoryDialog.value = false;
-    category.value = {};
-    toast.add({ severity: 'success', summary: 'Successful', detail: 'Category Deleted', life: 3000 });
+    router.delete(route('categories.destroy', { category: editingId.value }), {
+        onSuccess: () => {
+            toast.add({ severity: 'error', summary: 'Deleted', detail: 'Successfully Deleted', life: 3000 });
+        }
+    });
 };
 
 const exportCSV = () => {
@@ -248,10 +266,19 @@ const confirmDeleteSelected = () => {
 };
 
 const deleteSelectedCategories = () => {
-    categories.value = categories.value.filter(val => !selectedCategories.value.includes(val));
+    console.log(selectedCategories.value);
+    // const categoryIds = vueProps.categories.filter(val => !selectedCategories.value.includes(val)).map(e => e.id);
+    const categoryIds = selectedCategories.value.map(c => c.id);
+    console.log(categoryIds);
     deleteCategoriesDialog.value = false;
     selectedCategories.value = null;
-    toast.add({ severity: 'success', summary: 'Successful', detail: 'Categories Deleted', life: 3000 });
+    console.log(route('categories.bulk-destroy'));
+    router.post(route('categories.bulk-destroy'), {
+        categoryIds: categoryIds,
+        onSuccess: () => {
+            toast.add({ severity: 'error', summary: 'Deleted', detail: 'Selected Categories Deleted', life: 3000 });
+        }
+    })
 };
 
 </script>

@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
+use App\Models\Category;
+use Illuminate\Http\Request;
 use App\Http\Requests\CategoryStoreRequest;
 use App\Http\Requests\CategoryUpdateRequest;
-use App\Models\Category;
-use Inertia\Inertia;
 
 class CategoryController extends Controller
 {
@@ -14,8 +15,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
+        $categories = Category::paginate(3);
         return Inertia::render('Categories/Index', [
-            'categories' => Category::all()->toArray(),
+            'categories' => $categories,
         ]);
     }
 
@@ -37,7 +39,6 @@ class CategoryController extends Controller
             $data['thumbnail'] = $request->file('thumbnail')->store('categories');
         }
         Category::create($data);
-
         return redirect()->route('categories.index')->with('success', 'Category created successfully');
     }
 
@@ -63,17 +64,31 @@ class CategoryController extends Controller
     public function update(CategoryUpdateRequest $request, Category $category)
     {
         $data = $request->validated();
+        // dd($data);
         if ($request->file('thumbnail')) {
             $data['thumbnail'] = $request->file('thumbnail')->store('categories');
         }
-        $category->update($data);
+        $res = $category->update($data);
+        return to_route('categories.index')->with('success', 'Category updated successfully');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Category $category)
     {
-        //
+        $category->delete();
+        return to_route('categories.index')->with('success', 'Category deleted successfully');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate(['categoryIds' => 'required|array']);
+        $categoryIds = $request->input('categoryIds');
+        Category::destroy($categoryIds);
+        return to_route('categories.index')->with('success', 'Categories deleted successfully');
     }
 }

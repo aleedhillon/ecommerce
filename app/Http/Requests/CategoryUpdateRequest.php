@@ -23,6 +23,7 @@ class CategoryUpdateRequest extends FormRequest
      */
     public function rules()
     {
+        // dd($this->category);
         return [
             'name' => 'required|string|max:255|unique:categories,name,' . $this->category->id,
             'thumbnail' => 'nullable|max:2048',

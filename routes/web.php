@@ -26,5 +26,5 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::resource('categories', CategoryController::class);
-
-require __DIR__.'/auth.php';
+Route::post('/categories/bulk-destroy', [CategoryController::class, 'bulkDestroy'])->name('categories.bulk-destroy');
+require __DIR__ . '/auth.php';
