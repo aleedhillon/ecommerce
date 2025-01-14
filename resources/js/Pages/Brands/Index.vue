@@ -98,7 +98,8 @@
             <template #footer>
                 <div class="mt-3">
                     <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
-                    <Button label="Save" icon="pi pi-check" @click="saveBrand" v-if="!isEdit" />
+                    <Button label="Save & Continue" text icon="pi pi-check" @click="saveBrand(true)" v-if="!isEdit" />
+                    <Button label="Save" icon="pi pi-check" @click="saveBrand(false)" v-if="!isEdit" />
                     <Button label="Update" icon="pi pi-check" @click="updateBrand" v-if="isEdit" />
                 </div>
             </template>
@@ -197,15 +198,20 @@ const hideDialog = () => {
     submitted.value = false;
 };
 
-const saveBrand = () => {
+const saveBrand = (saveAndContinue = false) => {
     submitted.value = true;
 
     form.post(route('brands.store'), {
         onSuccess: () => {
-            hideDialog();
             form.reset();
             photoPreview.value = null;
             toast.add({ severity: 'success', summary: 'Successful', detail: 'Successfully Created!', life: 3000 });
+            if (saveAndContinue) {
+                submitted.value = false;
+                return;
+            } else {
+                hideDialog();
+            }
         },
         onError: () => {
             toast.add({ severity: 'error', summary: 'Error', detail: 'Something went wrong', life: 3000 });
