@@ -60,18 +60,19 @@
             <div class="flex flex-col gap-6">
                 <div>
                     <label for="name" class="block font-bold mb-2">Name</label>
-                    <InputText id="name" v-model.trim="category.name" required="true" autofocus
-                        :invalid="submitted && !category.name" fluid />
-                    <small v-if="submitted && !category.name" class="text-red-500">Name is required.</small>
+                    <InputText id="name" v-model.trim="form.name" required="true" autofocus
+                        :invalid="submitted && !form.name" fluid />
+                    <small v-if="submitted && !form.name" class="text-red-500">Name is required.</small>
                 </div>
             </div>
             <div class="flex flex-col gap-6 mt-3">
                 <div>
                     <label for="is_active" class="block font-bold mb-2">Status</label>
-                    <Select v-model="category.is_active" :options="statuses" optionLabel="label" optionValue="value"
+                    <Select v-model="form.is_active" :options="statuses" optionLabel="label" optionValue="value"
                         placeholder="Select a status" class="w-full" :required="true" />
-                    <small v-if="submitted && (category.is_active == null)" class="text-red-500">Status is
-                        required.</small>
+                    <small v-if="submitted && (form.is_active == null)" class="text-red-500">
+                        Status is required.
+                    </small>
                 </div>
             </div>
             <div class="flex flex-col gap-6 mt-3">
@@ -80,11 +81,12 @@
                     <label for="thumbnail" class="block font-bold mb-2">Thumbnail</label>
                     <FileUpload mode="basic" name="thumbnail" customUpload @select="handleThumbnailUpload" :auto="true"
                         accept="image/*" chooseLabel="Choose Image" class="w-full" />
-                    <!-- <small v-if="submitted && !category.thumbnail" class="text-red-500">Thumbnail is required.</small> -->
+                    <!-- <small v-if="submitted && !form.thumbnail" class="text-red-500">Thumbnail is required.</small> -->
                 </div>
                 <div>
-                    <img v-if="category.thumbnail || thumbnailPreview" :src="thumbnailPreview ?? category.thumbnail"
-                        alt="Image" class="shadow-md rounded-xl w-full" style="filter: grayscale(100%)" />
+                    <img v-if="form.thumbnail || thumbnailPreview"
+                        :src="thumbnailPreview ?? resolveImagePath(form.thumbnail)" alt="Image"
+                        class="shadow-md rounded-xl w-full" style="filter: grayscale(100%)" />
                 </div>
             </div>
 
@@ -101,7 +103,7 @@
         <Dialog v-model:visible="deleteCategoryDialog" :style="{ width: '450px' }" header="Confirm">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
-                <span v-if="category">Are you sure you want to delete <b>{{ category.name }}</b>?</span>
+                <span v-if="form.name">Are you sure you want to delete <b>{{ form.name }}</b>?</span>
             </div>
             <template #footer>
                 <Button label="No" icon="pi pi-times" text @click="deleteCategoryDialog = false" />
@@ -113,7 +115,7 @@
         <Dialog v-model:visible="deleteCategoriesDialog" :style="{ width: '450px' }" header="Confirm">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
-                <span v-if="category">Are you sure you want to delete the selected categories?</span>
+                <span v-if="form.name">Are you sure you want to delete the selected categories?</span>
             </div>
             <template #footer>
                 <Button label="No" icon="pi pi-times" text @click="deleteCategoriesDialog = false" />
@@ -131,6 +133,7 @@ import { useToast } from 'primevue/usetoast';
 import { router, useForm } from '@inertiajs/vue3';
 import { Select } from 'primevue';
 import { usePage } from '@inertiajs/vue3';
+import { resolveImagePath } from '../../Helpers/imageHelper';
 
 const { props } = usePage();
 
@@ -144,13 +147,11 @@ const categoryDialog = ref(false);
 const deleteCategoryDialog = ref(false);
 const deleteCategoriesDialog = ref(false);
 
-const init = {
+const form = useForm({
     name: null,
     is_active: 1,
     thumbnail: null,
-};
-
-const category = ref({ ...init });
+});
 
 const selectedCategories = ref();
 const filters = ref({
@@ -167,7 +168,8 @@ const thumbnailPreview = ref(null);
 
 const handleThumbnailUpload = (event) => {
     const file = event.files[0];
-    category.value.thumbnail = file;
+    form.thumbnail = file;
+
     const reader = new FileReader();
 
     reader.onload = async (e) => {
@@ -177,7 +179,8 @@ const handleThumbnailUpload = (event) => {
 };
 
 const openNew = () => {
-    category.value = { ...init };
+    isEdit.value = false;
+    form.reset();
     submitted.value = false;
     categoryDialog.value = true;
     thumbnailPreview.value = null;
@@ -190,14 +193,13 @@ const hideDialog = () => {
 
 const saveCategory = () => {
     submitted.value = true;
-    const categoryForm = useForm({ ...category.value });
-    categoryForm.post(route('categories.store'), {
+
+    form.post(route('categories.store'), {
         onSuccess: () => {
             hideDialog();
-            category.value = {};
+            form.reset();
             thumbnailPreview.value = null;
-            const message = props.flash.success;
-            toast.add({ severity: 'success', summary: 'Successful', detail: message, life: 3000 });
+            toast.add({ severity: 'success', summary: 'Successful', detail: 'Successfully Created!', life: 3000 });
         },
         onError: () => {
             toast.add({ severity: 'error', summary: 'Error', detail: 'Something went wrong', life: 3000 });
@@ -212,39 +214,44 @@ const updateCategory = () => {
     submitted.value = true;
     const url = route('categories.update', { category: editingId.value });
 
-    const categoryUpdateForm = useForm({ ...category.value });
+    const data = {
+        _method: 'put',
+        name: form.name,
+        is_active: form.is_active,
+        thumbnail: form.thumbnail,
+    };
 
-    categoryUpdateForm.put(url, {
+    router.post(url, data, {
         onSuccess: () => {
             hideDialog();
             thumbnailPreview.value = null;
-            category.value = { ...init };
-            const message = props.flash.success;
-            toast.add({ severity: 'success', summary: 'Successful', detail: message, life: 3000 });
+            form.reset();
+            toast.add({ severity: 'success', summary: 'Successful', detail: 'Successfully Updated!', life: 3000 });
         },
         onError: () => {
             toast.add({ severity: 'error', summary: 'Error', detail: 'Something went wrong, please try again!', life: 3000 });
         },
     });
-
 };
 
 const editCategory = (prod) => {
     categoryDialog.value = true;
-    thumbnailPreview.value = null;
     isEdit.value = true;
 
-    category.value = {
-        name: prod.name,
-        is_active: prod.is_active,
-        thumbnail: prod.thumbnail,
-    };
+    thumbnailPreview.value = null;
+    form.name = prod.name;
+    form.is_active = prod.is_active;
+    form.thumbnail = prod.thumbnail;
     editingId.value = prod.id;
 };
 
 const confirmDeleteCategory = (prod) => {
     deleteCategoryDialog.value = true;
-    category.value = {};
+
+    thumbnailPreview.value = null;
+    form.name = prod.name;
+    form.is_active = prod.is_active;
+    form.thumbnail = prod.thumbnail;
     editingId.value = prod.id;
 };
 
@@ -266,13 +273,9 @@ const confirmDeleteSelected = () => {
 };
 
 const deleteSelectedCategories = () => {
-    console.log(selectedCategories.value);
-    // const categoryIds = vueProps.categories.filter(val => !selectedCategories.value.includes(val)).map(e => e.id);
     const categoryIds = selectedCategories.value.map(c => c.id);
-    console.log(categoryIds);
     deleteCategoriesDialog.value = false;
     selectedCategories.value = null;
-    console.log(route('categories.bulk-destroy'));
     router.post(route('categories.bulk-destroy'), {
         categoryIds: categoryIds,
         onSuccess: () => {

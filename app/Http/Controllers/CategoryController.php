@@ -7,6 +7,8 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Requests\CategoryStoreRequest;
 use App\Http\Requests\CategoryUpdateRequest;
+use Exception;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
@@ -15,7 +17,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::paginate(3);
+        $categories = Category::paginate();
         return Inertia::render('Categories/Index', [
             'categories' => $categories,
         ]);
@@ -64,9 +66,12 @@ class CategoryController extends Controller
     public function update(CategoryUpdateRequest $request, Category $category)
     {
         $data = $request->validated();
-        // dd($data);
         if ($request->file('thumbnail')) {
             $data['thumbnail'] = $request->file('thumbnail')->store('categories');
+            // Delete existing thumbnail
+            if ($category->thumbnail && Storage::fileExists($category->thumbnail)) {
+                Storage::delete($category->thumbnail);
+            }
         }
         $res = $category->update($data);
         return to_route('categories.index')->with('success', 'Category updated successfully');
@@ -77,6 +82,9 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+        if ($category->thumbnail && Storage::fileExists($category->thumbnail)) {
+            Storage::delete($category->thumbnail);
+        }
         $category->delete();
         return to_route('categories.index')->with('success', 'Category deleted successfully');
     }
@@ -88,7 +96,14 @@ class CategoryController extends Controller
     {
         $request->validate(['categoryIds' => 'required|array']);
         $categoryIds = $request->input('categoryIds');
-        Category::destroy($categoryIds);
+        foreach ($categoryIds as $id) {
+            $category = Category::find($id);
+            if ($category->thumbnail && Storage::fileExists($category->thumbnail)) {
+                Storage::delete($category->thumbnail);
+            }
+            $category->delete();
+        }
+        // Category::destroy($categoryIds);
         return to_route('categories.index')->with('success', 'Categories deleted successfully');
     }
 }
