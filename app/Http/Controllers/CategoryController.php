@@ -37,8 +37,8 @@ class CategoryController extends Controller
     public function store(CategoryStoreRequest $request)
     {
         $data = $request->validated();
-        if ($request->file('thumbnail')) {
-            $data['thumbnail'] = $request->file('thumbnail')->store('categories');
+        if ($request->file('photo')) {
+            $data['photo'] = $request->file('photo')->store('categories');
         }
         Category::create($data);
         return redirect()->route('categories.index')->with('success', 'Category created successfully');
@@ -66,11 +66,11 @@ class CategoryController extends Controller
     public function update(CategoryUpdateRequest $request, Category $category)
     {
         $data = $request->validated();
-        if ($request->file('thumbnail')) {
-            $data['thumbnail'] = $request->file('thumbnail')->store('categories');
-            // Delete existing thumbnail
-            if ($category->thumbnail && Storage::fileExists($category->thumbnail)) {
-                Storage::delete($category->thumbnail);
+        if ($request->file('photo')) {
+            $data['photo'] = $request->file('photo')->store('categories');
+            // Delete existing photo
+            if ($category->photo && Storage::fileExists($category->photo)) {
+                Storage::delete($category->photo);
             }
         }
         $res = $category->update($data);
@@ -82,8 +82,8 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        if ($category->thumbnail && Storage::fileExists($category->thumbnail)) {
-            Storage::delete($category->thumbnail);
+        if ($category->photo && Storage::fileExists($category->photo)) {
+            Storage::delete($category->photo);
         }
         $category->delete();
         return to_route('categories.index')->with('success', 'Category deleted successfully');
@@ -98,8 +98,8 @@ class CategoryController extends Controller
         $categoryIds = $request->input('categoryIds');
         foreach ($categoryIds as $id) {
             $category = Category::find($id);
-            if ($category->thumbnail && Storage::fileExists($category->thumbnail)) {
-                Storage::delete($category->thumbnail);
+            if ($category->photo && Storage::fileExists($category->photo)) {
+                Storage::delete($category->photo);
             }
             $category->delete();
         }

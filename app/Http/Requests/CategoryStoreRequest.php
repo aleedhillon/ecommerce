@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\FileUploadRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CategoryStoreRequest extends FormRequest
@@ -25,7 +26,7 @@ class CategoryStoreRequest extends FormRequest
     {
         return [
             'name' => 'required|string|unique:categories,name',
-            'thumbnail' => 'nullable|file|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'photo' => $this->hasFile('photo') ? ['nullable', new FileUploadRule()] : 'nullable|string',
             'is_active' => 'nullable|boolean',
         ];
     }

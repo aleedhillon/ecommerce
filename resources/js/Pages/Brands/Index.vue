@@ -5,7 +5,7 @@
                 <template #start>
                     <Button label="New" icon="pi pi-plus" class="mr-2" @click="openNew" />
                     <Button label="Delete" icon="pi pi-trash" severity="danger" outlined @click="confirmDeleteSelected"
-                        :disabled="!selectedCategories || !selectedCategories.length" />
+                        :disabled="!selectedBrands || !selectedBrands.length" />
                 </template>
 
                 <template #end>
@@ -15,14 +15,14 @@
                 </template>
             </Toolbar>
 
-            <DataTable ref="dt" v-model:selection="selectedCategories" :value="categories.data" dataKey="id"
-                :paginator="true" :rows="10" :filters="filters"
+            <DataTable ref="dt" v-model:selection="selectedBrands" :value="brands.data" dataKey="id" :paginator="true"
+                :rows="10" :filters="filters"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
-                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories">
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} brands">
                 <template #header>
                     <div class="flex flex-wrap gap-2 items-center justify-between">
-                        <h4 class="m-0">Manage Categories</h4>
+                        <h4 class="m-0">Manage Brands</h4>
                         <IconField>
                             <InputIcon>
                                 <i class="pi pi-search" />
@@ -45,17 +45,16 @@
                 <Column field="updated_at" header="Updated At" sortable></Column>
                 <Column :exportable="false" style="min-width: 12rem">
                     <template #body="slotProps">
-                        <Button icon="pi pi-pencil" outlined rounded class="mr-2"
-                            @click="editCategory(slotProps.data)" />
+                        <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editBrand(slotProps.data)" />
                         <Button icon="pi pi-trash" outlined rounded severity="danger"
-                            @click="confirmDeleteCategory(slotProps.data)" />
+                            @click="confirmDeleteBrand(slotProps.data)" />
                     </template>
                 </Column>
             </DataTable>
         </div>
 
         <!-- Create & Edit Form Dialog -->
-        <Dialog v-model:visible="categoryDialog" maximizable :style="{ width: '600px' }" header="Category Details"
+        <Dialog v-model:visible="brandDialog" maximizable :style="{ width: '600px' }" header="Brand Details"
             pt:mask:class="backdrop-blur-sm">
             <div class="flex flex-col gap-6">
                 <div>
@@ -63,6 +62,13 @@
                     <InputText id="name" v-model.trim="form.name" required="true" autofocus
                         :invalid="submitted && !form.name" fluid />
                     <small v-if="submitted && !form.name" class="text-red-500">Name is required.</small>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <div>
+                    <label for="name" class="block font-bold mb-2">Description</label>
+                    <Textarea v-model.trim="form.description" rows="4" cols="30" id="description" class="w-full" />
                 </div>
             </div>
             <div class="flex flex-col gap-6 mt-3">
@@ -92,33 +98,33 @@
             <template #footer>
                 <div class="mt-3">
                     <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
-                    <Button label="Save" icon="pi pi-check" @click="saveCategory" v-if="!isEdit" />
-                    <Button label="Update" icon="pi pi-check" @click="updateCategory" v-if="isEdit" />
+                    <Button label="Save" icon="pi pi-check" @click="saveBrand" v-if="!isEdit" />
+                    <Button label="Update" icon="pi pi-check" @click="updateBrand" v-if="isEdit" />
                 </div>
             </template>
         </Dialog>
 
         <!-- Single Delete -->
-        <Dialog v-model:visible="deleteCategoryDialog" :style="{ width: '450px' }" header="Confirm">
+        <Dialog v-model:visible="deleteBrandDialog" :style="{ width: '450px' }" header="Confirm">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
                 <span v-if="form.name">Are you sure you want to delete <b>{{ form.name }}</b>?</span>
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" text @click="deleteCategoryDialog = false" />
-                <Button label="Yes" icon="pi pi-check" @click="deleteCategory" />
+                <Button label="No" icon="pi pi-times" text @click="deleteBrandDialog = false" />
+                <Button label="Yes" icon="pi pi-check" @click="deleteBrand" />
             </template>
         </Dialog>
 
         <!-- Bulk Delete -->
-        <Dialog v-model:visible="deleteCategoriesDialog" :style="{ width: '450px' }" header="Confirm">
+        <Dialog v-model:visible="deleteBrandsDialog" :style="{ width: '450px' }" header="Confirm">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
-                <span v-if="form.name">Are you sure you want to delete the selected categories?</span>
+                <span v-if="form.name">Are you sure you want to delete the selected brands?</span>
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" text @click="deleteCategoriesDialog = false" />
-                <Button label="Yes" icon="pi pi-check" text @click="deleteSelectedCategories" />
+                <Button label="No" icon="pi pi-times" text @click="deleteBrandsDialog = false" />
+                <Button label="Yes" icon="pi pi-check" text @click="deleteSelectedBrands" />
             </template>
         </Dialog>
     </AuthenticatedLayout>
@@ -137,22 +143,23 @@ import { resolveImagePath } from '../../Helpers/imageHelper';
 const { props } = usePage();
 
 const vueProps = defineProps({
-    categories: Object,
+    brands: Object,
 });
 
 const toast = useToast();
 const dt = ref();
-const categoryDialog = ref(false);
-const deleteCategoryDialog = ref(false);
-const deleteCategoriesDialog = ref(false);
+const brandDialog = ref(false);
+const deleteBrandDialog = ref(false);
+const deleteBrandsDialog = ref(false);
 
 const form = useForm({
     name: null,
+    description: null,
     is_active: 1,
     photo: null,
 });
 
-const selectedCategories = ref();
+const selectedBrands = ref();
 const filters = ref({
     'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
@@ -181,19 +188,19 @@ const openNew = () => {
     isEdit.value = false;
     form.reset();
     submitted.value = false;
-    categoryDialog.value = true;
+    brandDialog.value = true;
     photoPreview.value = null;
 };
 
 const hideDialog = () => {
-    categoryDialog.value = false;
+    brandDialog.value = false;
     submitted.value = false;
 };
 
-const saveCategory = () => {
+const saveBrand = () => {
     submitted.value = true;
 
-    form.post(route('categories.store'), {
+    form.post(route('brands.store'), {
         onSuccess: () => {
             hideDialog();
             form.reset();
@@ -209,13 +216,14 @@ const saveCategory = () => {
 const isEdit = ref(false);
 const editingId = ref(null);
 
-const updateCategory = () => {
+const updateBrand = () => {
     submitted.value = true;
-    const url = route('categories.update', { category: editingId.value });
+    const url = route('brands.update', { brand: editingId.value });
 
     const data = {
         _method: 'put',
         name: form.name,
+        description: form.description,
         is_active: form.is_active,
         photo: form.photo,
     };
@@ -233,30 +241,32 @@ const updateCategory = () => {
     });
 };
 
-const editCategory = (prod) => {
-    categoryDialog.value = true;
+const editBrand = (prod) => {
+    brandDialog.value = true;
     isEdit.value = true;
 
     photoPreview.value = null;
     form.name = prod.name;
+    form.description = prod.description;
     form.is_active = prod.is_active;
     form.photo = prod.photo;
     editingId.value = prod.id;
 };
 
-const confirmDeleteCategory = (prod) => {
-    deleteCategoryDialog.value = true;
+const confirmDeleteBrand = (prod) => {
+    deleteBrandDialog.value = true;
 
     photoPreview.value = null;
     form.name = prod.name;
+    form.description = prod.description;
     form.is_active = prod.is_active;
     form.photo = prod.photo;
     editingId.value = prod.id;
 };
 
-const deleteCategory = () => {
-    deleteCategoryDialog.value = false;
-    router.delete(route('categories.destroy', { category: editingId.value }), {
+const deleteBrand = () => {
+    deleteBrandDialog.value = false;
+    router.delete(route('brands.destroy', { brand: editingId.value }), {
         onSuccess: () => {
             toast.add({ severity: 'error', summary: 'Deleted', detail: 'Successfully Deleted', life: 3000 });
         }
@@ -268,17 +278,17 @@ const exportCSV = () => {
 };
 
 const confirmDeleteSelected = () => {
-    deleteCategoriesDialog.value = true;
+    deleteBrandsDialog.value = true;
 };
 
-const deleteSelectedCategories = () => {
-    const categoryIds = selectedCategories.value.map(c => c.id);
-    deleteCategoriesDialog.value = false;
-    selectedCategories.value = null;
-    router.post(route('categories.bulk-destroy'), {
-        categoryIds: categoryIds,
+const deleteSelectedBrands = () => {
+    const brandIds = selectedBrands.value.map(c => c.id);
+    deleteBrandsDialog.value = false;
+    selectedBrands.value = null;
+    router.post(route('brands.bulk-destroy'), {
+        brandIds: brandIds,
         onSuccess: () => {
-            toast.add({ severity: 'error', summary: 'Deleted', detail: 'Selected Categories Deleted', life: 3000 });
+            toast.add({ severity: 'error', summary: 'Deleted', detail: 'Selected Brands Deleted', life: 3000 });
         }
     })
 };

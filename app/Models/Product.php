@@ -30,7 +30,7 @@ class Product extends Model
         'meterials',
         'description',
         'other_info',
-        'pro_thumbnail',
+        'pro_photo',
         'is_active',
     ];
 }

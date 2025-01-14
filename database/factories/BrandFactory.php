@@ -17,7 +17,7 @@ class BrandFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->bothify('BR - ##??'),
+            'name' => $this->faker->bothify('Brand - ##??'),
             'description' => $this->faker->paragraph(),
             'photo' => $this->faker->imageUrl(),
             'is_active' => $this->faker->boolean(90),

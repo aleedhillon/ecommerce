@@ -42,7 +42,7 @@ class ProductStoreRequest extends FormRequest
             'meterials' => 'nullable',
             'description' => 'nullable',
             'other_info' => 'nullable',
-            'pro_thumbnail' => 'nullable',
+            'pro_photo' => 'nullable',
             'is_active' => 'boolean',
         ];
     }

@@ -34,7 +34,7 @@ return new class extends Migration
             $table->longText('description')->nullable();
             $table->longText('other_info')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->string('pro_thumbnail')->nullable()->default('product_thumbnail.jpg');
+            $table->string('pro_photo')->nullable()->default('product_photo.jpg');
             $table->foreign(['category_id'])->references(['id'])->on('categories')->onDelete('CASCADE');
             $table->foreign(['sub_category_id'])->references(['id'])->on('sub_categories')->onDelete('CASCADE');
             $table->foreign(['tax_id'])->references(['id'])->on('taxes')->onDelete('CASCADE');

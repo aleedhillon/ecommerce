@@ -18,7 +18,7 @@ class CategoryFactory extends Factory
     {
         return [
             'name' => $this->faker->bothify('Category - ##??'),
-            'thumbnail' => 'https://placehold.co/600x400/png',
+            'photo' => 'https://placehold.co/600x400/png',
             'is_active' => $this->faker->boolean(90),
         ];
     }

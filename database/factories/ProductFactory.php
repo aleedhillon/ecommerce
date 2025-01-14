@@ -42,7 +42,7 @@ class ProductFactory extends Factory
             'meterials' => $this->faker->word(),
             'description' => $this->faker->paragraph(),
             'other_info' => $this->faker->paragraph(),
-            'pro_thumbnail' => $this->faker->imageUrl(),
+            'pro_photo' => $this->faker->imageUrl(),
             'is_active' => $this->faker->boolean(90),
         ];
     }

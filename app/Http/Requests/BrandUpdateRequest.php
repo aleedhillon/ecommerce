@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\FileUploadRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BrandUpdateRequest extends FormRequest
@@ -24,9 +25,9 @@ class BrandUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255|unique:categories,name,'.$this->id,
+            'name' => 'required|string|max:255|unique:categories,name,' . $this->id,
             'description' => 'nullable|string',
-            'photo' => 'nullable|string',
+            'photo' => $this->hasFile('photo') ? ['nullable', new FileUploadRule()] : 'nullable|string',
             'is_active' => 'nullable|boolean',
         ];
     }

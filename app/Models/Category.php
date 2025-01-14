@@ -11,7 +11,7 @@ class Category extends BaseModel
 
     protected $fillable = [
         'name',
-        'thumbnail',
+        'photo',
         'is_active',
     ];
 }
