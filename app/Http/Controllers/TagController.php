@@ -37,11 +37,8 @@ class TagController extends Controller
     public function store(TagStoreRequest $request)
     {
         $data = $request->validated();
-        if ($request->file('photo')) {
-            $data['photo'] = $request->file('photo')->store('tags');
-        }
         Tag::create($data);
-        return redirect()->route('tags.index')->with('success', 'Tag created successfully');
+        // return redirect()->route('tags.index')->with('success', 'Tag created successfully');
     }
 
     /**
@@ -66,13 +63,6 @@ class TagController extends Controller
     public function update(TagUpdateRequest $request, Tag $tag)
     {
         $data = $request->validated();
-        if ($request->file('photo')) {
-            $data['photo'] = $request->file('photo')->store('tags');
-            // Delete existing photo
-            if ($tag->photo && Storage::fileExists($tag->photo)) {
-                Storage::delete($tag->photo);
-            }
-        }
         $res = $tag->update($data);
         return to_route('tags.index')->with('success', 'Tag updated successfully');
     }

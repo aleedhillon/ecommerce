@@ -37,10 +37,10 @@
                 <div>
                     <div class="mt-3">
                         <Button label="Cancel" icon="pi pi-times" text />
-                        <Button label="Save & Continue" text icon="pi pi-check" @click="saveCategory(true)"
+                        <Button label="Save & Continue" text icon="pi pi-check" @click="saveItem(true)"
                             v-if="!isEdit" />
-                        <Button label="Save" icon="pi pi-check" @click="saveCategory(false)" v-if="!isEdit" />
-                        <Button label="Update" icon="pi pi-check" @click="updateCategory" v-if="isEdit" />
+                        <Button label="Save" icon="pi pi-check" @click="saveItem(false)" v-if="!isEdit" />
+                        <Button label="Update" icon="pi pi-check" @click="updateItem" v-if="isEdit" />
                     </div>
                 </div>
             </div>
@@ -48,12 +48,14 @@
     </AuthenticatedLayout>
 </template>
 <script setup>
-import { useForm } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
 import { statuses } from '../../Helpers/enums';
 import { Link } from '@inertiajs/vue3'
 import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { useToast } from 'primevue';
 
+const toast = useToast();
 const isEdit = ref(false);
 const submitted = ref(false);
 
@@ -61,4 +63,16 @@ const form = useForm({
     name: '',
     is_active: 1,
 });
+
+const saveItem = (saveAndContinue) => {
+    form.post(route('tags.store'), {
+        onSuccess: () => {
+            form.reset();
+            toast.add({ severity: 'success', summary: 'Successful', detail: 'Successfully Created!', life: 3000 });
+            if (!saveAndContinue) {
+                router.visit(route('tags.index'));
+            }
+        }
+    })
+}
 </script>
