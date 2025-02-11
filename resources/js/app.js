@@ -17,7 +17,7 @@ import ToastService from 'primevue/toastservice';
 import Noir from './primevue/Noir';
 import AppState from './primevue/AppState';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'E-Commerce';
 
 createInertiaApp({
     title: (title) => title ? `${title} - ${appName}` : appName,

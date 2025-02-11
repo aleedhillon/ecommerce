@@ -7,7 +7,12 @@ import Components from 'unplugin-vue-components/vite';
 import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 
 export default defineConfig({
-    server: { // Open to load fonts from node_modules directory
+    server: {
+        host: '0.0.0.0',
+        port: 5173,
+        hmr: {
+            host: 'localhost'
+        },
         fs: {
             allow: ['node_modules', 'resources', 'vendor'],
         },
