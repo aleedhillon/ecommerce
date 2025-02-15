@@ -8,6 +8,7 @@ use App\Http\Requests\CategoryStoreRequest;
 use App\Http\Requests\CategoryUpdateRequest;
 use App\Http\Requests\SubCategoryStoreRequest;
 use App\Http\Requests\SubCategoryUpdateRequest;
+use App\Models\Category;
 use App\Models\SubCategory;
 use Exception;
 use Illuminate\Support\Facades\Storage;
@@ -20,8 +21,10 @@ class SubCategoryController extends Controller
     public function index()
     {
         $sub_categories = SubCategory::with('category')->paginate();
+        $categories = Category::get();
         return Inertia::render('SubCategories/Index', [
             'sub_categories' => $sub_categories,
+            'categories' => $categories,
         ]);
     }
 

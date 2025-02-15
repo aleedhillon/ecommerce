@@ -46,9 +46,9 @@
                 <Column :exportable="false" style="min-width: 12rem">
                     <template #body="slotProps">
                         <Button icon="pi pi-pencil" outlined rounded class="mr-2"
-                            @click="editCategory(slotProps.data)" />
+                            @click="editSubCategory(slotProps.data)" />
                         <Button icon="pi pi-trash" outlined rounded severity="danger"
-                            @click="confirmDeleteCategory(slotProps.data)" />
+                            @click="confirmDeleteSubCategory(slotProps.data)" />
                     </template>
                 </Column>
             </DataTable>
@@ -61,9 +61,9 @@
             <div class="flex flex-col gap-6">
                 <div>
                     <label for="category" class="block font-bold mb-2">Category</label>
-                    <Dropdown v-model="form.category_id" :options="categories" option-label="name" option-value="id"
-                        placeholder="Select a Category" />
-                    <small v-if="submitted && !form.category_id" class="text-red-500">Category is required.</small>
+                    <Dropdown v-model="form.category_id" :options="props.categories" option-label="name"
+                        option-value="id" placeholder="Select a Category" class="w-full" />
+                    <small v-if="!form.category_id" class="text-red-500">Category is required.</small>
                 </div>
             </div>
             <div class="flex flex-col gap-6">
@@ -95,7 +95,6 @@
                 </div>
             </div>
             <div class="flex flex-col gap-6 mt-3">
-
                 <div>
                     <label for="photo" class="block font-bold mb-2">Photo</label>
                     <FileUpload mode="basic" name="photo" customUpload @select="handlePhotoUpload" :auto="true"
@@ -114,7 +113,7 @@
                     <Button label="Save & Continue" text icon="pi pi-check" @click="saveSubCategory(true)"
                         v-if="!isEdit" />
                     <Button label="Save" icon="pi pi-check" @click="saveSubCategory(false)" v-if="!isEdit" />
-                    <Button label="Update" icon="pi pi-check" @click="updateCategory" v-if="isEdit" />
+                    <Button label="Update" icon="pi pi-check" @click="updateSubCategory" v-if="isEdit" />
                 </div>
             </template>
         </Dialog>
@@ -127,19 +126,19 @@
             </div>
             <template #footer>
                 <Button label="No" icon="pi pi-times" text @click="deleteSubCategoryDialog = false" />
-                <Button label="Yes" icon="pi pi-check" @click="deleteCategory" />
+                <Button label="Yes" icon="pi pi-check" @click="deleteSubCategory" />
             </template>
         </Dialog>
 
         <!-- Bulk Delete -->
-        <Dialog v-model:visible="deleteCategoriesDialog" :style="{ width: '450px' }" header="Confirm">
+        <Dialog v-model:visible="deleteSubCategoriesDialog" :style="{ width: '450px' }" header="Confirm">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
                 <span v-if="form.name">Are you sure you want to delete the selected categories?</span>
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" text @click="deleteCategoriesDialog = false" />
-                <Button label="Yes" icon="pi pi-check" text @click="deleteSelectedCategories" />
+                <Button label="No" icon="pi pi-times" text @click="deleteSubCategoriesDialog = false" />
+                <Button label="Yes" icon="pi pi-check" text @click="deleteSelectedSubCategories" />
             </template>
         </Dialog>
     </AuthenticatedLayout>
@@ -147,7 +146,7 @@
 
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { ref, defineProps } from 'vue';
+import { ref, defineProps, onMounted } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
 import { router, useForm } from '@inertiajs/vue3';
@@ -161,13 +160,14 @@ const { props } = usePage();
 
 const vueProps = defineProps({
     sub_categories: Object,
+    categories: Array,
 });
 
 const toast = useToast();
 const dt = ref();
 const subCategoryDialog = ref(false);
 const deleteSubCategoryDialog = ref(false);
-const deleteCategoriesDialog = ref(false);
+const deleteSubCategoriesDialog = ref(false);
 
 const form = useForm({
     name: null,
@@ -177,6 +177,9 @@ const form = useForm({
     category_id: null,
 });
 
+onMounted(() => {
+    console.log('Categories:', props.categories);
+});
 const selectedCategories = ref();
 const filters = ref({
     'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -215,23 +218,6 @@ const hideDialog = () => {
     submitted.value = false;
 };
 
-const categories = ref([]);
-
-const loadCategories = async () => {
-    try {
-        const response = await axios.get('/categories');
-        categories.value = response.data;
-        console.log('Category:', categories);
-    } catch (error) {
-        toast.add({ severity: 'error', summary: 'Error', detail: 'Unable to fetch categories.', life: 3000 });
-        console.error('Category loading error:', error);
-    }
-};
-
-// Load categories on component mount
-loadCategories();
-
-
 const saveSubCategory = (saveAndContinue = false) => {
     submitted.value = true;
 
@@ -256,13 +242,14 @@ const saveSubCategory = (saveAndContinue = false) => {
 const isEdit = ref(false);
 const editingId = ref(null);
 
-const updateCategory = () => {
+const updateSubCategory = () => {
     submitted.value = true;
-    const url = route('sub-categories.update', { category: editingId.value });
+    const url = route('sub-categories.update', { sub_category: editingId.value });
 
     const data = {
         _method: 'put',
         name: form.name,
+        category_id: form.category_id,
         is_active: form.is_active,
         photo: form.photo,
     };
@@ -280,30 +267,32 @@ const updateCategory = () => {
     });
 };
 
-const editCategory = (prod) => {
+const editSubCategory = (prod) => {
     subCategoryDialog.value = true;
     isEdit.value = true;
 
     photoPreview.value = null;
     form.name = prod.name;
+    form.category_id = prod.category_id;
     form.is_active = prod.is_active;
     form.photo = prod.photo;
     editingId.value = prod.id;
 };
 
-const confirmDeleteCategory = (prod) => {
+const confirmDeleteSubCategory = (prod) => {
     deleteSubCategoryDialog.value = true;
 
     photoPreview.value = null;
     form.name = prod.name;
+    form.category_id = prod.category_id;
     form.is_active = prod.is_active;
     form.photo = prod.photo;
     editingId.value = prod.id;
 };
 
-const deleteCategory = () => {
+const deleteSubCategory = () => {
     deleteSubCategoryDialog.value = false;
-    router.delete(route('sub-categories.destroy', { category: editingId.value }), {
+    router.delete(route('sub-categories.destroy', { sub_category: editingId.value }), {
         onSuccess: () => {
             toast.add({ severity: 'error', summary: 'Deleted', detail: 'Successfully Deleted', life: 3000 });
         }
@@ -315,12 +304,12 @@ const exportCSV = () => {
 };
 
 const confirmDeleteSelected = () => {
-    deleteCategoriesDialog.value = true;
+    deleteSubCategoriesDialog.value = true;
 };
 
-const deleteSelectedCategories = () => {
+const deleteSelectedSubCategories = () => {
     const categoryIds = selectedCategories.value.map(c => c.id);
-    deleteCategoriesDialog.value = false;
+    deleteSubCategoriesDialog.value = false;
     selectedCategories.value = null;
     router.post(route('sub-categories.bulk-destroy'), {
         categoryIds: categoryIds,
