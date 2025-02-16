@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ColorController;
 use App\Http\Controllers\SubCategoryController;
 
 
@@ -24,4 +25,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Tags
     Route::resource('tags', TagController::class);
     Route::post('/tags/bulk-destroy', [TagController::class, 'bulkDestroy'])->name('tags.bulk-destroy');
+    // Colors
+    Route::resource('colors', ColorController::class);
+    Route::post('/colors/bulk-destroy', [ColorController::class, 'bulkDestroy'])->name('colors.bulk-destroy');
 });
