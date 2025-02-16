@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\FileUploadRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SubCategoryUpdateRequest extends FormRequest
@@ -25,9 +26,9 @@ class SubCategoryUpdateRequest extends FormRequest
     {
         return [
             'category_id' => 'required|exists:categories,id',
-            'name' => 'required|string|unique:sub_categories,name,'.$this->id,
+            'name' => 'required|string|unique:sub_categories,name,' . $this->id,
             'description' => 'nullable|string',
-            'photo' => 'nullable|string',
+            'photo' => $this->hasFile('photo') ? ['nullable', new FileUploadRule()] : 'nullable|string',
             'is_active' => 'nullable|boolean',
         ];
     }
