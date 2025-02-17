@@ -1,7 +1,7 @@
 <template>
     <AuthenticatedLayout>
         <div class="card">
-            <Toolbar class="mb-6">
+            <Toolbar>
                 <template #start>
                     <Button label="New" icon="pi pi-plus" class="mr-2" @click="openNew" />
                     <Button label="Delete" icon="pi pi-trash" severity="danger" outlined @click="confirmDeleteSelected"
@@ -16,13 +16,13 @@
             </Toolbar>
 
             <DataTable ref="dt" v-model:selection="selectedCategories" :value="categories.data" dataKey="id"
-                :paginator="true" :rows="10" :filters="filters"
+                :paginator="true" :rows="5" :filters="filters"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories">
                 <template #header>
                     <div class="flex flex-wrap gap-2 items-center justify-between">
-                        <h4 class="m-0">Manage Categories</h4>
+                        <h1 class="text-3xl">Manage Categories</h1>
                         <IconField>
                             <InputIcon>
                                 <i class="pi pi-search" />
@@ -104,7 +104,7 @@
         <Dialog v-model:visible="deleteCategoryDialog" :style="{ width: '450px' }" header="Confirm">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
-                <span v-if="form.name">Are you sure you want to delete <b>{{ form.name }}</b>?</span>
+                <span>Are you sure you want to delete <b>{{ form.name }}</b>?</span>
             </div>
             <template #footer>
                 <Button label="No" icon="pi pi-times" text @click="deleteCategoryDialog = false" />
@@ -116,7 +116,7 @@
         <Dialog v-model:visible="deleteCategoriesDialog" :style="{ width: '450px' }" header="Confirm">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
-                <span v-if="form.name">Are you sure you want to delete the selected categories?</span>
+                <span>Are you sure you want to delete the selected categories?</span>
             </div>
             <template #footer>
                 <Button label="No" icon="pi pi-times" text @click="deleteCategoriesDialog = false" />
@@ -282,9 +282,12 @@ const deleteSelectedCategories = () => {
     const categoryIds = selectedCategories.value.map(c => c.id);
     deleteCategoriesDialog.value = false;
     selectedCategories.value = null;
+
     router.post(route('categories.bulk-destroy'), {
-        categoryIds: categoryIds,
+        categoryIds: categoryIds
+    }, {
         onSuccess: () => {
+            console.log('all deleted');
             toast.add({ severity: 'error', summary: 'Deleted', detail: 'Selected Categories Deleted', life: 3000 });
         }
     })
