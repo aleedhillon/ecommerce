@@ -16,7 +16,8 @@
             </Toolbar>
 
             <DataTable ref="dt" v-model:selection="selectedCategories" :value="categories.data" dataKey="id"
-                :paginator="true" :rows="5" :filters="filters"
+                :paginator="true" :rows="15" :filters="filters" :totalRecords="categories.total" :lazy="true"
+                @page="handlePagination($event, route('categories.index'), 'categories')"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories">
@@ -135,6 +136,7 @@ import { router, useForm } from '@inertiajs/vue3';
 import { Select } from 'primevue';
 import { usePage } from '@inertiajs/vue3';
 import { resolveImagePath } from '../../Helpers/imageHelper';
+import { handlePagination } from '@/Helpers/pagination';
 
 const { props } = usePage();
 
@@ -291,6 +293,19 @@ const deleteSelectedCategories = () => {
             toast.add({ severity: 'error', summary: 'Deleted', detail: 'Selected Categories Deleted', life: 3000 });
         }
     })
+};
+
+const onPage = (event) => {
+    console.log(event);
+    const page = (event.first / event.rows) + 1;
+    router.get(route('categories.index'), {
+        page: page,
+        per_page: event.rows
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+        only: ['categories']
+    });
 };
 
 </script>
