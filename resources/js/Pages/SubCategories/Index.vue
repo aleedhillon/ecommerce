@@ -1,7 +1,7 @@
 <template>
     <AuthenticatedLayout>
         <div class="card">
-            <Toolbar class="mb-6">
+            <Toolbar class="">
                 <template #start>
                     <Button label="New" icon="pi pi-plus" class="mr-2" @click="openNew" />
                     <Button label="Delete" icon="pi pi-trash" severity="danger" outlined @click="confirmDeleteSelected"
@@ -16,13 +16,14 @@
             </Toolbar>
 
             <DataTable ref="dt" v-model:selection="selectedCategories" :value="sub_categories.data" dataKey="id"
-                :paginator="true" :rows="10" :filters="filters"
+                :paginator="true" :rows="15" :filters="filters"
+                @page="handlePagination($event, route('sub-categories.index'), 'sub_categories')"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
-                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories">
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} sub-categories">
                 <template #header>
                     <div class="flex flex-wrap gap-2 items-center justify-between">
-                        <h4 class="m-0">Manage SubCategories</h4>
+                        <h1 class="text-3xl">Manage Sub-categories</h1>
                         <IconField>
                             <InputIcon>
                                 <i class="pi pi-search" />
@@ -154,6 +155,7 @@ import { Select } from 'primevue';
 import { usePage } from '@inertiajs/vue3';
 import { resolveImagePath } from '../../Helpers/imageHelper';
 import axios from 'axios';
+import { handlePagination } from '@/Helpers/pagination';
 // import { Dropdown } from 'primevue/dropdown';
 
 const { props } = usePage();
