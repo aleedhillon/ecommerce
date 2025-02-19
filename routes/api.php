@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Auth\RegistrationController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ColorController;
 use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\DiscountController;
@@ -45,5 +46,6 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
         'carts' => CartController::class,
         'discounts' => DiscountController::class,
         'payments' => PaymentsController::class,
+        'colors' => ColorController::class,
     ]);
 });
