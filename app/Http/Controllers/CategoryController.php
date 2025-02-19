@@ -2,23 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
-use App\Models\Category;
-use Illuminate\Http\Request;
 use App\Http\Requests\CategoryStoreRequest;
 use App\Http\Requests\CategoryUpdateRequest;
+use App\Models\Category;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class CategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::paginate();
+        $perPage = $request->input('per_page', 15); // Default to 15 if not specified
+
+        $categories = Category::query()
+            ->paginate($perPage);
+
         return Inertia::render('Categories/Index', [
-            'categories' => $categories,
+            'categories' => $categories
         ]);
     }
 
@@ -40,6 +44,7 @@ class CategoryController extends Controller
             $data['photo'] = $request->file('photo')->store('categories');
         }
         Category::create($data);
+
         return redirect()->route('categories.index')->with('success', 'Category created successfully');
     }
 
@@ -73,6 +78,7 @@ class CategoryController extends Controller
             }
         }
         $res = $category->update($data);
+
         return to_route('categories.index')->with('success', 'Category updated successfully');
     }
 
@@ -85,6 +91,7 @@ class CategoryController extends Controller
             Storage::delete($category->photo);
         }
         $category->delete();
+
         return to_route('categories.index')->with('success', 'Category deleted successfully');
     }
 
@@ -95,14 +102,7 @@ class CategoryController extends Controller
     {
         $request->validate(['categoryIds' => 'required|array']);
         $categoryIds = $request->input('categoryIds');
-        foreach ($categoryIds as $id) {
-            $category = Category::find($id);
-            if ($category->photo && Storage::fileExists($category->photo)) {
-                Storage::delete($category->photo);
-            }
-            $category->delete();
-        }
-        // Category::destroy($categoryIds);
+        Category::destroy($categoryIds);
         return to_route('categories.index')->with('success', 'Categories deleted successfully');
     }
 }

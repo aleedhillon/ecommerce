@@ -122,7 +122,7 @@
         <Dialog v-model:visible="deleteSubCategoryDialog" :style="{ width: '450px' }" header="Confirm">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
-                <span v-if="form.name">Are you sure you want to delete <b>{{ form.name }}</b>?</span>
+                <span>Are you sure you want to delete <b>{{ form.name }}</b>?</span>
             </div>
             <template #footer>
                 <Button label="No" icon="pi pi-times" text @click="deleteSubCategoryDialog = false" />
@@ -134,7 +134,7 @@
         <Dialog v-model:visible="deleteSubCategoriesDialog" :style="{ width: '450px' }" header="Confirm">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
-                <span v-if="form.name">Are you sure you want to delete the selected categories?</span>
+                <span>Are you sure you want to delete the selected categories?</span>
             </div>
             <template #footer>
                 <Button label="No" icon="pi pi-times" text @click="deleteSubCategoriesDialog = false" />

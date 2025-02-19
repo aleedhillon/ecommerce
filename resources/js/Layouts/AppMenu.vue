@@ -12,7 +12,7 @@ const model = ref([
         label: 'Product',
         items: [
             { label: 'Category', icon: 'pi pi-fw pi-id-card', to: '/categories' },
-            { label: 'SubCategory', icon: 'pi pi-fw pi-id-card', to: '/sub-categories' },
+            { label: 'Sub-category', icon: 'pi pi-fw pi-id-card', to: '/sub-categories' },
             { label: 'Brand', icon: 'pi pi-fw pi-check-square', to: '/brands' },
             { label: 'Tag', icon: 'pi pi-fw pi-check-square', to: '/tags' },
             { label: 'Color', icon: 'pi pi-fw pi-check-square', to: '/colors' },
