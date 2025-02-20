@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
-@use './layout/layout.scss';
-@use 'primeicons/primeicons.css';
-@use './demo/demo.scss';
+@use "./layout/layout.scss";
+@use "primeicons/primeicons.css";
+@use "./demo/demo.scss";
 
 @tailwind base;
 @tailwind components;
@@ -24,7 +24,7 @@
     --overlay-background: #ffffff;
 }
 
-:root[class='p-dark'] {
+:root[class="p-dark"] {
     --body-bg: var(--p-surface-950);
     --body-text-color: var(--p-surface-50);
     --card-border: 1px solid transparent;
@@ -46,7 +46,6 @@ body {
     background-color: var(--body-bg);
     font-weight: normal;
     color: var(--body-text-color);
-    padding: 1rem;
 }
 
 .card {

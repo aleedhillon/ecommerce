@@ -1,17 +1,17 @@
 <template>
-    <AppLayout>
+    <AuthenticatedLayout>
         <div class="card">
             <h1 class="text-dark text-2xl">Welcome to your Dashboard!</h1>
         </div>
         <div class="card">
             <Chart type="bar" :data="chartData" :options="chartOptions" class="h-[30rem]" />
         </div>
-    </AppLayout>
+    </AuthenticatedLayout>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import AppLayout from "@/Layouts/AppLayout.vue";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 onMounted(() => {
     chartData.value = setChartData();

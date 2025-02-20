@@ -15,21 +15,22 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         \App\Models\User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Mr. Admin',
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('password'),
         ]);
 
-        \App\Models\User::factory(5)->create();
+        \App\Models\User::factory(3)->create();
 
-        $this->call(CouponTableSeeder::class);
-        $this->call(CategoryTableSeeder::class);
-        $this->call(BrandTableSeeder::class);
-        $this->call(CustomerTableSeeder::class);
-        $this->call(SubCategoryTableSeeder::class);
-        $this->call(SupplierTableSeeder::class);
-        $this->call(TagTableSeeder::class);
-        $this->call(TaxTableSeeder::class);
-        $this->call(ProductTableSeeder::class);
+        // $this->call(CouponTableSeeder::class);
+        // $this->call(CategoryTableSeeder::class);
+        // $this->call(BrandTableSeeder::class);
+        // $this->call(CustomerTableSeeder::class);
+        // $this->call(SubCategoryTableSeeder::class);
+        // $this->call(SupplierTableSeeder::class);
+        // $this->call(TagTableSeeder::class);
+        // $this->call(TaxTableSeeder::class);
+        // $this->call(ProductTableSeeder::class);
         // $this->call(ProductStockTableSeeder::class);
     }
 }

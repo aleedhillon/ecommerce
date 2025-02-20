@@ -1,71 +1,22 @@
 <script setup>
-import { useLayout } from './LayoutComposable';
-import { computed, ref, watch } from 'vue';
-import AppFooter from './AppFooter.vue';
-import AppSidebar from './AppSidebar.vue';
-import AppTopbar from './AppTopbar.vue';
-
-const { layoutConfig, layoutState, isSidebarActive } = useLayout();
-
-const outsideClickListener = ref(null);
-
-watch(isSidebarActive, (newVal) => {
-    if (newVal) {
-        bindOutsideClickListener();
-    } else {
-        unbindOutsideClickListener();
-    }
-});
-
-const containerClass = computed(() => {
-    return {
-        'layout-overlay': layoutConfig.menuMode === 'overlay',
-        'layout-static': layoutConfig.menuMode === 'static',
-        'layout-static-inactive': layoutState.staticMenuDesktopInactive && layoutConfig.menuMode === 'static',
-        'layout-overlay-active': layoutState.overlayMenuActive,
-        'layout-mobile-active': layoutState.staticMenuMobileActive
-    };
-});
-
-function bindOutsideClickListener() {
-    if (!outsideClickListener.value) {
-        outsideClickListener.value = (event) => {
-            if (isOutsideClicked(event)) {
-                layoutState.overlayMenuActive = false;
-                layoutState.staticMenuMobileActive = false;
-                layoutState.menuHoverActive = false;
-            }
-        };
-        document.addEventListener('click', outsideClickListener.value);
-    }
-}
-
-function unbindOutsideClickListener() {
-    if (outsideClickListener.value) {
-        document.removeEventListener('click', outsideClickListener);
-        outsideClickListener.value = null;
-    }
-}
-
-function isOutsideClicked(event) {
-    const sidebarEl = document.querySelector('.layout-sidebar');
-    const topbarEl = document.querySelector('.layout-menu-button');
-
-    return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
-}
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import { Link } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
+import FavIcons from '@/Layouts/Partials/FavIcons.vue';
 </script>
 
 <template>
-    <div class="layout-wrapper" :class="containerClass">
-        <app-topbar></app-topbar>
-        <app-sidebar></app-sidebar>
-        <div class="layout-main-container">
-            <div class="layout-main">
-                <slot></slot>
-            </div>
-            <app-footer></app-footer>
+    <FavIcons />
+    <div
+        class="flex min-h-screen flex-col items-center bg-[#e3ef4457] bg-gray-100 pt-6 sm:justify-center sm:pt-0 dark:bg-gray-900">
+        <div class="uppercase text-blue-400">
+            <Link href="/">
+            <ApplicationLogo />
+            </Link>
         </div>
-        <div class="layout-mask animate-fadein"></div>
+        <div
+            class="mt-6 w-full overflow-hidden bg-white px-6 py-4 shadow-md sm:max-w-md sm:rounded-lg dark:bg-gray-800">
+            <slot />
+        </div>
     </div>
-    <Toast />
 </template>
