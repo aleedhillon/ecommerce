@@ -1,5 +1,5 @@
 <template>
-    <div class="card flex justify-end p-2 mb-4">
+    <div class="flex justify-end">
         <ul class="flex list-none m-0 p-0 gap-2 items-center">
             <li>
                 <button type="button"
