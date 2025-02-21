@@ -15,7 +15,9 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
                 <i class="pi pi-bars"></i>
             </button>
             <Link href="/" class="layout-topbar-logo">
-                <span><AppLogo></AppLogo></span>
+            <span>
+                <AppLogo></AppLogo>
+            </span>
             </Link>
         </div>
 
