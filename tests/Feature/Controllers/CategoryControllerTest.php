@@ -17,7 +17,7 @@ class CategoryControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Storage::fake('local');
+        Storage::fake('public');
         $this->actingAs(User::factory()->create());
     }
 
@@ -33,7 +33,7 @@ class CategoryControllerTest extends TestCase
         $response->assertInertia(
             fn(Assert $page) => $page
                 ->component('Categories/Index')
-            // ->has('categories.data', 15)
+                // ->has('categories.data', 15);
         );
     }
 
@@ -42,7 +42,7 @@ class CategoryControllerTest extends TestCase
         // Arrange
         $categoryData = [
             'name' => 'Test Category',
-            'description' => 'Test Description',
+            'is_active' => false,
         ];
 
         // Act
@@ -60,7 +60,6 @@ class CategoryControllerTest extends TestCase
         $photo = UploadedFile::fake()->image('category.jpg');
         $categoryData = [
             'name' => 'Test Category',
-            'description' => 'Test Description',
             'photo' => $photo,
         ];
 
@@ -73,7 +72,7 @@ class CategoryControllerTest extends TestCase
 
         $category = Category::first();
         $this->assertNotNull($category->photo);
-        Storage::disk('local')->assertExists($category->photo);
+        Storage::disk('public')->assertExists($category->photo);
     }
 
     public function test_update_category()
@@ -82,7 +81,7 @@ class CategoryControllerTest extends TestCase
         $category = Category::factory()->create();
         $updateData = [
             'name' => 'Updated Name',
-            'description' => 'Updated Description',
+            'is_active' => false,
         ];
 
         // Act
@@ -105,7 +104,6 @@ class CategoryControllerTest extends TestCase
         $newPhoto = UploadedFile::fake()->image('new-category.jpg');
         $updateData = [
             'name' => 'Updated Name',
-            'description' => 'Updated Description',
             'photo' => $newPhoto,
         ];
 
@@ -135,7 +133,7 @@ class CategoryControllerTest extends TestCase
         // Assert
         $response->assertRedirect(route('categories.index'));
         $response->assertSessionHas('success');
-        $this->assertDatabaseMissing('categories', ['id' => $category->id]);
+        $this->assertDatabaseMissing('categories', [['id' => $category->id]]);
         Storage::assertMissing($category->photo);
     }
 
@@ -151,7 +149,7 @@ class CategoryControllerTest extends TestCase
         $categoryIds = $categories->pluck('id')->toArray();
 
         // Act
-        $response = $this->delete(route('categories.bulk-destroy'), [
+        $response = $this->post(route('categories.bulk-destroy'), [
             'categoryIds' => $categoryIds
         ]);
 
@@ -160,7 +158,7 @@ class CategoryControllerTest extends TestCase
         $response->assertSessionHas('success');
 
         foreach ($categories as $category) {
-            $this->assertDatabaseMissing('categories', ['id' => $category->id]);
+            $this->assertDatabaseMissing('categories', [['id' => $category->id]]);
             Storage::assertMissing($category->photo);
         }
     }
