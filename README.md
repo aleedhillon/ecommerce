@@ -2,6 +2,20 @@
 
 ## Multi-tenant, Multi-vendor E-commerce with POS
 
+
+### Modules:
+
+- User (Registration, Login, Authentication, Authorization, RolePermission)
+- Blog
+- Cart
+- Payment (Multi-currency, Payment methods)
+- Notification
+- POS
+- Setting (Language, Theme (Dark/Light), RTL)
+- Utility
+
+
+
 ### Frontend (Website) features:
 
 -   [ ] Home-page / Landing page
