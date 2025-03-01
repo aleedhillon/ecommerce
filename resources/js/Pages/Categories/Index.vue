@@ -9,8 +9,6 @@
                 </template>
 
                 <template #end>
-                    <!-- <FileUpload mode="basic" :maxFileSize="1000000" label="Import" customUpload chooseLabel="Import"
-                        class="mr-2" auto :chooseButtonProps="{ severity: 'secondary' }" /> -->
                     <Button label="Export" icon="pi pi-upload" severity="secondary" @click="exportCSV($event)" />
                 </template>
             </Toolbar>
@@ -28,7 +26,8 @@
                             <InputIcon>
                                 <i class="pi pi-search" />
                             </InputIcon>
-                            <InputText v-model="filters['global'].value" placeholder="Search..." />
+                            <InputText v-model="filters.global.value" type="search" @input="debouncedSearch"
+                                placeholder="Search..." clearable />
                         </IconField>
                     </div>
                 </template>
@@ -82,7 +81,6 @@
                     <label for="photo" class="block font-bold mb-2">Photo</label>
                     <FileUpload mode="basic" name="photo" customUpload @select="handlePhotoUpload" :auto="true"
                         accept="image/*" chooseLabel="Choose Image" class="w-full" />
-                    <!-- <small v-if="submitted && !form.photo" class="text-red-500">Photo is required.</small> -->
                 </div>
                 <div>
                     <img v-if="form.photo || photoPreview" :src="photoPreview ?? resolveImagePath(form.photo)"
@@ -129,7 +127,7 @@
 
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { ref, defineProps } from 'vue';
+import { ref, defineProps, onMounted } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
 import { router, useForm } from '@inertiajs/vue3';
@@ -137,11 +135,18 @@ import { Select } from 'primevue';
 import { usePage } from '@inertiajs/vue3';
 import { resolveImagePath } from '../../Helpers/imageHelper';
 import { handlePagination } from '@/Helpers/pagination';
+import debounce from 'lodash/debounce';
 
 const { props } = usePage();
 
 const vueProps = defineProps({
     categories: Object,
+    filters: {
+        type: Object,
+        default: () => ({
+            search: '',
+        }),
+    },
 });
 
 const toast = useToast();
@@ -158,8 +163,9 @@ const form = useForm({
 
 const selectedCategories = ref();
 const filters = ref({
-    'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
+
 const submitted = ref(false);
 
 const statuses = [
@@ -307,5 +313,27 @@ const onPage = (event) => {
         only: ['categories']
     });
 };
+
+const debouncedSearch = debounce((e) => {
+    filters.value.global.value = e.target.value;
+    router.get(
+        route('categories.index'),
+        {
+            search: e.target.value,
+            per_page: dt.value?.rows
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            only: ['categories']
+        }
+    );
+}, 300);
+
+onMounted(() => {
+    if (vueProps.filters.search) {
+        filters.value.global.value = vueProps.filters.search;
+    }
+});
 
 </script>

@@ -16,13 +16,24 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $perPage = $request->input('per_page', 15); // Default to 15 if not specified
+        $perPage = $request->input('per_page', 15);
+        $search = $request->input('search');
 
         $categories = Category::query()
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('created_at', 'like', "%{$search}%")
+                      ->orWhere('updated_at', 'like', "%{$search}%");
+                });
+            })
             ->paginate($perPage);
 
         return Inertia::render('Categories/Index', [
-            'categories' => $categories
+            'categories' => $categories,
+            'filters' => [
+                'search' => $search,
+            ],
         ]);
     }
 
