@@ -9,7 +9,7 @@
                 </template>
 
                 <template #end>
-                    <Button label="Export" icon="pi pi-upload" severity="secondary" @click="exportCSV($event)" />
+                    <Button label="Export" icon="pi pi-upload" severity="secondary" @click="exportExcel" />
                 </template>
             </Toolbar>
 
@@ -21,7 +21,7 @@
                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories">
                 <template #header>
                     <div class="flex flex-wrap gap-2 items-center justify-between">
-                        <h1 class="text-3xl">Manage Categories</h1>
+                        <h1 class="text-3xl">Categories</h1>
                         <IconField>
                             <InputIcon>
                                 <i class="pi pi-search" />
@@ -215,8 +215,10 @@ const saveCategory = (saveAndContinue = false) => {
                 hideDialog();
             }
         },
-        onError: () => {
-            toast.add({ severity: 'error', summary: 'Error', detail: 'Something went wrong', life: 3000 });
+        onError: (errors) => {
+            Object.entries(errors).forEach((val, key) => {
+                toast.add({ severity: 'error', summary: 'Validation Error', detail: val[1], life: 3000 });
+            })
         },
     });
 };
@@ -278,8 +280,25 @@ const deleteCategory = () => {
     });
 };
 
-const exportCSV = () => {
-    dt.value.exportCSV();
+const exportExcel = () => {
+    const params = new URLSearchParams({
+        search: filters.value.global.value || ''
+    }).toString();
+
+    // Create a temporary link to trigger the download
+    const link = document.createElement('a');
+    link.href = `${route('categories.export')}?${params}`;
+    link.setAttribute('download', ''); // This is optional as the server will send the filename
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast.add({
+        severity: 'success',
+        summary: 'Export Started',
+        detail: 'Your export will download shortly.',
+        life: 3000
+    });
 };
 
 const confirmDeleteSelected = () => {

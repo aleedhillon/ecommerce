@@ -8,6 +8,8 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use App\Exports\CategoriesExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CategoryController extends Controller
 {
@@ -115,5 +117,16 @@ class CategoryController extends Controller
         $categoryIds = $request->input('categoryIds');
         Category::destroy($categoryIds);
         return to_route('categories.index')->with('success', 'Categories deleted successfully');
+    }
+
+    /**
+     * Export categories to Excel
+     */
+    public function export(Request $request)
+    {
+        $search = $request->input('search');
+        $filename = 'categories-' . now()->format('Y-m-d-H-i-s') . '.xlsx';
+        
+        return Excel::download(new CategoriesExport($search), $filename);
     }
 }

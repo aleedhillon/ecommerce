@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie';
 import { computed, reactive } from 'vue';
 
 const layoutConfig = reactive({
@@ -9,7 +10,7 @@ const layoutConfig = reactive({
 });
 
 const layoutState = reactive({
-    staticMenuDesktopInactive: false,
+    staticMenuDesktopInactive: Cookies.get('menuState') === 'true' || false,
     overlayMenuActive: false,
     profileSidebarVisible: false,
     configSidebarVisible: false,
@@ -44,7 +45,9 @@ export function useLayout() {
         }
 
         if (window.innerWidth > 991) {
+            // layoutState.staticMenuDesktopInactive = !layoutState.staticMenuDesktopInactive;
             layoutState.staticMenuDesktopInactive = !layoutState.staticMenuDesktopInactive;
+            Cookies.set('menuState', layoutState.staticMenuDesktopInactive);
         } else {
             layoutState.staticMenuMobileActive = !layoutState.staticMenuMobileActive;
         }
