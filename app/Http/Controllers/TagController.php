@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Models\Tag;
@@ -17,16 +16,24 @@ class TagController extends Controller
 {
     public function index(Request $request)
     {
-        $tags = Tag::query()
+        $perPage = $request->input('per_page', 15);
+        $search = $request->input('search');
+        $items = Tag::query()
             ->when($request->search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%");
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('created_at', 'like', "%{$search}%")
+                    ->orWhere('updated_at', 'like', "%{$search}%");
             })
-            ->orderBy('created_at', 'desc')
-            ->paginate($request->input('per_page', 10))
-            ->withQueryString();
+            ->when($request->trashed, function ($query) {
+                $query->onlyTrashed();
+            })
+            ->paginate($perPage);
 
         return Inertia::render('Tags/Index', [
-            'tags' => $tags
+            'items' => $items,
+            'filters' => [
+                'search' => $search,
+            ],
         ]);
     }
 

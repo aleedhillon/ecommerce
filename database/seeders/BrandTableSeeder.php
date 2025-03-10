@@ -14,6 +14,6 @@ class BrandTableSeeder extends Seeder
      */
     public function run()
     {
-        Brand::factory(100)->create();
+        Brand::factory(30)->create();
     }
 }

@@ -13,13 +13,13 @@ class UserTableSeeder extends Seeder
      */
     public function run(): void
     {
-        if (User::count() > 0) {
+        if (User::doesntExist()) {
             User::factory()->create([
                 'name' => 'Mr. Admin',
                 'email' => 'admin@gmail.com',
                 'password' => bcrypt('password'),
             ]);
-            User::factory(3)->create();
+            User::factory(2)->create();
         }
     }
 }
