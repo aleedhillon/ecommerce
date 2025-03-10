@@ -15,34 +15,47 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('category_id')->nullable();
-            $table->unsignedBigInteger('sub_category_id')->nullable();
-            $table->unsignedBigInteger('tax_id')->nullable();
-            $table->unsignedBigInteger('brand_id')->nullable();
-            $table->unsignedBigInteger('tag_id')->nullable();
-            $table->unsignedBigInteger('added_by')->nullable();
-            $table->string('product_name');
-            $table->float('price');
-            $table->float('discount_price')->nullable();
-            $table->string('code')->nullable()->default();
-            $table->string('title')->nullable();
-            $table->string('slug')->default();
-            $table->string('dimantion')->nullable();
+            $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('CASCADE');
+            $table->foreignId('sub_category_id')->nullable()->constrained('sub_categories')->onDelete('CASCADE');
+            $table->foreignId('tax_id')->nullable()->constrained('taxes')->onDelete('CASCADE');
+            $table->foreignId('brand_id')->nullable()->constrained('brands')->onDelete('CASCADE');
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('CASCADE');
+
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->string('sku')->nullable()->unique();
+            $table->string('barcode')->nullable()->unique();
+            $table->string('code')->nullable()->unique();
+
+            // Base price (for simple products)
+            $table->decimal('base_price', 10, 2);
+            $table->decimal('base_discount_price', 10, 2)->nullable();
+
+            // Stock will be managed at variation level for variable products
+            $table->integer('stock_quantity')->default(0)->nullable();
+            $table->enum('stock_status', ['in_stock', 'out_of_stock', 'pre_order'])->default('in_stock');
+
+            // Product type
+            $table->enum('type', ['simple', 'variable'])->default('simple');
+
             $table->string('weight')->nullable();
-            $table->string('sku')->nullable();
-            $table->string('meterials')->nullable();
+            $table->string('dimensions')->nullable();
+            $table->string('materials')->nullable();
+
             $table->longText('description')->nullable();
-            $table->longText('other_info')->nullable();
+            $table->longText('additional_info')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->string('pro_photo')->nullable()->default('product_photo.jpg');
-            $table->foreign(['category_id'])->references(['id'])->on('categories')->onDelete('CASCADE');
-            $table->foreign(['sub_category_id'])->references(['id'])->on('sub_categories')->onDelete('CASCADE');
-            $table->foreign(['tax_id'])->references(['id'])->on('taxes')->onDelete('CASCADE');
-            $table->foreign(['brand_id'])->references(['id'])->on('brands')->onDelete('CASCADE');
-            $table->foreign(['tag_id'])->references(['id'])->on('tags')->onDelete('CASCADE');
-            $table->foreign(['added_by'])->references(['id'])->on('users')->onDelete('CASCADE');
+            $table->string('thumbnail')->nullable();
+
+            // SEO fields
+            $table->string('meta_title')->nullable();
+            $table->text('meta_description')->nullable();
+            $table->string('meta_keywords')->nullable();
+
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index(['slug', 'sku', 'code', 'type']);
         });
     }
 
