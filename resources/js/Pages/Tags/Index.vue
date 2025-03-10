@@ -135,7 +135,6 @@ import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
 import { router, useForm, Link } from '@inertiajs/vue3';
 import { Select } from 'primevue';
-import { usePage } from '@inertiajs/vue3';
 import { resolveImagePath } from '@/Helpers/imageHelper';
 import { handlePagination } from '@/Helpers/pagination';
 import debounce from 'lodash/debounce';
@@ -152,8 +151,6 @@ const config = {
     bulkDeleteRoute: route('tags.bulk-destroy'),
     exportRoute: route('tags.export'),
 }
-
-const { props } = usePage();
 
 const vueProps = defineProps({
     items: Object,
@@ -184,20 +181,16 @@ const filters = ref({
 });
 
 const submitted = ref(false);
-
 const statuses = [
     { label: 'Active', value: 1 },
     { label: 'Inactive', value: 0 },
 ];
 
 const photoPreview = ref(null);
-
 const handlePhotoUpload = (event) => {
     const file = event.files[0];
     form.photo = file;
-
     const reader = new FileReader();
-
     reader.onload = async (e) => {
         photoPreview.value = e.target.result;
     };
@@ -219,7 +212,6 @@ const hideDialog = () => {
 
 const saveItem = (saveAndContinue = false) => {
     submitted.value = true;
-
     form.post(config.storeRoute, {
         onSuccess: () => {
             form.reset();
@@ -342,21 +334,9 @@ const deleteSelectedItems = () => {
     })
 };
 
-const onPage = (event) => {
-    const page = (event.first / event.rows) + 1;
-    router.get(config.indexRoute, {
-        page: page,
-        per_page: event.rows
-    }, {
-        preserveState: true,
-        preserveScroll: true,
-        only: [config.resource]
-    });
-};
-
 const debouncedSearch = debounce((e) => {
     filters.value.global.value = e.target.value;
-    const r = router.get(
+    router.get(
         config.indexRoute,
         {
             search: e.target.value,
@@ -365,7 +345,7 @@ const debouncedSearch = debounce((e) => {
         {
             preserveState: true,
             preserveScroll: true,
-            only: [config.resource]
+            only: ['items']
         }
     );
 }, 300);
@@ -373,13 +353,6 @@ const debouncedSearch = debounce((e) => {
 onMounted(() => {
     if (vueProps.filters.search) {
         filters.value.global.value = vueProps.filters.search;
-        console.log('run')
     }
 });
-
-const handleSelectAll = () => {
-    console.log('run')
-    selectedItems.value = null;
-}
-
 </script>
