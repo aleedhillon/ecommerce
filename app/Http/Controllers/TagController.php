@@ -93,12 +93,10 @@ class TagController extends Controller
         return to_route('tags.index')->with('success', 'Tag deleted successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function bulkDestroy(Request $request)
     {
-        $request->validate(['ids' => 'required|array']);
+        $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:tags,id']);
         $tagIds = $request->input('ids');
         foreach ($tagIds as $id) {
             $tag = Tag::find($id);
@@ -110,6 +108,22 @@ class TagController extends Controller
             }
         }
         return to_route('tags.index')->with('success', 'Tags deleted successfully');
+    }
+
+    public function bulkRestore(request $request)
+    {
+        $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:tags,id']);
+        $tagIds = $request->input('ids');
+        Tag::whereIn('id', $tagIds)->restore();
+        return to_route('tags.index')->with('success', 'Restored successfully');
+    }
+
+    public function bulkForceDelete(request $request)
+    {
+        $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:tags,id']);
+        $ids = $request->input('ids');
+        Tag::whereIn('id', $ids)->forceDelete();
+        return to_route('tags.index')->with('success', 'Selected items permanently deleted!');
     }
 
     public function export(Request $request)

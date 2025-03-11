@@ -1,16 +1,27 @@
 <template>
     <AuthenticatedLayout>
         <div class="card">
-            <Toolbar class="mb-3">
+            <Toolbar class="">
                 <template #start>
-                    <Button label="New" icon="pi pi-plus" class="mr-2" @click="openNew" />
+                    <Button label="New" icon="pi pi-plus" class="mr-2" @click="openNew" text />
+                    <ButtonGroup class="mr-2">
+                        <Link :href="config.indexRoute">
+                        <Button label="All Items" icon="pi pi-list" :class="{'border-bottom-2': !isTrashedPage}" text />
+                        </Link>
+                        <Link :href="config.indexRouteTrashed">
+                        <Button label="Trashed" icon="pi pi-ban" :class="{'border-bottom-2': isTrashedPage}" text />
+                        </Link>
+                    </ButtonGroup>
                     <Button label="Bulk Delete" icon="pi pi-trash" class="mr-2" severity="danger" outlined
-                        @click="confirmDeleteSelected" v-show="selectedItems || selectedItems?.length" />
-                    <Link :href="route('tags.index', { trashed: true })">
-                    <Button label="Trashed" icon="pi pi-trash" severity="warning" outlined>
-                        Trashed
-                    </Button>
-                    </Link>
+                        @click="confirmDeleteSelected"
+                        v-show="!(!selectedItems || !selectedItems?.length) && !isTrashedPage" />
+                    <Button label="Bulk Restore" icon="pi pi-undo" class="mr-2" severity="warn" outlined
+                        @click="restoreSelected"
+                        v-show="!(!selectedItems || !selectedItems?.length) && isTrashedPage" />
+
+                    <Button label="Force Delete" icon="pi pi-trash" class="mr-2" severity="danger" outlined
+                        @click="forceDeleteSelected"
+                        v-show="!(!selectedItems || !selectedItems?.length) && isTrashedPage" />
                 </template>
                 <template #end>
                     <Button label="Export" class="mx-2" icon="pi pi-upload" severity="secondary" @click="exportExcel" />
@@ -23,7 +34,12 @@
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
                 :currentPageReportTemplate="`Showing {first} to {last} of {totalRecords} ${config.resource}`"
-                resizableColumns columnResizeMode="fit" showGridlines>
+                resizableColumns columnResizeMode="fit">
+                <template #empty>
+                    <div class="p-4 text-center">
+                        <p class="text-lg">No {{ config.resource }} found.</p>
+                    </div>
+                </template>
                 <template #header>
                     <div class="flex flex-wrap gap-2 items-center justify-between">
                         <h1 class="text-3xl">{{ config.title }}</h1>
@@ -36,8 +52,8 @@
                         </IconField>
                     </div>
                 </template>
-
                 <Column selectionMode="multiple" style="width: 3rem" :exportable="false" header=""></Column>
+
                 <Column field="name" header="Name"></Column>
                 <Column field="is_active" header="Status">
                     <template #body="{ data }">
@@ -46,15 +62,20 @@
                         </Badge>
                     </template>
                 </Column>
+                
                 <Column field="created_at" header="Created At" sortable></Column>
                 <Column field="updated_at" header="Updated At" sortable></Column>
+
                 <Column :exportable="false" style="min-width: 12rem">
                     <template #body="slotProps">
-                        <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editItem(slotProps.data)" />
+                        <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editItem(slotProps.data)"
+                            :disabled="isTrashedPage" />
                         <Button icon="pi pi-trash" outlined rounded severity="danger"
-                            @click="confirmDeleteItem(slotProps.data)" />
+                            @click="confirmDeleteItem(slotProps.data)" :disabled="isTrashedPage" />
                     </template>
                 </Column>
+
+
             </DataTable>
         </div>
 
@@ -130,7 +151,7 @@
 
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { ref, defineProps, onMounted } from 'vue';
+import { ref, computed, defineProps, onMounted, watch } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
 import { router, useForm, Link } from '@inertiajs/vue3';
@@ -145,10 +166,13 @@ const config = {
     modelRaw: 'Tag',
     resource: 'tags',
     indexRoute: route('tags.index'),
+    indexRouteTrashed: route('tags.index', {trashed: true}),
     storeRoute: route('tags.store'),
     updateRoute: route('tags.update', '__ID__'),
     deleteRoute: route('tags.destroy', '__ID__'),
     bulkDeleteRoute: route('tags.bulk-destroy'),
+    bulkRestoreRoute: route('tags.bulk-restore'),
+    bulkForceDeleteRoute: route('tags.bulk-force-delete'),
     exportRoute: route('tags.export'),
 }
 
@@ -280,6 +304,44 @@ const confirmDeleteItem = (prod) => {
     editingId.value = prod.id;
 };
 
+const restoreSelected = () => {
+    const itemIds = selectedItems.value.map(c => c.id);
+    selectedItems.value = null;
+
+    router.post(config.bulkRestoreRoute, {
+        ids: itemIds
+    }, {
+        onSuccess: () => {
+            isTrashedPage.value = false;
+            toast.add({ severity: 'success', summary: 'Restored', detail: 'Selected Items Restored!', life: 3000 });
+        },
+        onError: (errors) => {
+            Object.entries(errors).forEach((val, key) => {
+                toast.add({ severity: 'error', summary: 'Restore Error', detail: val[1], life: 3000 });
+            })
+        },
+    })
+};
+
+const forceDeleteSelected = () => {
+    const itemIds = selectedItems.value.map(c => c.id);
+    selectedItems.value = null;
+
+    router.post(config.bulkForceDeleteRoute, {
+        ids: itemIds
+    }, {
+        onSuccess: () => {
+            isTrashedPage.value = false;
+            toast.add({ severity: 'warn', summary: 'Permanently Delete', detail: 'Items Permanently Deleted!', life: 3000 });
+        },
+        onError: (errors) => {
+            Object.entries(errors).forEach((val, key) => {
+                toast.add({ severity: 'error', summary: 'Permanent Delete Error', detail: val[1], life: 3000 });
+            })
+        },
+    })
+};
+
 const deleteItem = () => {
     deleteItemDialog.value = false;
     const url = config.deleteRoute.replace('__ID__', editingId.value);
@@ -355,4 +417,7 @@ onMounted(() => {
         filters.value.global.value = vueProps.filters.search;
     }
 });
+
+const isTrashedPage = ref(route().params.trashed === '1');
+
 </script>
