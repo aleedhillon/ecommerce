@@ -7,7 +7,6 @@ use App\Http\Controllers\Api\TaxController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\UnitController;
 use App\Http\Controllers\Api\BrandController;
-use App\Http\Controllers\Api\ColorController;
 use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CategoryController;
@@ -43,6 +42,5 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
         'carts' => CartController::class,
         'discounts' => DiscountController::class,
         'payments' => PaymentsController::class,
-        'colors' => ColorController::class,
     ]);
 });

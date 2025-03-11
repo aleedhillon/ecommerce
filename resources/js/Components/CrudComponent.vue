@@ -5,10 +5,10 @@
                 <template #start>
                     <Button label="New" icon="pi pi-plus" class="mr-2" @click="openNew" text />
                     <ButtonGroup class="mr-2">
-                        <Link :href="config.indexRoute">
+                        <Link :href="vueProps.config.indexRoute">
                         <Button label="All Items" icon="pi pi-list" :class="{ 'border-bottom-2': !isTrashedPage }" text />
                         </Link>
-                        <Link :href="config.indexRouteTrashed">
+                        <Link :href="vueProps.config.indexRouteTrashed">
                         <Button label="Trashed" icon="pi pi-ban" :class="{ 'border-bottom-2': isTrashedPage }" text />
                         </Link>
                     </ButtonGroup>
@@ -30,19 +30,19 @@
 
             <DataTable ref="dt" v-model:selection="selectedItems" :value="items.data" dataKey="id" :paginator="true"
                 :rows="15" :filters="filters" :totalRecords="items.total" :lazy="true"
-                @page="handlePagination($event, config.indexRoute, config.resource)"
+                @page="handlePagination($event, vueProps.config.indexRoute, vueProps.config.resource)"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
-                :currentPageReportTemplate="`Showing {first} to {last} of {totalRecords} ${config.resource}`"
+                :currentPageReportTemplate="`Showing {first} to {last} of {totalRecords} ${vueProps.config.resource}`"
                 resizableColumns columnResizeMode="fit">
                 <template #empty>
                     <div class="p-4 text-center">
-                        <p class="text-lg">No {{ config.resource }} found.</p>
+                        <p class="text-lg">No {{ vueProps.config.resource }} found.</p>
                     </div>
                 </template>
                 <template #header>
                     <div class="flex flex-wrap gap-2 items-center justify-between">
-                        <h1 class="text-3xl">{{ config.title }}</h1>
+                        <h1 class="text-3xl">{{ vueProps.config.title }}</h1>
                         <IconField>
                             <InputIcon>
                                 <i class="pi pi-search" />
@@ -74,14 +74,12 @@
                             @click="confirmDeleteItem(slotProps.data)" :disabled="isTrashedPage" />
                     </template>
                 </Column>
-
-
             </DataTable>
         </div>
 
         <!-- Create & Edit Form Dialog -->
         <Dialog v-model:visible="itemDialog" maximizable :style="{ width: '600px' }"
-            :header="`${config.modelRaw} Details`" pt:mask:class="backdrop-blur-sm">
+            :header="`${vueProps.config.modelRaw} Details`" pt:mask:class="backdrop-blur-sm">
             <div class="flex flex-col gap-6">
                 <div>
                     <label for="name" class="block font-bold mb-2">Name</label>
@@ -159,24 +157,10 @@ import { Select } from 'primevue';
 import { resolveImagePath } from '@/Helpers/imageHelper';
 import { handlePagination } from '@/Helpers/pagination';
 import debounce from 'lodash/debounce';
-
-const config = {
-    title: 'Colors',
-    modelSingular: 'color',
-    modelRaw: 'Color',
-    resource: 'colors',
-    indexRoute: route('colors.index'),
-    indexRouteTrashed: route('colors.index', { trashed: true }),
-    storeRoute: route('colors.store'),
-    updateRoute: route('colors.update', '__ID__'),
-    deleteRoute: route('colors.destroy', '__ID__'),
-    bulkDeleteRoute: route('colors.bulk-destroy'),
-    bulkRestoreRoute: route('colors.bulk-restore'),
-    bulkForceDeleteRoute: route('colors.bulk-force-delete'),
-    exportRoute: route('colors.export'),
-}
+import { statuses } from '@/Helpers/enums.js';
 
 const vueProps = defineProps({
+    config: Object,
     items: Object,
     filters: {
         type: Object,
@@ -205,10 +189,6 @@ const filters = ref({
 });
 
 const submitted = ref(false);
-const statuses = [
-    { label: 'Active', value: 1 },
-    { label: 'Inactive', value: 0 },
-];
 
 const photoPreview = ref(null);
 const handlePhotoUpload = (event) => {
@@ -236,7 +216,7 @@ const hideDialog = () => {
 
 const saveItem = (saveAndContinue = false) => {
     submitted.value = true;
-    form.post(config.storeRoute, {
+    form.post(vueProps.config.storeRoute, {
         onSuccess: () => {
             form.reset();
             photoPreview.value = null;
@@ -261,7 +241,7 @@ const editingId = ref(null);
 
 const updateItem = () => {
     submitted.value = true;
-    const url = config.updateRoute.replace('__ID__', editingId.value);
+    const url = vueProps.config.updateRoute.replace('__ID__', editingId.value);
 
     const data = {
         _method: 'put',
@@ -308,7 +288,7 @@ const restoreSelected = () => {
     const itemIds = selectedItems.value.map(c => c.id);
     selectedItems.value = null;
 
-    router.post(config.bulkRestoreRoute, {
+    router.post(vueProps.config.bulkRestoreRoute, {
         ids: itemIds
     }, {
         onSuccess: () => {
@@ -327,7 +307,7 @@ const forceDeleteSelected = () => {
     const itemIds = selectedItems.value.map(c => c.id);
     selectedItems.value = null;
 
-    router.post(config.bulkForceDeleteRoute, {
+    router.post(vueProps.config.bulkForceDeleteRoute, {
         ids: itemIds
     }, {
         onSuccess: () => {
@@ -344,7 +324,7 @@ const forceDeleteSelected = () => {
 
 const deleteItem = () => {
     deleteItemDialog.value = false;
-    const url = config.deleteRoute.replace('__ID__', editingId.value);
+    const url = vueProps.config.deleteRoute.replace('__ID__', editingId.value);
     router.delete(url, {
         onSuccess: () => {
             toast.add({ severity: 'error', summary: 'Deleted', detail: 'Successfully Deleted', life: 3000 });
@@ -359,7 +339,7 @@ const exportExcel = () => {
 
     // Create a temporary link to trigger the download
     const link = document.createElement('a');
-    link.href = `${config.exportRoute}?${params}`;
+    link.href = `${vueProps.config.exportRoute}?${params}`;
     link.setAttribute('download', ''); // This is optional as the server will send the filename
     document.body.appendChild(link);
     link.click();
@@ -382,7 +362,7 @@ const deleteSelectedItems = () => {
     deleteItemsDialog.value = false;
     selectedItems.value = null;
 
-    router.post(config.bulkDeleteRoute, {
+    router.post(vueProps.config.bulkDeleteRoute, {
         ids: itemIds
     }, {
         onSuccess: () => {
@@ -399,7 +379,7 @@ const deleteSelectedItems = () => {
 const debouncedSearch = debounce((e) => {
     filters.value.global.value = e.target.value;
     router.get(
-        config.indexRoute,
+        vueProps.config.indexRoute,
         {
             search: e.target.value,
             per_page: dt.value?.rows

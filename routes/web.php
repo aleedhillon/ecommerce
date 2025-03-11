@@ -8,7 +8,6 @@ Route::get('/', WelcomePageController::class)->name('welcome');
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\BrandController;
-use App\Http\Controllers\ColorController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubCategoryController;
 
@@ -36,11 +35,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/tags/action/bulk-force-delete', [TagController::class, 'bulkForceDelete'])->name('tags.bulk-force-delete');
     Route::get('/tags/action/export-excel', [TagController::class, 'export'])->name('tags.export');
     
-    // Color
-    Route::resource('colors', ColorController::class);
-    Route::post('/colors/action/bulk-destroy', [ColorController::class, 'bulkDestroy'])->name('colors.bulk-destroy');
-    Route::post('/colors/action/bulk-restore', [ColorController::class, 'bulkRestore'])->name('colors.bulk-restore');
-    Route::post('/colors/action/bulk-force-delete', [ColorController::class, 'bulkForceDelete'])->name('colors.bulk-force-delete');
-    Route::get('/colors/action/export-excel', [ColorController::class, 'export'])->name('colors.export');
-
 });

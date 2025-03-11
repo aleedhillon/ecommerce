@@ -21,8 +21,9 @@ return new class extends Migration
             $table->string('photo')->nullable();
             $table->boolean('is_active')->default(true);
             $table->softDeletes();
-            $table->foreign(['category_id'])->references(['id'])->on('categories')->onDelete('CASCADE');
             $table->timestamps();
+            
+            $table->foreign(['category_id'])->references(['id'])->on('categories')->onDelete('CASCADE');
         });
     }
 
