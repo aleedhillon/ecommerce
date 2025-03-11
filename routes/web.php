@@ -35,8 +35,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/tags/action/bulk-restore', [TagController::class, 'bulkRestore'])->name('tags.bulk-restore');
     Route::post('/tags/action/bulk-force-delete', [TagController::class, 'bulkForceDelete'])->name('tags.bulk-force-delete');
     Route::get('/tags/action/export-excel', [TagController::class, 'export'])->name('tags.export');
-
-    // Colors
+    
+    // Color
     Route::resource('colors', ColorController::class);
-    Route::post('/colors/destroy/bulk', [ColorController::class, 'bulkDestroy'])->name('colors.bulk-destroy');
+    Route::post('/colors/action/bulk-destroy', [ColorController::class, 'bulkDestroy'])->name('colors.bulk-destroy');
+    Route::post('/colors/action/bulk-restore', [ColorController::class, 'bulkRestore'])->name('colors.bulk-restore');
+    Route::post('/colors/action/bulk-force-delete', [ColorController::class, 'bulkForceDelete'])->name('colors.bulk-force-delete');
+    Route::get('/colors/action/export-excel', [ColorController::class, 'export'])->name('colors.export');
+
 });

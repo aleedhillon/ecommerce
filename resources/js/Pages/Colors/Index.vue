@@ -1,40 +1,60 @@
 <template>
     <AuthenticatedLayout>
         <div class="card">
-            <Toolbar class="mb-6">
+            <Toolbar class="">
                 <template #start>
-                    <Button label="New" icon="pi pi-plus" class="mr-2" @click="openNew" />
-                    <Button label="Delete" icon="pi pi-trash" severity="danger" outlined @click="confirmDeleteSelected"
-                        :disabled="!selectedColors || !selectedColors.length" />
-                </template>
+                    <Button label="New" icon="pi pi-plus" class="mr-2" @click="openNew" text />
+                    <ButtonGroup class="mr-2">
+                        <Link :href="config.indexRoute">
+                        <Button label="All Items" icon="pi pi-list" :class="{ 'border-bottom-2': !isTrashedPage }" text />
+                        </Link>
+                        <Link :href="config.indexRouteTrashed">
+                        <Button label="Trashed" icon="pi pi-ban" :class="{ 'border-bottom-2': isTrashedPage }" text />
+                        </Link>
+                    </ButtonGroup>
+                    <Button label="Bulk Delete" icon="pi pi-trash" class="mr-2" severity="danger" outlined
+                        @click="confirmDeleteSelected"
+                        v-show="!(!selectedItems || !selectedItems?.length) && !isTrashedPage" />
+                    <Button label="Bulk Restore" icon="pi pi-undo" class="mr-2" severity="warn" outlined
+                        @click="restoreSelected"
+                        v-show="!(!selectedItems || !selectedItems?.length) && isTrashedPage" />
 
+                    <Button label="Force Delete" icon="pi pi-trash" class="mr-2" severity="danger" outlined
+                        @click="forceDeleteSelected"
+                        v-show="!(!selectedItems || !selectedItems?.length) && isTrashedPage" />
+                </template>
                 <template #end>
-                    <!-- <FileUpload mode="basic" :maxFileSize="1000000" label="Import" customUpload chooseLabel="Import"
-                        class="mr-2" auto :chooseButtonProps="{ severity: 'secondary' }" /> -->
-                    <Button label="Export" icon="pi pi-upload" severity="secondary" @click="exportCSV($event)" />
+                    <Button label="Export" class="mx-2" icon="pi pi-upload" severity="secondary" @click="exportExcel" />
                 </template>
             </Toolbar>
 
-            <DataTable ref="dt" v-model:selection="selectedColors" :value="colors.data" dataKey="id" :paginator="true"
-                :rows="10" :filters="filters"
+            <DataTable ref="dt" v-model:selection="selectedItems" :value="items.data" dataKey="id" :paginator="true"
+                :rows="15" :filters="filters" :totalRecords="items.total" :lazy="true"
+                @page="handlePagination($event, config.indexRoute, config.resource)"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
-                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} colors">
+                :currentPageReportTemplate="`Showing {first} to {last} of {totalRecords} ${config.resource}`"
+                resizableColumns columnResizeMode="fit">
+                <template #empty>
+                    <div class="p-4 text-center">
+                        <p class="text-lg">No {{ config.resource }} found.</p>
+                    </div>
+                </template>
                 <template #header>
                     <div class="flex flex-wrap gap-2 items-center justify-between">
-                        <h4 class="m-0">Manage Colors</h4>
+                        <h1 class="text-3xl">{{ config.title }}</h1>
                         <IconField>
                             <InputIcon>
                                 <i class="pi pi-search" />
                             </InputIcon>
-                            <InputText v-model="filters['global'].value" placeholder="Search..." />
+                            <InputText v-model="filters.global.value" type="search" @input="debouncedSearch"
+                                placeholder="Search..." clearable />
                         </IconField>
                     </div>
                 </template>
+                <Column selectionMode="multiple" style="width: 3rem" :exportable="false" header=""></Column>
 
-                <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
                 <Column field="name" header="Name"></Column>
-                <Column field="color_code" header="Color Code"></Column>
                 <Column field="is_active" header="Status">
                     <template #body="{ data }">
                         <Badge :severity="data.is_active ? 'success' : 'danger'">
@@ -42,35 +62,32 @@
                         </Badge>
                     </template>
                 </Column>
+
                 <Column field="created_at" header="Created At" sortable></Column>
                 <Column field="updated_at" header="Updated At" sortable></Column>
+
                 <Column :exportable="false" style="min-width: 12rem">
                     <template #body="slotProps">
-                        <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editColor(slotProps.data)" />
+                        <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editItem(slotProps.data)"
+                            :disabled="isTrashedPage" />
                         <Button icon="pi pi-trash" outlined rounded severity="danger"
-                            @click="confirmDeleteColor(slotProps.data)" />
+                            @click="confirmDeleteItem(slotProps.data)" :disabled="isTrashedPage" />
                     </template>
                 </Column>
+
+
             </DataTable>
         </div>
 
         <!-- Create & Edit Form Dialog -->
-        <Dialog v-model:visible="colorDialog" maximizable :style="{ width: '600px' }" header="Color Details"
-            pt:mask:class="backdrop-blur-sm">
+        <Dialog v-model:visible="itemDialog" maximizable :style="{ width: '600px' }"
+            :header="`${config.modelRaw} Details`" pt:mask:class="backdrop-blur-sm">
             <div class="flex flex-col gap-6">
                 <div>
                     <label for="name" class="block font-bold mb-2">Name</label>
                     <InputText id="name" v-model.trim="form.name" required="true" autofocus
                         :invalid="submitted && !form.name" fluid />
                     <small v-if="submitted && !form.name" class="text-red-500">Name is required.</small>
-                </div>
-            </div>
-            <div class="flex flex-col gap-6">
-                <div>
-                    <label for="color_code" class="block font-bold mb-2">Color Code</label>
-                    <InputText type="color" id="color_code" v-model.trim="form.color_code" required="true" autofocus
-                        :invalid="submitted && !form.color_code" fluid />
-                    <small v-if="submitted && !form.color_code" class="text-red-500">Color Code is required.</small>
                 </div>
             </div>
             <div class="flex flex-col gap-6 mt-3">
@@ -83,38 +100,50 @@
                     </small>
                 </div>
             </div>
+            <div class="flex flex-col gap-6 mt-3">
+
+                <div>
+                    <label for="photo" class="block font-bold mb-2">Photo</label>
+                    <FileUpload mode="basic" name="photo" customUpload @select="handlePhotoUpload" :auto="true"
+                        accept="image/*" chooseLabel="Choose Image" class="w-full" />
+                </div>
+                <div>
+                    <img v-if="form.photo || photoPreview" :src="photoPreview ?? resolveImagePath(form.photo)"
+                        alt="Image" class="shadow-md rounded-xl w-full" style="filter: grayscale(100%)" />
+                </div>
+            </div>
 
             <template #footer>
                 <div class="mt-3">
                     <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
-                    <Button label="Save & Continue" text icon="pi pi-check" @click="saveColor(true)" v-if="!isEdit" />
-                    <Button label="Save" icon="pi pi-check" @click="saveColor(false)" v-if="!isEdit" />
-                    <Button label="Update" icon="pi pi-check" @click="updateColor" v-if="isEdit" />
+                    <Button label="Save & Continue" text icon="pi pi-check" @click="saveItem(true)" v-if="!isEdit" />
+                    <Button label="Save" icon="pi pi-check" @click="saveItem(false)" v-if="!isEdit" />
+                    <Button label="Update" icon="pi pi-check" @click="updateItem" v-if="isEdit" />
                 </div>
             </template>
         </Dialog>
 
         <!-- Single Delete -->
-        <Dialog v-model:visible="deleteColorDialog" :style="{ width: '450px' }" header="Confirm">
+        <Dialog v-model:visible="deleteItemDialog" :style="{ width: '450px' }" header="Confirm">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
-                <span v-if="form.name">Are you sure you want to delete <b>{{ form.name }}</b>?</span>
+                <span>Are you sure you want to delete <b>{{ form.name }}</b>?</span>
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" text @click="deleteColorDialog = false" />
-                <Button label="Yes" icon="pi pi-check" @click="deleteColor" />
+                <Button label="No" icon="pi pi-times" text @click="deleteItemDialog = false" />
+                <Button label="Yes" icon="pi pi-check" @click="deleteItem" />
             </template>
         </Dialog>
 
         <!-- Bulk Delete -->
-        <Dialog v-model:visible="deleteColorsDialog" :style="{ width: '450px' }" header="Confirm">
+        <Dialog v-model:visible="deleteItemsDialog" :style="{ width: '450px' }" header="Confirm">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
-                <span v-if="form.name">Are you sure you want to delete the selected colors?</span>
+                <span>Are you sure you want to delete the selected items?</span>
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" text @click="deleteColorsDialog = false" />
-                <Button label="Yes" icon="pi pi-check" text @click="deleteSelectedColors" />
+                <Button label="No" icon="pi pi-times" text @click="deleteItemsDialog = false" />
+                <Button label="Yes" icon="pi pi-check" text @click="deleteSelectedItems" />
             </template>
         </Dialog>
     </AuthenticatedLayout>
@@ -122,61 +151,95 @@
 
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { ref, defineProps } from 'vue';
+import { ref, computed, defineProps, onMounted, watch } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
-import { router, useForm } from '@inertiajs/vue3';
+import { router, useForm, Link } from '@inertiajs/vue3';
 import { Select } from 'primevue';
-import { usePage } from '@inertiajs/vue3';
 import { resolveImagePath } from '@/Helpers/imageHelper';
+import { handlePagination } from '@/Helpers/pagination';
+import debounce from 'lodash/debounce';
 
-const { props } = usePage();
+const config = {
+    title: 'Colors',
+    modelSingular: 'color',
+    modelRaw: 'Color',
+    resource: 'colors',
+    indexRoute: route('colors.index'),
+    indexRouteTrashed: route('colors.index', { trashed: true }),
+    storeRoute: route('colors.store'),
+    updateRoute: route('colors.update', '__ID__'),
+    deleteRoute: route('colors.destroy', '__ID__'),
+    bulkDeleteRoute: route('colors.bulk-destroy'),
+    bulkRestoreRoute: route('colors.bulk-restore'),
+    bulkForceDeleteRoute: route('colors.bulk-force-delete'),
+    exportRoute: route('colors.export'),
+}
 
 const vueProps = defineProps({
-    colors: Object,
+    items: Object,
+    filters: {
+        type: Object,
+        default: () => ({
+            search: '',
+        }),
+    },
 });
 
 const toast = useToast();
 const dt = ref();
-const colorDialog = ref(false);
-const deleteColorDialog = ref(false);
-const deleteColorsDialog = ref(false);
+const itemDialog = ref(false);
+const deleteItemDialog = ref(false);
+const deleteItemsDialog = ref(false);
 
 const form = useForm({
     name: null,
     is_active: 1,
-    color_code: null,
+    photo: null,
 });
 
-const selectedColors = ref();
+const selectedItems = ref();
+
 const filters = ref({
-    'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
-const submitted = ref(false);
 
+const submitted = ref(false);
 const statuses = [
     { label: 'Active', value: 1 },
     { label: 'Inactive', value: 0 },
 ];
 
+const photoPreview = ref(null);
+const handlePhotoUpload = (event) => {
+    const file = event.files[0];
+    form.photo = file;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        photoPreview.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+};
+
 const openNew = () => {
     isEdit.value = false;
     form.reset();
     submitted.value = false;
-    colorDialog.value = true;
+    itemDialog.value = true;
+    photoPreview.value = null;
 };
 
 const hideDialog = () => {
-    colorDialog.value = false;
+    itemDialog.value = false;
     submitted.value = false;
 };
 
-const saveColor = (saveAndContinue = false) => {
+const saveItem = (saveAndContinue = false) => {
     submitted.value = true;
-
-    form.post(route('colors.store'), {
+    form.post(config.storeRoute, {
         onSuccess: () => {
             form.reset();
+            photoPreview.value = null;
             toast.add({ severity: 'success', summary: 'Successful', detail: 'Successfully Created!', life: 3000 });
             if (saveAndContinue) {
                 submitted.value = false;
@@ -185,8 +248,10 @@ const saveColor = (saveAndContinue = false) => {
                 hideDialog();
             }
         },
-        onError: () => {
-            toast.add({ severity: 'error', summary: 'Error', detail: 'Something went wrong', life: 3000 });
+        onError: (errors) => {
+            Object.entries(errors).forEach((val, key) => {
+                toast.add({ severity: 'error', summary: 'Validation Error', detail: val[1], life: 3000 });
+            })
         },
     });
 };
@@ -194,20 +259,21 @@ const saveColor = (saveAndContinue = false) => {
 const isEdit = ref(false);
 const editingId = ref(null);
 
-const updateColor = () => {
+const updateItem = () => {
     submitted.value = true;
-    const url = route('colors.update', { color: editingId.value });
+    const url = config.updateRoute.replace('__ID__', editingId.value);
 
     const data = {
         _method: 'put',
         name: form.name,
         is_active: form.is_active,
-        color_code: form.color_code,
+        photo: form.photo,
     };
 
     router.post(url, data, {
         onSuccess: () => {
             hideDialog();
+            photoPreview.value = null;
             form.reset();
             toast.add({ severity: 'success', summary: 'Successful', detail: 'Successfully Updated!', life: 3000 });
         },
@@ -217,52 +283,141 @@ const updateColor = () => {
     });
 };
 
-const editColor = (prod) => {
-    colorDialog.value = true;
+const editItem = (prod) => {
+    itemDialog.value = true;
     isEdit.value = true;
 
+    photoPreview.value = null;
     form.name = prod.name;
     form.is_active = prod.is_active;
-    form.color_code = prod.color_code;
+    form.photo = prod.photo;
     editingId.value = prod.id;
 };
 
-const confirmDeleteColor = (prod) => {
-    deleteColorDialog.value = true;
+const confirmDeleteItem = (prod) => {
+    deleteItemDialog.value = true;
 
+    photoPreview.value = null;
     form.name = prod.name;
     form.is_active = prod.is_active;
-    form.color_code = prod.color_code;
+    form.photo = prod.photo;
     editingId.value = prod.id;
 };
 
-const deleteColor = () => {
-    deleteColorDialog.value = false;
-    router.delete(route('colors.destroy', { color: editingId.value }), {
+const restoreSelected = () => {
+    const itemIds = selectedItems.value.map(c => c.id);
+    selectedItems.value = null;
+
+    router.post(config.bulkRestoreRoute, {
+        ids: itemIds
+    }, {
+        onSuccess: () => {
+            isTrashedPage.value = false;
+            toast.add({ severity: 'success', summary: 'Restored', detail: 'Selected Items Restored!', life: 3000 });
+        },
+        onError: (errors) => {
+            Object.entries(errors).forEach((val, key) => {
+                toast.add({ severity: 'error', summary: 'Restore Error', detail: val[1], life: 3000 });
+            })
+        },
+    })
+};
+
+const forceDeleteSelected = () => {
+    const itemIds = selectedItems.value.map(c => c.id);
+    selectedItems.value = null;
+
+    router.post(config.bulkForceDeleteRoute, {
+        ids: itemIds
+    }, {
+        onSuccess: () => {
+            isTrashedPage.value = false;
+            toast.add({ severity: 'warn', summary: 'Permanently Delete', detail: 'Items Permanently Deleted!', life: 3000 });
+        },
+        onError: (errors) => {
+            Object.entries(errors).forEach((val, key) => {
+                toast.add({ severity: 'error', summary: 'Permanent Delete Error', detail: val[1], life: 3000 });
+            })
+        },
+    })
+};
+
+const deleteItem = () => {
+    deleteItemDialog.value = false;
+    const url = config.deleteRoute.replace('__ID__', editingId.value);
+    router.delete(url, {
         onSuccess: () => {
             toast.add({ severity: 'error', summary: 'Deleted', detail: 'Successfully Deleted', life: 3000 });
-        }
+        },
     });
 };
 
-const exportCSV = () => {
-    dt.value.exportCSV();
+const exportExcel = () => {
+    const params = new URLSearchParams({
+        search: filters.value.global.value || ''
+    }).toString();
+
+    // Create a temporary link to trigger the download
+    const link = document.createElement('a');
+    link.href = `${config.exportRoute}?${params}`;
+    link.setAttribute('download', ''); // This is optional as the server will send the filename
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast.add({
+        severity: 'success',
+        summary: 'Export Started',
+        detail: 'Your export will download shortly.',
+        life: 3000
+    });
 };
 
 const confirmDeleteSelected = () => {
-    deleteColorsDialog.value = true;
+    deleteItemsDialog.value = true;
 };
 
-const deleteSelectedColors = () => {
-    const colorIds = selectedColors.value.map(c => c.id);
-    deleteColorsDialog.value = false;
-    selectedColors.value = null;
-    router.post(route('colors.bulk-destroy'), {
-        colorIds: colorIds,
+const deleteSelectedItems = () => {
+    const itemIds = selectedItems.value.map(c => c.id);
+    deleteItemsDialog.value = false;
+    selectedItems.value = null;
+
+    router.post(config.bulkDeleteRoute, {
+        ids: itemIds
+    }, {
         onSuccess: () => {
-            toast.add({ severity: 'error', summary: 'Deleted', detail: 'Selected Colors Deleted', life: 3000 });
-        }
+            toast.add({ severity: 'error', summary: 'Deleted', detail: 'Selected Items Deleted', life: 3000 });
+        },
+        onError: (errors) => {
+            Object.entries(errors).forEach((val, key) => {
+                toast.add({ severity: 'error', summary: 'Delete Error', detail: val[1], life: 3000 });
+            })
+        },
     })
 };
+
+const debouncedSearch = debounce((e) => {
+    filters.value.global.value = e.target.value;
+    router.get(
+        config.indexRoute,
+        {
+            search: e.target.value,
+            per_page: dt.value?.rows
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            only: ['items']
+        }
+    );
+}, 300);
+
+onMounted(() => {
+    if (vueProps.filters.search) {
+        filters.value.global.value = vueProps.filters.search;
+    }
+});
+
+const isTrashedPage = ref(route().params.trashed === '1');
 
 </script>
