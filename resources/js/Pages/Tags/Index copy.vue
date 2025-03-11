@@ -6,10 +6,11 @@
                     <Button label="New" icon="pi pi-plus" class="mr-2" @click="openNew" text />
                     <ButtonGroup class="mr-2">
                         <Link :href="config.indexRoute">
-                        <Button label="All Items" icon="pi pi-list" :class="{'border-bottom-2': !isTrashedPage}" text />
+                        <Button label="All Items" icon="pi pi-list" :class="{ 'border-bottom-2': !isTrashedPage }"
+                            text />
                         </Link>
                         <Link :href="config.indexRouteTrashed">
-                        <Button label="Trashed" icon="pi pi-ban" :class="{'border-bottom-2': isTrashedPage}" text />
+                        <Button label="Trashed" icon="pi pi-ban" :class="{ 'border-bottom-2': isTrashedPage }" text />
                         </Link>
                     </ButtonGroup>
                     <Button label="Bulk Delete" icon="pi pi-trash" class="mr-2" severity="danger" outlined
@@ -54,6 +55,7 @@
                 </template>
                 <Column selectionMode="multiple" style="width: 3rem" :exportable="false" header=""></Column>
 
+                <!-- #1 start -->
                 <Column field="name" header="Name"></Column>
                 <Column field="is_active" header="Status">
                     <template #body="{ data }">
@@ -62,9 +64,9 @@
                         </Badge>
                     </template>
                 </Column>
-                
                 <Column field="created_at" header="Created At" sortable></Column>
                 <Column field="updated_at" header="Updated At" sortable></Column>
+                <!-- #1 end -->
 
                 <Column :exportable="false" style="min-width: 12rem">
                     <template #body="slotProps">
@@ -74,14 +76,14 @@
                             @click="confirmDeleteItem(slotProps.data)" :disabled="isTrashedPage" />
                     </template>
                 </Column>
-
-
             </DataTable>
         </div>
 
         <!-- Create & Edit Form Dialog -->
         <Dialog v-model:visible="itemDialog" maximizable :style="{ width: '600px' }"
             :header="`${config.modelRaw} Details`" pt:mask:class="backdrop-blur-sm">
+            
+            <!-- #2 starts -->
             <div class="flex flex-col gap-6">
                 <div>
                     <label for="name" class="block font-bold mb-2">Name</label>
@@ -100,18 +102,7 @@
                     </small>
                 </div>
             </div>
-            <div class="flex flex-col gap-6 mt-3">
-
-                <div>
-                    <label for="photo" class="block font-bold mb-2">Photo</label>
-                    <FileUpload mode="basic" name="photo" customUpload @select="handlePhotoUpload" :auto="true"
-                        accept="image/*" chooseLabel="Choose Image" class="w-full" />
-                </div>
-                <div>
-                    <img v-if="form.photo || photoPreview" :src="photoPreview ?? resolveImagePath(form.photo)"
-                        alt="Image" class="shadow-md rounded-xl w-full" style="filter: grayscale(100%)" />
-                </div>
-            </div>
+            <!-- #2 ends -->
 
             <template #footer>
                 <div class="mt-3">
@@ -159,6 +150,13 @@ import { Select } from 'primevue';
 import { resolveImagePath } from '@/Helpers/imageHelper';
 import { handlePagination } from '@/Helpers/pagination';
 import debounce from 'lodash/debounce';
+import { statuses } from '@/Helpers/enums.js';
+
+// #3 start
+const form = useForm({
+    name: null,
+    is_active: 1,
+});
 
 const config = {
     title: 'Tags',
@@ -166,7 +164,7 @@ const config = {
     modelRaw: 'Tag',
     resource: 'tags',
     indexRoute: route('tags.index'),
-    indexRouteTrashed: route('tags.index', {trashed: true}),
+    indexRouteTrashed: route('tags.index', { trashed: true }),
     storeRoute: route('tags.store'),
     updateRoute: route('tags.update', '__ID__'),
     deleteRoute: route('tags.destroy', '__ID__'),
@@ -175,6 +173,8 @@ const config = {
     bulkForceDeleteRoute: route('tags.bulk-force-delete'),
     exportRoute: route('tags.export'),
 }
+
+// #3 end
 
 const vueProps = defineProps({
     items: Object,
@@ -191,118 +191,19 @@ const dt = ref();
 const itemDialog = ref(false);
 const deleteItemDialog = ref(false);
 const deleteItemsDialog = ref(false);
-
-const form = useForm({
-    name: null,
-    is_active: 1,
-    photo: null,
-});
-
 const selectedItems = ref();
+const submitted = ref(false);
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
-const submitted = ref(false);
-const statuses = [
-    { label: 'Active', value: 1 },
-    { label: 'Inactive', value: 0 },
-];
-
-const photoPreview = ref(null);
-const handlePhotoUpload = (event) => {
-    const file = event.files[0];
-    form.photo = file;
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        photoPreview.value = e.target.result;
-    };
-    reader.readAsDataURL(file);
-};
-
-const openNew = () => {
-    isEdit.value = false;
-    form.reset();
-    submitted.value = false;
-    itemDialog.value = true;
-    photoPreview.value = null;
-};
 
 const hideDialog = () => {
     itemDialog.value = false;
     submitted.value = false;
 };
 
-const saveItem = (saveAndContinue = false) => {
-    submitted.value = true;
-    form.post(config.storeRoute, {
-        onSuccess: () => {
-            form.reset();
-            photoPreview.value = null;
-            toast.add({ severity: 'success', summary: 'Successful', detail: 'Successfully Created!', life: 3000 });
-            if (saveAndContinue) {
-                submitted.value = false;
-                return;
-            } else {
-                hideDialog();
-            }
-        },
-        onError: (errors) => {
-            Object.entries(errors).forEach((val, key) => {
-                toast.add({ severity: 'error', summary: 'Validation Error', detail: val[1], life: 3000 });
-            })
-        },
-    });
-};
-
-const isEdit = ref(false);
-const editingId = ref(null);
-
-const updateItem = () => {
-    submitted.value = true;
-    const url = config.updateRoute.replace('__ID__', editingId.value);
-
-    const data = {
-        _method: 'put',
-        name: form.name,
-        is_active: form.is_active,
-        photo: form.photo,
-    };
-
-    router.post(url, data, {
-        onSuccess: () => {
-            hideDialog();
-            photoPreview.value = null;
-            form.reset();
-            toast.add({ severity: 'success', summary: 'Successful', detail: 'Successfully Updated!', life: 3000 });
-        },
-        onError: () => {
-            toast.add({ severity: 'error', summary: 'Error', detail: 'Something went wrong, please try again!', life: 3000 });
-        },
-    });
-};
-
-const editItem = (prod) => {
-    itemDialog.value = true;
-    isEdit.value = true;
-
-    photoPreview.value = null;
-    form.name = prod.name;
-    form.is_active = prod.is_active;
-    form.photo = prod.photo;
-    editingId.value = prod.id;
-};
-
-const confirmDeleteItem = (prod) => {
-    deleteItemDialog.value = true;
-
-    photoPreview.value = null;
-    form.name = prod.name;
-    form.is_active = prod.is_active;
-    form.photo = prod.photo;
-    editingId.value = prod.id;
-};
 
 const restoreSelected = () => {
     const itemIds = selectedItems.value.map(c => c.id);
@@ -419,5 +320,96 @@ onMounted(() => {
 });
 
 const isTrashedPage = ref(route().params.trashed === '1');
+
+const openNew = () => {
+    isEdit.value = false;
+    form.reset();
+    submitted.value = false;
+    itemDialog.value = true;
+    photoPreview.value = null;
+};
+
+
+const saveItem = (saveAndContinue = false) => {
+    submitted.value = true;
+    form.post(config.storeRoute, {
+        onSuccess: () => {
+            form.reset();
+            photoPreview.value = null;
+            toast.add({ severity: 'success', summary: 'Successful', detail: 'Successfully Created!', life: 3000 });
+            if (saveAndContinue) {
+                submitted.value = false;
+                return;
+            } else {
+                hideDialog();
+            }
+        },
+        onError: (errors) => {
+            Object.entries(errors).forEach((val, key) => {
+                toast.add({ severity: 'error', summary: 'Validation Error', detail: val[1], life: 3000 });
+            })
+        },
+    });
+};
+
+const isEdit = ref(false);
+const editingId = ref(null);
+
+const updateItem = () => {
+    submitted.value = true;
+    const url = config.updateRoute.replace('__ID__', editingId.value);
+
+    const data = {
+        _method: 'put',
+        name: form.name,
+        is_active: form.is_active,
+        photo: form.photo,
+    };
+
+    router.post(url, data, {
+        onSuccess: () => {
+            hideDialog();
+            photoPreview.value = null;
+            form.reset();
+            toast.add({ severity: 'success', summary: 'Successful', detail: 'Successfully Updated!', life: 3000 });
+        },
+        onError: () => {
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Something went wrong, please try again!', life: 3000 });
+        },
+    });
+};
+
+const editItem = (prod) => {
+    itemDialog.value = true;
+    isEdit.value = true;
+
+    photoPreview.value = null;
+    form.name = prod.name;
+    form.is_active = prod.is_active;
+    form.photo = prod.photo;
+    editingId.value = prod.id;
+};
+
+const confirmDeleteItem = (prod) => {
+    deleteItemDialog.value = true;
+
+    photoPreview.value = null;
+    form.name = prod.name;
+    form.is_active = prod.is_active;
+    form.photo = prod.photo;
+    editingId.value = prod.id;
+};
+
+// #4 Photo Upload Area Start
+const photoPreview = ref(null);
+const handlePhotoUpload = (event) => {
+    const file = event.files[0];
+    form.photo = file;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        photoPreview.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+};
 
 </script>

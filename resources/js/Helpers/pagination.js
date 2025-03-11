@@ -10,6 +10,6 @@ export const handlePagination = (event, routeName, resourceName) => {
     }, {
         preserveState: true,
         preserveScroll: true,
-        only: [resourceName]
+        only: ['items']
     });
 };

@@ -10,6 +10,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubCategoryController;
+use App\Utils\CrudRouter;
 
 # AUTH & VERIFIED
 
@@ -28,11 +29,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/brands/destroy/bulk', [BrandController::class, 'bulkDestroy'])->name('brands.bulk-destroy');
     Route::get('/brands/export/excel', [BrandController::class, 'export'])->name('brands.export');
 
-    // Tags
-    Route::resource('tags', TagController::class);
-    Route::post('/tags/action/bulk-destroy', [TagController::class, 'bulkDestroy'])->name('tags.bulk-destroy');
-    Route::post('/tags/action/bulk-restore', [TagController::class, 'bulkRestore'])->name('tags.bulk-restore');
-    Route::post('/tags/action/bulk-force-delete', [TagController::class, 'bulkForceDelete'])->name('tags.bulk-force-delete');
-    Route::get('/tags/action/export-excel', [TagController::class, 'export'])->name('tags.export');
+
+    CrudRouter::setFor('tags', TagController::class);
     
 });

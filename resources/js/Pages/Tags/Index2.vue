@@ -1,6 +1,6 @@
 <template>
     <div>
-        <CrudComponent :config :items :filters :form>
+        <CrudComponent :config :items :filters :form :submitted>
             <template #columns>
                 <Column field="name" header="Name"></Column>
                 <Column field="is_active" header="Status">
@@ -15,7 +15,7 @@
                 <Column field="updated_at" header="Updated At" sortable></Column>
             </template>
 
-            <template #form="{ submitted, statuses }">
+            <template #form>
                 <div class="flex flex-col gap-6">
                     <div>
                         <label for="name" class="block font-bold mb-2">Name</label>
@@ -34,18 +34,42 @@
                         </small>
                     </div>
                 </div>
+                <div class="flex flex-col gap-6 mt-3">
+                    <div>
+                        <label for="photo" class="block font-bold mb-2">Photo</label>
+                        <FileUpload mode="basic" name="photo" customUpload @select="handlePhotoUpload" :auto="true"
+                            accept="image/*" chooseLabel="Choose Image" class="w-full" />
+                    </div>
+                    <div>
+                        <img v-if="form.photo || photoPreview" :src="photoPreview ?? resolveImagePath(form.photo)"
+                            alt="Image" class="shadow-md rounded-xl w-full" style="filter: grayscale(100%)" />
+                    </div>
+                </div>
             </template>
         </CrudComponent>
     </div>
 </template>
 <script setup>
 import CrudComponent from '@/Components/CrudComponent.vue';
-import {useForm } from '@inertiajs/vue3';
+
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { ref, computed, defineProps, onMounted, watch } from 'vue';
+import { FilterMatchMode } from '@primevue/core/api';
+import { useToast } from 'primevue/usetoast';
+import { router, useForm, Link } from '@inertiajs/vue3';
+import { Select } from 'primevue';
+import { resolveImagePath } from '@/Helpers/imageHelper';
+import { handlePagination } from '@/Helpers/pagination';
+import debounce from 'lodash/debounce';
+import { statuses } from '@/Helpers/enums.js';
+
+const submitted = ref(false);
 
 const form = useForm({
     name: '',
-    is_active: 1,
-});
+    is_active: null,
+    photo: null,
+})
 
 defineProps({
     items: Object,

@@ -14,10 +14,13 @@ trait CrudTrait
     public string $componentPath;
     public string $storeRequestClass;
     public string $updateRequestClass;
+    public string $exportClass;
+
     public string $resource;
 
     public function index(Request $request)
     {
+        $this->logThisMethod();
         $this->ensureModelClass();
         $perPage = $request->input('per_page', 15);
         $search = $request->input('search');
@@ -39,25 +42,34 @@ trait CrudTrait
 
     public function create()
     {
+        $this->logThisMethod();
         return Inertia::render($this->componentPath);
     }
 
     public function store(Request $request)
     {
+        $this->logThisMethod();
         $this->ensureModelClass();
         $validatedData = app($this->storeRequestClass)->validated();
-        $this->modelClass::create($validatedData);
+        $model = new $this->modelClass();
+        $model->fill($validatedData);
+        $model->save();
     }
 
-    public function update(Request $request, Model $model)
+    public function update(Request $request, $id)
     {
+        $this->logThisMethod();
         $validatedData = app($this->updateRequestClass)->validated();
+        $model = $this->modelClass::findOrFail($id);
         $model->update($validatedData);
+
         return to_route($this->resource . '.index')->with('success', 'Updated successfully');
     }
 
-    public function destroy(Model $model)
+    public function destroy($id)
     {
+        $this->logThisMethod();
+        $model = $this->modelClass::findOrFail($id);
         if ($model->photo && Storage::exists($model->photo)) {
             Storage::delete($model->photo);
         }
@@ -67,6 +79,7 @@ trait CrudTrait
 
     public function bulkDestroy(Request $request)
     {
+        $this->logThisMethod();
         $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:' . $this->modelClass . ',id']);
         foreach ($request->ids as $id) {
             $model = $this->modelClass::find($id);
@@ -82,20 +95,25 @@ trait CrudTrait
 
     public function bulkRestore(Request $request)
     {
+        $this->logThisMethod();
         $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:' . $this->modelClass . ',id']);
         $this->modelClass::whereIn('id', $request->ids)->restore();
     }
 
     public function bulkForceDelete(Request $request)
     {
+        $this->logThisMethod();
         $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:' . $this->modelClass . ',id']);
         $this->modelClass::whereIn('id', $request->ids)->forceDelete();
     }
 
     public function export(Request $request)
     {
+        $this->logThisMethod();
+        $search = $request->input('search');
+
         $filename = strtolower(class_basename($this->modelClass)) . '-' . now()->format('Y-m-d-H-i-s') . '.xlsx';
-        return Excel::download(new ($this->resource . 'Export')($request->input('search')), $filename);
+        return Excel::download(new $this->exportClass($search), $filename);
     }
 
     protected function ensureModelClass()
@@ -103,5 +121,11 @@ trait CrudTrait
         if (!$this->modelClass) {
             throw new \Exception("Model class not defined in trait usage");
         }
+    }
+
+    public function logThisMethod()
+    {
+        $backtrace = debug_backtrace();
+        logger()->info(__TRAIT__ . ' method called from : ' . $backtrace[1]['class']);
     }
 }
