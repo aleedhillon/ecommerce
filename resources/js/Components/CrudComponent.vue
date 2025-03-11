@@ -72,7 +72,7 @@
         <Dialog v-model:visible="itemDialog" maximizable :style="{ width: '600px' }"
             :header="`${vueProps.config.modelRaw} Details`" pt:mask:class="backdrop-blur-sm">
             
-            <slot name="form" v-bind="{submitted, statuses}"></slot>
+            <slot name="form" v-bind="{submitted, statuses, handlePhotoUpload, photoPreview, resolveImagePath}"></slot>
 
             <template #footer>
                 <div class="mt-3">
@@ -205,7 +205,7 @@ const updateItem = () => {
         _method: 'put',
         ...vueProps.form
     };
-
+    
     router.post(url, data, {
         onSuccess: () => {
             hideDialog();
@@ -226,9 +226,9 @@ const editItem = (prod) => {
     isEdit.value = true;
 
     photoPreview.value = null;
-    vueProps.form.name = prod.name;
-    vueProps.form.is_active = prod.is_active;
-    vueProps.form.photo = prod.photo;
+
+    Object.assign(vueProps.form, prod);
+
     editingId.value = prod.id;
 };
 
@@ -236,9 +236,9 @@ const confirmDeleteItem = (prod) => {
     deleteItemDialog.value = true;
 
     photoPreview.value = null;
-    vueProps.form.name = prod.name;
-    vueProps.form.is_active = prod.is_active;
-    vueProps.form.photo = prod.photo;
+    
+    Object.assign(vueProps.form, prod);
+
     editingId.value = prod.id;
 };
 

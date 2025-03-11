@@ -24,12 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('sub-categories', SubCategoryController::class);
     Route::get('/sub-categories/export/excel', [SubCategoryController::class, 'export'])->name('sub_categories.export');
 
-    // Brands
-    Route::resource('brands', BrandController::class);
-    Route::post('/brands/destroy/bulk', [BrandController::class, 'bulkDestroy'])->name('brands.bulk-destroy');
-    Route::get('/brands/export/excel', [BrandController::class, 'export'])->name('brands.export');
-
-
     CrudRouter::setFor('tags', TagController::class);
+    CrudRouter::setFor('brands', BrandController::class);
     
 });

@@ -3,10 +3,12 @@
 namespace App\Traits;
 
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 trait CrudTrait
 {
@@ -37,9 +39,31 @@ trait CrudTrait
         return Inertia::render($this->componentPath, [
             'items' => $items,
             'filters' => ['search' => $search],
+            'config' => $this->makeConfig(),
         ]);
     }
 
+    private function makeConfig()
+    {
+        $modelRawName = class_basename($this->modelClass);
+        $modelLowerCase = Str::lower($modelRawName);
+        $config = [
+            'title' => Str::title($this->resource),
+            'modelSingular' => $modelLowerCase,
+            'modelRaw' => $modelRawName,
+            'resource' => $this->resource,
+            'indexRoute' => route($this->resource . '.index'),
+            'indexRouteTrashed' => route($this->resource . '.index', ['trashed' => true]),
+            'storeRoute' => route($this->resource . '.store'),
+            'updateRoute' => route($this->resource . '.update', [$modelLowerCase => '__ID__']),
+            'deleteRoute' => route($this->resource . '.destroy', [$modelLowerCase => '__ID__']),
+            'bulkDeleteRoute' => route($this->resource . '.bulk-destroy'),
+            'bulkRestoreRoute' => route($this->resource . '.bulk-restore'),
+            'bulkForceDeleteRoute' => route($this->resource . '.bulk-force-delete'),
+            'exportRoute' => route($this->resource . '.export'),
+        ];
+        return $config;
+    }
     public function create()
     {
         $this->logThisMethod();
@@ -51,17 +75,29 @@ trait CrudTrait
         $this->logThisMethod();
         $this->ensureModelClass();
         $validatedData = app($this->storeRequestClass)->validated();
+        if ($request->file('photo')) {
+            $validatedData['photo'] = $request->file('photo')->store($this->resource);
+        }
         $model = new $this->modelClass();
         $model->fill($validatedData);
         $model->save();
+
     }
 
     public function update(Request $request, $id)
     {
         $this->logThisMethod();
         $validatedData = app($this->updateRequestClass)->validated();
+        Log::debug($validatedData);
         $model = $this->modelClass::findOrFail($id);
-        $model->update($validatedData);
+        if ($request->file('photo')) {
+            $validatedData['photo'] = $request->file('photo')->store($this->resource);
+            // Delete existing photo
+            if ($model->photo && Storage::fileExists($model->photo)) {
+                Storage::delete($model->photo);
+            }
+        }
+        $res = $model->update($validatedData);
 
         return to_route($this->resource . '.index')->with('success', 'Updated successfully');
     }
@@ -70,9 +106,9 @@ trait CrudTrait
     {
         $this->logThisMethod();
         $model = $this->modelClass::findOrFail($id);
-        if ($model->photo && Storage::exists($model->photo)) {
-            Storage::delete($model->photo);
-        }
+        // if ($model->photo && Storage::exists($model->photo)) {
+        //     Storage::delete($model->photo);
+        // }
         $model->delete();
         return to_route($this->resource . '.index')->with('success', 'Deleted successfully');
     }
@@ -84,9 +120,6 @@ trait CrudTrait
         foreach ($request->ids as $id) {
             $model = $this->modelClass::find($id);
             if ($model) {
-                if ($model->photo && Storage::exists($model->photo)) {
-                    Storage::delete($model->photo);
-                }
                 $model->delete();
             }
         }
@@ -104,7 +137,16 @@ trait CrudTrait
     {
         $this->logThisMethod();
         $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:' . $this->modelClass . ',id']);
-        $this->modelClass::whereIn('id', $request->ids)->forceDelete();
+        // $this->modelClass::whereIn('id', $request->ids)->forceDelete();
+        foreach ($request->ids as $id) {
+            $model = $this->modelClass::find($id);
+            if ($model) {
+                if ($model->photo && Storage::exists($model->photo)) {
+                    Storage::delete($model->photo);
+                }
+                $model->forceDelete();
+            }
+        }
     }
 
     public function export(Request $request)
