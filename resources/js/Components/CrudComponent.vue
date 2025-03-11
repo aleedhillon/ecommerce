@@ -251,6 +251,7 @@ const restoreSelected = () => {
     }, {
         onSuccess: () => {
             isTrashedPage.value = false;
+            router.get(vueProps.config.indexRoute);
             toast.add({ severity: 'success', summary: 'Restored', detail: 'Selected Items Restored!', life: 3000 });
         },
         onError: (errors) => {
@@ -270,6 +271,7 @@ const forceDeleteSelected = () => {
     }, {
         onSuccess: () => {
             isTrashedPage.value = false;
+            router.get(vueProps.config.indexRoute);
             toast.add({ severity: 'warn', summary: 'Permanently Delete', detail: 'Items Permanently Deleted!', life: 3000 });
         },
         onError: (errors) => {
