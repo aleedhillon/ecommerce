@@ -41,6 +41,7 @@ class SubCategoriesExport implements FromCollection, ShouldAutoSize, WithHeading
         return [
             'ID',
             'Name',
+            'Description',
             'Status',
             'Created At',
             'Updated At',
@@ -52,6 +53,7 @@ class SubCategoriesExport implements FromCollection, ShouldAutoSize, WithHeading
         return [
             $subCategory->id,
             $subCategory->name,
+            $subCategory->description,
             $subCategory->is_active ? 'Active' : 'Inactive',
             Carbon::parse($subCategory->created_at)->format('Y-m-d H:i:s'),
             Carbon::parse($subCategory->updated_at)->format('Y-m-d H:i:s'),

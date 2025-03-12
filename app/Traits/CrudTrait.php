@@ -2,12 +2,13 @@
 
 namespace App\Traits;
 
+use Inertia\Inertia;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 trait CrudTrait
 {
@@ -19,54 +20,111 @@ trait CrudTrait
 
     public string $updateRequestClass;
 
+    public array $searchColumns;
+
     public string $exportClass;
 
     public string $componentPath;
+
+    public array $withRelations = [];
+
+
+    public function init(array $config): void
+    {
+        $this->resource = $config['resource'] ?? $this->resource;
+        $this->modelClass = $config['modelClass'] ?? $this->modelClass;
+        $this->storeRequestClass = $config['storeRequestClass'] ?? $this->storeRequestClass;
+        $this->updateRequestClass = $config['updateRequestClass'] ?? $this->updateRequestClass;
+        $this->searchColumns = $config['searchColumns'] ?? $this->searchColumns;
+        $this->exportClass = $config['exportClass'] ?? $this->exportClass;
+        $this->componentPath = $config['componentPath'] ?? $this->componentPath;
+        $this->withRelations = $config['withRelations'] ?? $this->withRelations;
+        $this->addProps = $config['addProps'] ?? $this->addProps();
+    }
+
 
     public function index(Request $request)
     {
         $this->logThisMethod();
         $this->ensureModelClass();
+
         $perPage = $request->input('per_page', 15);
         $search = $request->input('search');
 
-        $items = $this->modelClass::query()
-            ->when($search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('created_at', 'like', "%{$search}%")
-                    ->orWhere('updated_at', 'like', "%{$search}%");
-            })
-            ->when($request->trashed, fn ($query) => $query->onlyTrashed())
-            ->latest()
-            ->paginate($perPage);
+        $query =  $this->modelClass::query();
+
+        if (!empty($this->withRelations)) {
+            $query->with($this->withRelations);
+        }
+
+        $query->when($search, function ($query, $search) {
+            if (isset($this->searchColumns) && !empty($this->searchColumns)) {
+                $query->where(function ($query) use ($search) {
+                    foreach ($this->searchColumns as $column) {
+                        $query->orWhere($column, 'like', "%{$search}%");
+                    }
+                });
+            }
+        });
+
+        if ($request->has('trashed')) {
+            $query->when($request->trashed, fn($query) => $query->onlyTrashed());
+        }
+
+        $query = $this->modifyQuery($query);
+        $items = $query->latest()->paginate($perPage);
 
         return Inertia::render($this->componentPath, [
             'items' => $items,
             'filters' => ['search' => $search],
             'config' => $this->makeConfig(),
+            ... $this->addProps(),
         ]);
+    }
+
+    protected function addProps() : array
+    {
+        return [];
+    }
+
+    protected function modifyQuery($query)
+    {
+        return $query;
     }
 
     private function makeConfig()
     {
         $modelRawName = class_basename($this->modelClass);
-        $modelLowerCase = Str::lower($modelRawName);
+        $modelLowerCase = Str::snake($modelRawName);
+
+        $routes = [
+            'indexRoute' => $this->resource . '.index',
+            'indexRouteTrashed' => $this->resource . '.index',
+            'storeRoute' => $this->resource . '.store',
+            'updateRoute' => $this->resource . '.update',
+            'deleteRoute' => $this->resource . '.destroy',
+            'bulkDeleteRoute' => $this->resource . '.bulk-destroy',
+            'bulkRestoreRoute' => $this->resource . '.bulk-restore',
+            'bulkForceDeleteRoute' => $this->resource . '.bulk-force-delete',
+            'exportRoute' => $this->resource . '.export',
+        ];
+
         $config = [
             'title' => Str::title($this->resource),
             'modelSingular' => $modelLowerCase,
             'modelRaw' => $modelRawName,
             'resource' => $this->resource,
-            'indexRoute' => route($this->resource.'.index'),
-            'indexRouteTrashed' => route($this->resource.'.index', ['trashed' => true]),
-            'storeRoute' => route($this->resource.'.store'),
-            'updateRoute' => route($this->resource.'.update', [$modelLowerCase => '__ID__']),
-            'deleteRoute' => route($this->resource.'.destroy', [$modelLowerCase => '__ID__']),
-            'bulkDeleteRoute' => route($this->resource.'.bulk-destroy'),
-            'bulkRestoreRoute' => route($this->resource.'.bulk-restore'),
-            'bulkForceDeleteRoute' => route($this->resource.'.bulk-force-delete'),
-            'exportRoute' => route($this->resource.'.export'),
         ];
 
+        foreach ($routes as $key => $route) {
+            if ($key === 'indexRouteTrashed' && Route::has($route)) {
+                $config[$key] = route($route, ['trashed' => true]);
+            } elseif (in_array($key, ['updateRoute', 'deleteRoute']) && Route::has($route)) {
+                $config[$key] = route($route, [$modelLowerCase => '__ID__']);
+            } else {
+                $config[$key] = Route::has($route) ? route($route) : '#';
+            }
+        }
         return $config;
     }
 
@@ -105,7 +163,7 @@ trait CrudTrait
         }
         $res = $model->update($validatedData);
 
-        return to_route($this->resource.'.index')->with('success', 'Updated successfully');
+        return to_route($this->resource . '.index')->with('success', 'Updated successfully');
     }
 
     public function destroy($id)
@@ -117,13 +175,13 @@ trait CrudTrait
         // }
         $model->delete();
 
-        return to_route($this->resource.'.index')->with('success', 'Deleted successfully');
+        return to_route($this->resource . '.index')->with('success', 'Deleted successfully');
     }
 
     public function bulkDestroy(Request $request)
     {
         $this->logThisMethod();
-        $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:'.$this->modelClass.',id']);
+        $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:' . $this->modelClass . ',id']);
         foreach ($request->ids as $id) {
             $model = $this->modelClass::find($id);
             if ($model) {
@@ -131,23 +189,23 @@ trait CrudTrait
             }
         }
 
-        return to_route($this->resource.'.index')->with('success', 'Items deleted successfully');
+        return to_route($this->resource . '.index')->with('success', 'Items deleted successfully');
     }
 
     public function bulkRestore(Request $request)
     {
         $this->logThisMethod();
-        $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:'.$this->modelClass.',id']);
+        $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:' . $this->modelClass . ',id']);
         $this->modelClass::whereIn('id', $request->ids)->restore();
     }
 
     public function bulkForceDelete(Request $request)
     {
         $this->logThisMethod();
-        $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:'.$this->modelClass.',id']);
+        $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:' . $this->modelClass . ',id']);
         // $this->modelClass::whereIn('id', $request->ids)->forceDelete();
         foreach ($request->ids as $id) {
-            $model = $this->modelClass::find($id);
+            $model = $this->modelClass::withTrashed()->find($id);
             if ($model) {
                 if ($model->photo && Storage::exists($model->photo)) {
                     Storage::delete($model->photo);
@@ -162,7 +220,7 @@ trait CrudTrait
         $this->logThisMethod();
         $search = $request->input('search');
 
-        $filename = strtolower(class_basename($this->modelClass)).'-'.now()->format('Y-m-d-H-i-s').'.xlsx';
+        $filename = strtolower(class_basename($this->modelClass)) . '-' . now()->format('Y-m-d-H-i-s') . '.xlsx';
 
         return Excel::download(new $this->exportClass($search), $filename);
     }
@@ -179,7 +237,7 @@ trait CrudTrait
         $log = false;
         if ($log == true) {
             $backtrace = debug_backtrace();
-            logger()->info(__TRAIT__.' method called from : '.$backtrace[1]['class']);
+            logger()->info(__TRAIT__ . ' method called from : ' . $backtrace[1]['class']);
         }
     }
 }

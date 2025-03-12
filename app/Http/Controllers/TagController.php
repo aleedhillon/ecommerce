@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Tag;
 use App\Exports\TagExport;
 use App\Http\Requests\TagStoreRequest;
 use App\Http\Requests\TagUpdateRequest;
-use App\Models\Tag;
-use App\Traits\CrudTrait;
+use App\Http\Controllers\BaseCrudController;
 
-class TagController extends Controller
+class TagController extends BaseCrudController
 {
-    use CrudTrait;
-
     public function __construct()
     {
-        $this->modelClass = Tag::class;
-        $this->componentPath = 'Tags/Index';
-        $this->storeRequestClass = TagStoreRequest::class;
-        $this->updateRequestClass = TagUpdateRequest::class;
-        $this->resource = 'tags';
-        $this->exportClass = TagExport::class;
+        parent::__construct([
+            'resource' => 'tags',
+            'modelClass' => Tag::class,
+            'storeRequestClass' => TagStoreRequest::class,
+            'updateRequestClass' => TagUpdateRequest::class,
+            'searchColumns' => ['name'],
+            'exportClass' => TagExport::class,
+            'componentPath' => 'Tags/Index',
+        ]);
     }
 }

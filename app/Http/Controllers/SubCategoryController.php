@@ -2,21 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\SubCategory;
+use App\Exports\SubCategoriesExport;
+use App\Http\Controllers\BaseCrudController;
 use App\Http\Requests\SubCategoryStoreRequest;
 use App\Http\Requests\SubCategoryUpdateRequest;
-use App\Models\SubCategory;
-use App\Traits\CrudTrait;
 
-class SubCategoryController extends Controller
+class SubCategoryController extends BaseCrudController
 {
-    use CrudTrait;
-
     public function __construct()
     {
-        $this->modelClass = SubCategory::class;
-        $this->componentPath = 'SubCategories/Index';
-        $this->storeRequestClass = SubCategoryStoreRequest::class;
-        $this->updateRequestClass = SubCategoryUpdateRequest::class;
-        $this->resource = 'SubCategory';
+        parent::__construct([
+            'resource' => 'sub-categories',
+            'modelClass' => SubCategory::class,
+            'storeRequestClass' => SubCategoryStoreRequest::class,
+            'updateRequestClass' => SubCategoryUpdateRequest::class,
+            'searchColumns' => ['name'],
+            'exportClass' => SubCategoriesExport::class,
+            'componentPath' => 'SubCategories/Index',
+            'withRelations' => ['category'],
+            'addProps' => $this->addProps(),
+        ]);
+    }
+
+    protected function addProps(): array
+    {
+        return [
+            'categories' => Category::select('id', 'name')->get(),
+        ];
     }
 }
