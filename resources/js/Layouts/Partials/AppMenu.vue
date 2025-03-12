@@ -4,48 +4,18 @@ import AppMenuItem from './AppMenuItem.vue';
 
 const model = ref([
     // {
-    //     label: 'Home',
     //     items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
     // },
     {
         label: 'Products',
         items: [
-            { label: 'Category', icon: 'pi pi-fw pi-id-card', to: '/categories' },
-            { label: 'Sub-category', icon: 'pi pi-fw pi-id-card', to: '/sub-categories' },
-            { label: 'Brand', icon: 'pi pi-fw pi-check-square', to: '/brands' },
-            { label: 'Tag', icon: 'pi pi-fw pi-check-square', to: '/tags' },
-            // {
-            //     label: 'Products',
-            //     items: [
-            //     ]
-            // }
+            { label: 'Category', icon: 'pi pi-fw pi-id-card', to: route('categories.index') },
+            { label: 'Sub-category', icon: 'pi pi-fw pi-id-card', to: route('sub-categories.index') },
+            { label: 'Brand', icon: 'pi pi-fw pi-check-square', to: route('brands.index') },
+            { label: 'Tag', icon: 'pi pi-fw pi-check-square', to: route('tags.index') },
+            { label: 'Product', icon: 'pi pi-fw pi-check-square', to: route('products.index') },
         ]
     },
-    // {
-    //     label: 'Hierarchy',
-    //     items: [
-    //         {
-    //             label: 'Submenu 1',
-    //             icon: 'pi pi-fw pi-bookmark',
-    //             items: [
-    //                 {
-    //                     label: 'Submenu 1.1',
-    //                     icon: 'pi pi-fw pi-bookmark',
-    //                     items: [
-    //                         { label: 'Submenu 1.1.1', icon: 'pi pi-fw pi-bookmark' },
-    //                         { label: 'Submenu 1.1.2', icon: 'pi pi-fw pi-bookmark' },
-    //                         { label: 'Submenu 1.1.3', icon: 'pi pi-fw pi-bookmark' }
-    //                     ]
-    //                 },
-    //                 {
-    //                     label: 'Submenu 1.2',
-    //                     icon: 'pi pi-fw pi-bookmark',
-    //                     items: [{ label: 'Submenu 1.2.1', icon: 'pi pi-fw pi-bookmark' }]
-    //                 }
-    //             ]
-    //         }
-    //     ]
-    // }
 ]);
 </script>
 

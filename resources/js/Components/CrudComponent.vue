@@ -1,5 +1,9 @@
 <template>
     <AuthenticatedLayout>
+        <!-- <pre>
+            {{ vueProps }}
+        </pre> -->
+            
         <div class="card">
             <Toolbar class="">
                 <template #start>
@@ -29,8 +33,8 @@
                 </template>
             </Toolbar>
 
-            <DataTable ref="dt" v-model:selection="selectedItems" :value="items.data" dataKey="id" :paginator="true"
-                :rows="15" :filters="filters" :totalRecords="items.total" :lazy="true"
+            <DataTable ref="dt" v-model:selection="selectedItems" :value="vueProps.items.data" dataKey="id" :paginator="true"
+                :rows="15" :filters="filters" :totalRecords="vueProps.items.total" :lazy="true"
                 @page="handlePagination($event, vueProps.config.indexRoute, vueProps.config.resource)"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
@@ -115,25 +119,17 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { ref, computed, onMounted, watch } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
-import { router, useForm, Link } from '@inertiajs/vue3';
+import { router, useForm, Link, usePage } from '@inertiajs/vue3';
 import { Select } from 'primevue';
 import { resolveImagePath } from '@/Helpers/imageHelper';
 import { handlePagination } from '@/Helpers/pagination';
 import debounce from 'lodash/debounce';
 import { statuses } from '@/Helpers/enums.js';
 
-const vueProps = defineProps({
-    config: Object,
-    items: Object,
-    form: Object,
-    filters: {
-        type: Object,
-        default: () => ({
-            search: '',
-        }),
-    },
-});
+const { form } = defineProps(['form']);
 
+const page = usePage();
+const vueProps = computed(() => page.props);
 
 const toast = useToast();
 const dt = ref();
@@ -151,7 +147,7 @@ const filters = ref({
 const photoPreview = ref(null);
 const handlePhotoUpload = (event) => {
     const file = event.files[0];
-    vueProps.form.photo = file;
+    form.photo = file;
     const reader = new FileReader();
     reader.onload = async (e) => {
         photoPreview.value = e.target.result;
@@ -161,7 +157,7 @@ const handlePhotoUpload = (event) => {
 
 const openNew = () => {
     isEdit.value = false;
-    vueProps.form.reset();
+    form.reset();
     submitted.value = false;
     itemDialog.value = true;
     photoPreview.value = null;
@@ -174,9 +170,9 @@ const hideDialog = () => {
 
 const saveItem = (saveAndContinue = false) => {
     submitted.value = true;
-    vueProps.form.post(vueProps.config.storeRoute, {
+    form.post(vueProps.value.config.storeRoute, {
         onSuccess: () => {
-            vueProps.form.reset();
+            form.reset();
             photoPreview.value = null;
             toast.add({ severity: 'success', summary: 'Successful', detail: 'Successfully Created!', life: 3000 });
             if (saveAndContinue) {
@@ -199,18 +195,18 @@ const editingId = ref(null);
 
 const updateItem = () => {
     submitted.value = true;
-    const url = vueProps.config.updateRoute.replace('__ID__', editingId.value);
+    const url = vueProps.value.config.updateRoute.replace('__ID__', editingId.value);
 
     const data = {
         _method: 'put',
-        ...vueProps.form
+        ...form
     };
     
     router.post(url, data, {
         onSuccess: () => {
             hideDialog();
             photoPreview.value = null;
-            vueProps.form.reset();
+            form.reset();
             toast.add({ severity: 'success', summary: 'Successful', detail: 'Successfully Updated!', life: 3000 });
         },
         onError: (errors) => {
@@ -227,7 +223,7 @@ const editItem = (prod) => {
 
     photoPreview.value = null;
 
-    Object.assign(vueProps.form, prod);
+    Object.assign(form, prod);
 
     editingId.value = prod.id;
 };
@@ -237,7 +233,7 @@ const confirmDeleteItem = (prod) => {
 
     photoPreview.value = null;
     
-    Object.assign(vueProps.form, prod);
+    Object.assign(form, prod);
 
     editingId.value = prod.id;
 };
@@ -246,12 +242,12 @@ const restoreSelected = () => {
     const itemIds = selectedItems.value.map(c => c.id);
     selectedItems.value = null;
 
-    router.post(vueProps.config.bulkRestoreRoute, {
+    router.post(vueProps.value.config.bulkRestoreRoute, {
         ids: itemIds
     }, {
         onSuccess: () => {
             isTrashedPage.value = false;
-            router.get(vueProps.config.indexRoute);
+            router.get(vueProps.value.config.indexRoute);
             toast.add({ severity: 'success', summary: 'Restored', detail: 'Selected Items Restored!', life: 3000 });
         },
         onError: (errors) => {
@@ -266,12 +262,12 @@ const forceDeleteSelected = () => {
     const itemIds = selectedItems.value.map(c => c.id);
     selectedItems.value = null;
 
-    router.post(vueProps.config.bulkForceDeleteRoute, {
+    router.post(vueProps.value.config.bulkForceDeleteRoute, {
         ids: itemIds
     }, {
         onSuccess: () => {
             isTrashedPage.value = false;
-            router.get(vueProps.config.indexRoute);
+            router.get(vueProps.value.config.indexRoute);
             toast.add({ severity: 'warn', summary: 'Permanently Delete', detail: 'Items Permanently Deleted!', life: 3000 });
         },
         onError: (errors) => {
@@ -284,7 +280,7 @@ const forceDeleteSelected = () => {
 
 const deleteItem = () => {
     deleteItemDialog.value = false;
-    const url = vueProps.config.deleteRoute.replace('__ID__', editingId.value);
+    const url = vueProps.value.config.deleteRoute.replace('__ID__', editingId.value);
     router.delete(url, {
         onSuccess: () => {
             toast.add({ severity: 'error', summary: 'Deleted', detail: 'Successfully Deleted', life: 3000 });
@@ -299,7 +295,7 @@ const exportExcel = () => {
 
     // Create a temporary link to trigger the download
     const link = document.createElement('a');
-    link.href = `${vueProps.config.exportRoute}?${params}`;
+    link.href = `${vueProps.value.config.exportRoute}?${params}`;
     link.setAttribute('download', ''); // This is optional as the server will send the filename
     document.body.appendChild(link);
     link.click();
@@ -322,7 +318,7 @@ const deleteSelectedItems = () => {
     deleteItemsDialog.value = false;
     selectedItems.value = null;
 
-    router.post(vueProps.config.bulkDeleteRoute, {
+    router.post(vueProps.value.config.bulkDeleteRoute, {
         ids: itemIds
     }, {
         onSuccess: () => {
@@ -339,7 +335,7 @@ const deleteSelectedItems = () => {
 const debouncedSearch = debounce((e) => {
     filters.value.global.value = e.target.value;
     router.get(
-        vueProps.config.indexRoute,
+        vueProps.value.config.indexRoute,
         {
             search: e.target.value,
             per_page: dt.value?.rows
@@ -353,8 +349,8 @@ const debouncedSearch = debounce((e) => {
 }, 300);
 
 onMounted(() => {
-    if (vueProps.filters.search) {
-        filters.value.global.value = vueProps.filters.search;
+    if (vueProps.value.filters.search) {
+        filters.value.global.value = vueProps.value.filters.search;
     }
 });
 

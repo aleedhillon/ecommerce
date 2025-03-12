@@ -1,6 +1,6 @@
 <template>
     <div>
-        <CrudComponent :config :items :filters :form>
+        <CrudComponent :form>
             <template #columns>
                 <Column field="name" header="Name"></Column>
                 <Column field="is_active" header="Status">
@@ -27,10 +27,8 @@
                 <div class="flex flex-col gap-6 mt-3">
                     <div>
                         <label for="description" class="block font-bold mb-2">Description</label>
-                        <InputText id="description" v-model.trim="form.description" required="true" autofocus
+                        <Textarea id="description" v-model.trim="form.description" required="true" autofocus
                             :invalid="submitted && !form.description" fluid />
-                        <small v-if="submitted && !form.description" class="text-red-500">Description is
-                            required.</small>
                     </div>
                 </div>
                 <div class="flex flex-col gap-6 mt-3">
@@ -69,14 +67,4 @@ const form = useForm({
     is_active: 1,
 });
 
-defineProps({
-    config: Object,
-    items: Object,
-    filters: {
-        type: Object,
-        default: () => ({
-            search: '',
-        }),
-    },
-});
 </script>

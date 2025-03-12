@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Utils\CrudConfig;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -28,17 +29,17 @@ trait CrudTrait
 
     public array $withRelations = [];
 
-    public function init(array $config): void
+    public function init(CrudConfig $config): void
     {
-        $this->resource = $config['resource'] ?? $this->resource;
-        $this->modelClass = $config['modelClass'] ?? $this->modelClass;
-        $this->storeRequestClass = $config['storeRequestClass'] ?? $this->storeRequestClass;
-        $this->updateRequestClass = $config['updateRequestClass'] ?? $this->updateRequestClass;
-        $this->searchColumns = $config['searchColumns'] ?? $this->searchColumns;
-        $this->exportClass = $config['exportClass'] ?? $this->exportClass;
-        $this->componentPath = $config['componentPath'] ?? $this->componentPath;
-        $this->withRelations = $config['withRelations'] ?? $this->withRelations;
-        $this->addProps = $config['addProps'] ?? $this->addProps();
+        $this->resource = $config->resource ?? $this->resource;
+        $this->modelClass = $config->modelClass ?? $this->modelClass;
+        $this->storeRequestClass = $config->storeRequestClass ?? $this->storeRequestClass;
+        $this->updateRequestClass = $config->updateRequestClass ?? $this->updateRequestClass;
+        $this->searchColumns = $config->searchColumns ?? $this->searchColumns;
+        $this->exportClass = $config->exportClass ?? $this->exportClass;
+        $this->componentPath = $config->componentPath ?? $this->componentPath;
+        $this->withRelations = $config->withRelations ?? $this->withRelations;
+        $this->addProps = $config->addProps ?? $this->addProps();
     }
 
     public function index(Request $request)

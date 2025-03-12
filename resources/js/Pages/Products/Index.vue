@@ -1,6 +1,6 @@
 <template>
     <div>
-        <CrudComponent :form>
+        <CrudComponent :config :items :filters :form>
             <template #columns>
                 <Column field="name" header="Name"></Column>
                 <Column field="is_active" header="Status">
@@ -41,9 +41,14 @@
 <script setup>
 import CrudComponent from '@/Components/CrudComponent.vue';
 import { useForm } from '@inertiajs/vue3';
+const props = defineProps(['items', 'filters', 'config']);
+
+console.log(props);
 
 const form = useForm({
     name: '',
     is_active: 1,
 });
+
+
 </script>

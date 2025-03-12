@@ -8,6 +8,7 @@ use App\Http\Requests\SubCategoryUpdateRequest;
 use App\Models\Category;
 use App\Models\SubCategory;
 use App\Traits\CrudTrait;
+use App\Utils\CrudConfig;
 
 class SubCategoryController extends Controller
 {
@@ -15,17 +16,17 @@ class SubCategoryController extends Controller
 
     public function __construct()
     {
-        $this->init([
-            'resource' => 'sub-categories',
-            'modelClass' => SubCategory::class,
-            'storeRequestClass' => SubCategoryStoreRequest::class,
-            'updateRequestClass' => SubCategoryUpdateRequest::class,
-            'searchColumns' => ['name'],
-            'exportClass' => SubCategoriesExport::class,
-            'componentPath' => 'SubCategories/Index',
-            'withRelations' => ['category'],
-            'addProps' => $this->addProps(),
-        ]);
+        $this->init(new CrudConfig(
+            resource: 'sub-categories',
+            modelClass: SubCategory::class,
+            storeRequestClass: SubCategoryStoreRequest::class,
+            updateRequestClass: SubCategoryUpdateRequest::class,
+            searchColumns: ['name'],
+            exportClass: SubCategoriesExport::class,
+            componentPath: 'SubCategories/Index',
+            withRelations: ['category'],
+            addProps: $this->addProps(),
+        ));
     }
 
     protected function addProps(): array

@@ -1,6 +1,7 @@
 <template>
     <div>
-        <CrudComponent :config :items :filters :form>
+        <CrudComponent :form>
+            {{ items }}
             <template #columns>
                 <Column field="name" header="Name"></Column>
                 <Column field="is_active" header="Status">
@@ -71,23 +72,12 @@
 import CrudComponent from '@/Components/CrudComponent.vue';
 import { useForm } from '@inertiajs/vue3';
 
+defineProps(['categories']);
 const form = useForm({
     name: '',
     description: '',
     photo: null,
     is_active: 1,
     category_id: null,
-});
-
-defineProps({
-    config: Object,
-    items: Object,
-    categories: Object,
-    filters: {
-        type: Object,
-        default: () => ({
-            search: '',
-        }),
-    },
 });
 </script>

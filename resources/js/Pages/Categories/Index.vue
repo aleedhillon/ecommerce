@@ -1,6 +1,6 @@
 <template>
     <div>
-        <CrudComponent :config :items :filters :form>
+        <CrudComponent :form>
             <template #columns>
                 <Column field="name" header="Name"></Column>
                 <Column field="is_active" header="Status">
@@ -59,14 +59,4 @@ const form = useForm({
     is_active: 1,
 });
 
-defineProps({
-    config: Object,
-    items: Object,
-    filters: {
-        type: Object,
-        default: () => ({
-            search: '',
-        }),
-    },
-});
 </script>

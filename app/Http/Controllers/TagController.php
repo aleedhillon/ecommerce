@@ -7,6 +7,7 @@ use App\Http\Requests\TagStoreRequest;
 use App\Http\Requests\TagUpdateRequest;
 use App\Models\Tag;
 use App\Traits\CrudTrait;
+use App\Utils\CrudConfig;
 
 class TagController extends Controller
 {
@@ -14,14 +15,16 @@ class TagController extends Controller
 
     public function __construct()
     {
-        $this->init([
-            'resource' => 'tags',
-            'modelClass' => Tag::class,
-            'storeRequestClass' => TagStoreRequest::class,
-            'updateRequestClass' => TagUpdateRequest::class,
-            'searchColumns' => ['name'],
-            'exportClass' => TagExport::class,
-            'componentPath' => 'Tags/Index',
-        ]);
+        $this->init(new CrudConfig(
+            resource: 'tags',
+            modelClass: Tag::class,
+            storeRequestClass: TagStoreRequest::class,
+            updateRequestClass: TagUpdateRequest::class,
+            componentPath: 'Tags/Index',
+            searchColumns: ['name'],
+            exportClass: TagExport::class,
+            withRelations: [],
+
+        ));
     }
 }
