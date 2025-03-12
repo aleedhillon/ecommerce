@@ -2,13 +2,13 @@
 
 namespace Tests\Feature\Controllers;
 
-use Tests\TestCase;
 use App\Models\Category;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
+use Tests\TestCase;
 
 class CategoryControllerTest extends TestCase
 {
@@ -31,9 +31,9 @@ class CategoryControllerTest extends TestCase
         // Assert
         $response->assertStatus(200);
         $response->assertInertia(
-            fn(Assert $page) => $page
+            fn (Assert $page) => $page
                 ->component('Categories/Index')
-                // ->has('categories.data', 15);
+            // ->has('categories.data', 15);
         );
     }
 
@@ -97,7 +97,7 @@ class CategoryControllerTest extends TestCase
     {
         // Arrange
         $category = Category::factory()->create([
-            'photo' => 'categories/old-photo.jpg'
+            'photo' => 'categories/old-photo.jpg',
         ]);
         Storage::put($category->photo, 'fake-old-image');
 
@@ -123,7 +123,7 @@ class CategoryControllerTest extends TestCase
     {
         // Arrange
         $category = Category::factory()->create([
-            'photo' => 'categories/test-photo.jpg'
+            'photo' => 'categories/test-photo.jpg',
         ]);
         Storage::put($category->photo, 'fake-image');
 
@@ -141,7 +141,7 @@ class CategoryControllerTest extends TestCase
     {
         // Arrange
         $categories = Category::factory(3)->create()->each(function ($category) {
-            $category->photo = 'categories/test-photo-' . $category->id . '.jpg';
+            $category->photo = 'categories/test-photo-'.$category->id.'.jpg';
             $category->save();
             Storage::put($category->photo, 'fake-image');
         });
@@ -150,7 +150,7 @@ class CategoryControllerTest extends TestCase
 
         // Act
         $response = $this->post(route('categories.bulk-destroy'), [
-            'categoryIds' => $categoryIds
+            'categoryIds' => $categoryIds,
         ]);
 
         // Assert
@@ -167,7 +167,7 @@ class CategoryControllerTest extends TestCase
     {
         // Act
         $response = $this->delete(route('categories.bulk-destroy'), [
-            'categoryIds' => 'not-an-array'
+            'categoryIds' => 'not-an-array',
         ]);
 
         // Assert

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\ProductAttributeValue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -17,18 +16,20 @@ class ProductVariation extends Model
         'stock_quantity',
         'stock_status',
         'image',
-        'is_active'
+        'is_active',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'discount_price' => 'decimal:2',
         'is_active' => 'boolean',
-        'stock_quantity' => 'integer'
+        'stock_quantity' => 'integer',
     ];
 
     const STOCK_IN_STOCK = 'in_stock';
+
     const STOCK_OUT_OF_STOCK = 'out_of_stock';
+
     const STOCK_PRE_ORDER = 'pre_order';
 
     public static function getStockStatuses(): array
@@ -36,7 +37,7 @@ class ProductVariation extends Model
         return [
             self::STOCK_IN_STOCK,
             self::STOCK_OUT_OF_STOCK,
-            self::STOCK_PRE_ORDER
+            self::STOCK_PRE_ORDER,
         ];
     }
 
@@ -75,12 +76,12 @@ class ProductVariation extends Model
 
     public function hasDiscount(): bool
     {
-        return !is_null($this->discount_price);
+        return ! is_null($this->discount_price);
     }
 
     public function getDiscountPercentage(): ?float
     {
-        if (!$this->hasDiscount()) {
+        if (! $this->hasDiscount()) {
             return null;
         }
 

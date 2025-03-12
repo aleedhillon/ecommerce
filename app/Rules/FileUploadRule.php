@@ -17,19 +17,22 @@ class FileUploadRule implements ValidationRule
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'];
         $maxFileSize = 10 * 1024 * 1024; // 10 MB in bytes
 
-        if (!$value->isValid()) {
+        if (! $value->isValid()) {
             $fail('The file upload failed.');
+
             return;
         }
 
         $extension = strtolower($value->getClientOriginalExtension());
-        if (!in_array($extension, $allowedExtensions)) {
+        if (! in_array($extension, $allowedExtensions)) {
             $fail('The file type is not allowed.');
+
             return;
         }
 
         if ($value->getSize() > $maxFileSize) {
             $fail('The file size exceeds the maximum limit of 10 MB.');
+
             return;
         }
     }

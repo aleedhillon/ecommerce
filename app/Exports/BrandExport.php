@@ -2,16 +2,16 @@
 
 namespace App\Exports;
 
+use App\Models\Brand;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use App\Models\Brand;
-use Carbon\Carbon;
 
-class BrandExport implements FromCollection, WithHeadings, WithMapping, WithStyles, ShouldAutoSize
+class BrandExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping, WithStyles
 {
     protected $search;
 
@@ -43,7 +43,7 @@ class BrandExport implements FromCollection, WithHeadings, WithMapping, WithStyl
             'Name',
             'Status',
             'Created At',
-            'Updated At'
+            'Updated At',
         ];
     }
 
@@ -54,7 +54,7 @@ class BrandExport implements FromCollection, WithHeadings, WithMapping, WithStyl
             $brand->name,
             $brand->is_active ? 'Active' : 'Inactive',
             Carbon::parse($brand->created_at)->format('Y-m-d H:i:s'),
-            Carbon::parse($brand->updated_at)->format('Y-m-d H:i:s')
+            Carbon::parse($brand->updated_at)->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -65,8 +65,8 @@ class BrandExport implements FromCollection, WithHeadings, WithMapping, WithStyl
                 'font' => ['bold' => true],
                 'fill' => [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                    'startColor' => ['rgb' => 'E2E8F0']
-                ]
+                    'startColor' => ['rgb' => 'E2E8F0'],
+                ],
             ],
             'A1:E1' => [
                 'borders' => [

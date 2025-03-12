@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Models\Tag;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\TagExport;
 use App\Http\Requests\TagStoreRequest;
 use App\Http\Requests\TagUpdateRequest;
+use App\Models\Tag;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TagController extends Controller
 {
@@ -78,6 +77,7 @@ class TagController extends Controller
     {
         $data = $request->validated();
         $res = $tag->update($data);
+
         return to_route('tags.index')->with('success', 'Tag updated successfully');
     }
 
@@ -90,9 +90,9 @@ class TagController extends Controller
             Storage::delete($tag->photo);
         }
         $tag->delete();
+
         return to_route('tags.index')->with('success', 'Tag deleted successfully');
     }
-
 
     public function bulkDestroy(Request $request)
     {
@@ -107,6 +107,7 @@ class TagController extends Controller
                 $tag->delete();
             }
         }
+
         return to_route('tags.index')->with('success', 'Tags deleted successfully');
     }
 
@@ -115,6 +116,7 @@ class TagController extends Controller
         $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:tags,id']);
         $tagIds = $request->input('ids');
         Tag::whereIn('id', $tagIds)->restore();
+
         return to_route('tags.index')->with('success', 'Restored successfully');
     }
 
@@ -123,13 +125,15 @@ class TagController extends Controller
         $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:tags,id']);
         $ids = $request->input('ids');
         Tag::whereIn('id', $ids)->forceDelete();
+
         return to_route('tags.index')->with('success', 'Selected items permanently deleted!');
     }
 
     public function export(Request $request)
     {
         $search = $request->input('search');
-        $filename = 'tags-' . now()->format('Y-m-d-H-i-s') . '.xlsx';
+        $filename = 'tags-'.now()->format('Y-m-d-H-i-s').'.xlsx';
+
         return Excel::download(new TagExport($search), $filename);
     }
 }

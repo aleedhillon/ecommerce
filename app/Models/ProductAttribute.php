@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductAttribute extends Model
 {
@@ -12,7 +12,7 @@ class ProductAttribute extends Model
         'name',
         'display_name',
         'type',
-        'is_active'
+        'is_active',
     ];
 
     protected $casts = [
@@ -21,8 +21,11 @@ class ProductAttribute extends Model
 
     // Available attribute types
     const TYPE_SELECT = 'select';
+
     const TYPE_RADIO = 'radio';
+
     const TYPE_COLOR = 'color';
+
     const TYPE_BUTTON = 'button';
 
     public static function getTypes(): array
@@ -31,7 +34,7 @@ class ProductAttribute extends Model
             self::TYPE_SELECT,
             self::TYPE_RADIO,
             self::TYPE_COLOR,
-            self::TYPE_BUTTON
+            self::TYPE_BUTTON,
         ];
     }
 

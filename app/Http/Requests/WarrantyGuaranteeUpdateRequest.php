@@ -24,7 +24,7 @@ class WarrantyGuaranteeUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string' . $this->id,
+            'name' => 'required|string'.$this->id,
             'type' => 'required|string',
             'duration' => 'required|date',
             'description' => 'nullable',

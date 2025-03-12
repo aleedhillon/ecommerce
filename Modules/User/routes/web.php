@@ -1,16 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\User\Http\Controllers\DashboardController;
-use Modules\User\Http\Controllers\Auth\PasswordController;
-use Modules\User\Http\Controllers\Auth\NewPasswordController;
-use Modules\User\Http\Controllers\Auth\VerifyEmailController;
-use Modules\User\Http\Controllers\Auth\RegisteredUserController;
-use Modules\User\Http\Controllers\Auth\PasswordResetLinkController;
-use Modules\User\Http\Controllers\Auth\ConfirmablePasswordController;
 use Modules\User\Http\Controllers\Auth\AuthenticatedSessionController;
-use Modules\User\Http\Controllers\Auth\EmailVerificationPromptController;
+use Modules\User\Http\Controllers\Auth\ConfirmablePasswordController;
 use Modules\User\Http\Controllers\Auth\EmailVerificationNotificationController;
+use Modules\User\Http\Controllers\Auth\EmailVerificationPromptController;
+use Modules\User\Http\Controllers\Auth\NewPasswordController;
+use Modules\User\Http\Controllers\Auth\PasswordController;
+use Modules\User\Http\Controllers\Auth\PasswordResetLinkController;
+use Modules\User\Http\Controllers\Auth\RegisteredUserController;
+use Modules\User\Http\Controllers\Auth\VerifyEmailController;
+use Modules\User\Http\Controllers\DashboardController;
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])

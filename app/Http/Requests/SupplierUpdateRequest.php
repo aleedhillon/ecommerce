@@ -24,7 +24,7 @@ class SupplierUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string' . $this->id,
+            'name' => 'required|string'.$this->id,
             'phone' => 'required',
             'secur_number' => 'required',
             'nid_number' => 'required|integer',

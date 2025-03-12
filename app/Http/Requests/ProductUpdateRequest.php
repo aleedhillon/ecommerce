@@ -30,7 +30,7 @@ class ProductUpdateRequest extends FormRequest
             'brand_id' => 'nullable|exists:brands,id',
             'tag_id' => 'nullable|exists:tags,id',
             'added_by' => 'nullable|exists:users,id',
-            'product_name' => 'required' . $this->id,
+            'product_name' => 'required'.$this->id,
             'price' => 'required',
             'discount_price' => 'nullable',
             'title' => 'nullable|string',

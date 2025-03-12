@@ -2,9 +2,8 @@
 
 namespace Modules\User\Http\Controllers;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Inertia\Inertia;
 
 class DashboardController extends Controller
 {

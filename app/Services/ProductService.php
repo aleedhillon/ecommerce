@@ -9,5 +9,5 @@ class ProductService implements ProductServiceInterface
 {
     use ServiceTrait;
 
-    public $model = class;
+    public $model = Product::class;
 }

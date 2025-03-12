@@ -25,7 +25,7 @@ class ProductStockUpdateRequest extends FormRequest
     {
         return [
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required' . $this->id,
+            'quantity' => 'required'.$this->id,
             'alert_quantity' => 'nullable',
         ];
     }

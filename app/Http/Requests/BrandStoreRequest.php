@@ -27,7 +27,7 @@ class BrandStoreRequest extends FormRequest
         return [
             'name' => 'required|string|unique:brands,name',
             'description' => 'nullable|string',
-            'photo' => $this->hasFile('photo') ? ['nullable', new FileUploadRule()] : 'nullable|string',
+            'photo' => $this->hasFile('photo') ? ['nullable', new FileUploadRule] : 'nullable|string',
             'is_active' => 'nullable|boolean',
         ];
     }

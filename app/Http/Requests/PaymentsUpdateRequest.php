@@ -25,7 +25,7 @@ class PaymentsUpdateRequest extends FormRequest
     {
         return [
             'order_id' => 'required|integer',
-            'amount' => 'required|integer' . $this->id,
+            'amount' => 'required|integer'.$this->id,
             'provider' => 'nullable',
             'is_active' => 'nullable|boolean',
         ];

@@ -110,7 +110,7 @@ return [
         | Setting the generate key to false will not generate that folder
         */
         'generator' => [
-            // 
+            //
             'actions' => ['path' => 'Actions', 'generate' => false],
             'casts' => ['path' => 'Casts', 'generate' => false],
             'channels' => ['path' => 'Broadcasting', 'generate' => false],

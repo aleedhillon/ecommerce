@@ -3,11 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\Product;
-use Illuminate\Support\Str;
-use Illuminate\Database\Seeder;
 use App\Models\ProductAttribute;
-use App\Models\ProductVariation;
 use App\Models\ProductAttributeValue;
+use App\Models\ProductVariation;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class ProductTableSeeder extends Seeder
 {
@@ -22,13 +22,13 @@ class ProductTableSeeder extends Seeder
         $colorAttribute = ProductAttribute::create([
             'name' => 'color',
             'display_name' => 'Color',
-            'type' => 'color'
+            'type' => 'color',
         ]);
 
         $sizeAttribute = ProductAttribute::create([
             'name' => 'size',
             'display_name' => 'Size',
-            'type' => 'select'
+            'type' => 'select',
         ]);
 
         $colors = [
@@ -41,7 +41,7 @@ class ProductTableSeeder extends Seeder
         foreach ($colors as $color) {
             $colorValues->push(ProductAttributeValue::create([
                 'attribute_id' => $colorAttribute->id,
-                ...$color
+                ...$color,
             ]));
         }
 
@@ -56,7 +56,7 @@ class ProductTableSeeder extends Seeder
         foreach ($sizes as $size) {
             $sizeValues->push(ProductAttributeValue::create([
                 'attribute_id' => $sizeAttribute->id,
-                ...$size
+                ...$size,
             ]));
         }
 
@@ -90,7 +90,7 @@ class ProductTableSeeder extends Seeder
                 // Attach color and size attributes to the variation
                 $variation->attributeValues()->attach([
                     $color->id,
-                    $size->id
+                    $size->id,
                 ]);
             }
         }

@@ -24,7 +24,7 @@ class CustomerUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string' . $this->id,
+            'name' => 'required|string'.$this->id,
             'phone' => 'required',
             'email' => 'nullable|email',
             'address' => 'required|string',

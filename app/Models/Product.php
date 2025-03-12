@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
@@ -38,7 +38,7 @@ class Product extends Model
         'thumbnail',
         'meta_title',
         'meta_description',
-        'meta_keywords'
+        'meta_keywords',
     ];
 
     protected $casts = [
@@ -133,12 +133,12 @@ class Product extends Model
 
     public function hasDiscount(): bool
     {
-        return !is_null($this->base_discount_price);
+        return ! is_null($this->base_discount_price);
     }
 
     public function getDiscountPercentage(): ?float
     {
-        if (!$this->hasDiscount()) {
+        if (! $this->hasDiscount()) {
             return null;
         }
 

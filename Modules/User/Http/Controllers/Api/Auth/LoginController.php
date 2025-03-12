@@ -2,9 +2,9 @@
 
 namespace Modules\User\Http\Controllers\Api\Auth;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Response;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Modules\User\Http\Requests\Api\Auth\UserLoginRequest;
 

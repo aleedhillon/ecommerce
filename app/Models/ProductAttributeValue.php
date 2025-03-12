@@ -12,11 +12,11 @@ class ProductAttributeValue extends Model
         'attribute_id',
         'value',
         'display_value',
-        'color_code'
+        'color_code',
     ];
 
     protected $casts = [
-        'color_code' => 'string'
+        'color_code' => 'string',
     ];
 
     // Relationships
@@ -51,6 +51,7 @@ class ProductAttributeValue extends Model
         if ($this->isColorAttribute() && $this->color_code) {
             return sprintf('%s (%s)', $this->getDisplayValue(), $this->color_code);
         }
+
         return $this->getDisplayValue();
     }
 

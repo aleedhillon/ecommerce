@@ -19,7 +19,7 @@ class FileUploaderUtils
         $arr = preg_split('/\./', $fullNameExtension);
         $extension = array_pop($arr);
         $fullName = implode('.', $arr);
-        $fileName = $fullName . __ . uniqid() . __ . '.' . $extension;
+        $fileName = $fullName.__.uniqid().__.'.'.$extension;
         $file->move($filePath, $fileName);
         \Log::debug('File Uploaded');
 
@@ -41,7 +41,7 @@ class FileUploaderUtils
                 $arr = preg_split('/\./', $fullNameExtension);
                 $extension = array_pop($arr);
                 $fullName = implode('.', $arr);
-                $fileName = $fullName . __ . uniqid() . __ . '.' . $extension;
+                $fileName = $fullName.__.uniqid().__.'.'.$extension;
                 $file->move($filesPath, $fileName);
                 $filesNameArr[$key] = $fileName;
             }

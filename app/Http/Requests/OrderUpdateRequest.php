@@ -26,7 +26,7 @@ class OrderUpdateRequest extends FormRequest
         return [
             'user_id' => 'required|integer',
             'payment_id' => 'required|integer',
-            'total' => 'required|float' . $this->id,
+            'total' => 'required|float'.$this->id,
             'is_active' => 'nullable|boolean',
         ];
     }

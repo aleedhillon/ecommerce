@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Traits\CrudTrait;
-use App\Models\Brand;
-use App\Http\Controllers\Controller;
 use App\Exports\BrandExport;
 use App\Http\Requests\BrandStoreRequest;
 use App\Http\Requests\BrandUpdateRequest;
+use App\Models\Brand;
+use App\Traits\CrudTrait;
 
 class BrandController extends Controller
 {

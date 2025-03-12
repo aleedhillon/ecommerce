@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Traits\CrudTrait;
-use App\Models\SubCategory;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\SubCategoryStoreRequest;
 use App\Http\Requests\SubCategoryUpdateRequest;
+use App\Models\SubCategory;
+use App\Traits\CrudTrait;
 
 class SubCategoryController extends Controller
 {

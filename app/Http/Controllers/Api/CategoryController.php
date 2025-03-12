@@ -12,9 +12,9 @@ class CategoryController extends Controller
 {
     use ApiCrudTrait;
 
-    public function __construct() 
+    public function __construct()
     {
-        $this->resource = 'categories';    
+        $this->resource = 'categories';
         $this->modelClass = Category::class;
         $this->storeRequestClass = CategoryStoreRequest::class;
         $this->updateRequestClass = CategoryUpdateRequest::class;

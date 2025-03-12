@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Models\Category;
-use Illuminate\Support\Facades\Storage;
 use App\Exports\CategoriesExport;
 use App\Http\Requests\CategoryStoreRequest;
 use App\Http\Requests\CategoryUpdateRequest;
+use App\Models\Category;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CategoryController extends Controller
 {
@@ -117,6 +116,7 @@ class CategoryController extends Controller
         $request->validate(['categoryIds' => 'required|array']);
         $categoryIds = $request->input('categoryIds');
         Category::destroy($categoryIds);
+
         return to_route('categories.index')->with('success', 'Categories deleted successfully');
     }
 
@@ -126,7 +126,7 @@ class CategoryController extends Controller
     public function export(Request $request)
     {
         $search = $request->input('search');
-        $filename = 'categories-' . now()->format('Y-m-d-H-i-s') . '.xlsx';
+        $filename = 'categories-'.now()->format('Y-m-d-H-i-s').'.xlsx';
 
         return Excel::download(new CategoriesExport($search), $filename);
     }

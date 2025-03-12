@@ -3,11 +3,11 @@
 namespace Modules\User\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
-use Modules\User\Http\Requests\Api\Auth\UserRegistrationRequest;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Modules\User\Http\Requests\Api\Auth\UserRegistrationRequest;
 
 class RegistrationController extends Controller
 {

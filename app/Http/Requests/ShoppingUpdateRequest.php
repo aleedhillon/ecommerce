@@ -25,7 +25,7 @@ class ShoppingUpdateRequest extends FormRequest
     {
         return [
             'customer_id' => 'required|exists:customers,id',
-            'total' => 'required|integer' . $this->id,
+            'total' => 'required|integer'.$this->id,
         ];
     }
 }

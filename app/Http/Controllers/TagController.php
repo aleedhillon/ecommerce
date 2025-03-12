@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Traits\CrudTrait;
-
-use App\Models\Tag;
-use App\Http\Controllers\Controller;
 use App\Exports\TagExport;
 use App\Http\Requests\TagStoreRequest;
 use App\Http\Requests\TagUpdateRequest;
+use App\Models\Tag;
+use App\Traits\CrudTrait;
 
 class TagController extends Controller
 {
