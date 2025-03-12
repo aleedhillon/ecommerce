@@ -2,11 +2,11 @@
 
 namespace Modules\User\Http\Controllers\Api\Auth;
 
+use App\Models\User;
+use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
-use Modules\User\Http\Requests\Api\Auth\UserLoginRequest;
-use Modules\User\Http\Response\ApiResponse;
-use Modules\User\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Modules\User\Http\Requests\Api\Auth\UserLoginRequest;
 
 class LoginController extends Controller
 {
@@ -25,9 +25,17 @@ class LoginController extends Controller
         }
 
         if (! $isVerified) {
-            return ApiResponse::error(null, 'Your account is not verfied yet. Please verify in order to login.');
+            return response()->json([
+                'data' => null,
+                'message' => 'Your account is not verified yet. Please verify in order to login.',
+                'status_code' => Response::HTTP_FORBIDDEN,
+            ], Response::HTTP_FORBIDDEN);
         }
 
-        return ApiResponse::error(null, 'Login failed, please try again with correct credentials.');
+        return response()->json([
+            'data' => null,
+            'message' => 'Login failed, please try again with correct credentials.',
+            'status_code' => Response::HTTP_UNAUTHORIZED,
+        ], Response::HTTP_UNAUTHORIZED);
     }
 }

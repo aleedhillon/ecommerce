@@ -20,11 +20,12 @@ use App\Http\Controllers\Api\WarehouseController;
 use App\Http\Controllers\Api\SubCategoryController;
 use App\Http\Controllers\Api\ProductStockController;
 use App\Http\Controllers\Api\WarrantyGuaranteeController;
+use App\Utils\CrudRouter;
 
+Route::middleware(['auth:sanctum', 'verified'])->name('api.')->group(function () {
+    CrudRouter::setApiFor('categories', CategoryController::class);
 
-Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::apiResources([
-        'categories' => CategoryController::class,
         'tags' => TagController::class,
         'coupons' => CouponController::class,
         'products' => ProductController::class,

@@ -2,79 +2,45 @@
 
 namespace App\Traits;
 
-use Inertia\Inertia;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Http\Response\ApiResponse;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-trait CrudTrait
+trait ApiCrudTrait
 {
-    public string $resource;
     public string $modelClass;
     public string $storeRequestClass;
     public string $updateRequestClass;
-
     public string $exportClass;
-    public string $componentPath;
+    public string $resource;
+    public array $searchColumns;
 
     public function index(Request $request)
     {
-        $this->logThisMethod();
-        $this->ensureModelClass();
         $perPage = $request->input('per_page', 15);
         $search = $request->input('search');
 
         $items = $this->modelClass::query()
             ->when($search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('created_at', 'like', "%{$search}%")
-                    ->orWhere('updated_at', 'like', "%{$search}%");
+                if (isset($this->searchColumns) && !empty($this->searchColumns)) {
+                    $query->where(function ($query) use ($search) {
+                        foreach ($this->searchColumns as $column) {
+                            $query->orWhere($column, 'like', "%{$search}%");
+                        }
+                    });
+                }
             })
             ->when($request->trashed, fn($query) => $query->onlyTrashed())
             ->latest()
             ->paginate($perPage);
 
-        return Inertia::render($this->componentPath, [
-            'items' => $items,
-            'filters' => ['search' => $search],
-            'config' => $this->makeConfig(),
-        ]);
-    }
-
-    private function makeConfig()
-    {
-        $modelRawName = class_basename($this->modelClass);
-        $modelLowerCase = Str::lower($modelRawName);
-        $config = [
-            'title' => Str::title($this->resource),
-            'modelSingular' => $modelLowerCase,
-            'modelRaw' => $modelRawName,
-            'resource' => $this->resource,
-            'indexRoute' => route($this->resource . '.index'),
-            'indexRouteTrashed' => route($this->resource . '.index', ['trashed' => true]),
-            'storeRoute' => route($this->resource . '.store'),
-            'updateRoute' => route($this->resource . '.update', [$modelLowerCase => '__ID__']),
-            'deleteRoute' => route($this->resource . '.destroy', [$modelLowerCase => '__ID__']),
-            'bulkDeleteRoute' => route($this->resource . '.bulk-destroy'),
-            'bulkRestoreRoute' => route($this->resource . '.bulk-restore'),
-            'bulkForceDeleteRoute' => route($this->resource . '.bulk-force-delete'),
-            'exportRoute' => route($this->resource . '.export'),
-        ];
-        return $config;
-    }
-    public function create()
-    {
-        $this->logThisMethod();
-        return Inertia::render($this->componentPath);
+        return ApiResponse::ok($items);
     }
 
     public function store(Request $request)
     {
-        $this->logThisMethod();
-        $this->ensureModelClass();
         $validatedData = app($this->storeRequestClass)->validated();
         if ($request->file('photo')) {
             $validatedData['photo'] = $request->file('photo')->store($this->resource);
@@ -82,40 +48,42 @@ trait CrudTrait
         $model = new $this->modelClass();
         $model->fill($validatedData);
         $model->save();
+
+        return ApiResponse::created($model);
     }
 
     public function update(Request $request, $id)
     {
-        $this->logThisMethod();
         $validatedData = app($this->updateRequestClass)->validated();
-        Log::debug($validatedData);
         $model = $this->modelClass::findOrFail($id);
         if ($request->file('photo')) {
             $validatedData['photo'] = $request->file('photo')->store($this->resource);
-            // Delete existing photo
             if ($model->photo && Storage::fileExists($model->photo)) {
                 Storage::delete($model->photo);
             }
         }
-        $res = $model->update($validatedData);
+        $model->update($validatedData);
+        return ApiResponse::updated($model);
+    }
 
-        return to_route($this->resource . '.index')->with('success', 'Updated successfully');
+    public function show($id)
+    {
+        $model = $this->modelClass::findOrFail($id);
+        return ApiResponse::ok($model);
     }
 
     public function destroy($id)
     {
-        $this->logThisMethod();
         $model = $this->modelClass::findOrFail($id);
-        // if ($model->photo && Storage::exists($model->photo)) {
-        //     Storage::delete($model->photo);
-        // }
+        if ($model->photo && Storage::exists($model->photo)) {
+            Storage::delete($model->photo);
+        }
         $model->delete();
-        return to_route($this->resource . '.index')->with('success', 'Deleted successfully');
+        return ApiResponse::deleted(null);
     }
 
     public function bulkDestroy(Request $request)
     {
-        $this->logThisMethod();
         $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:' . $this->modelClass . ',id']);
         foreach ($request->ids as $id) {
             $model = $this->modelClass::find($id);
@@ -123,19 +91,18 @@ trait CrudTrait
                 $model->delete();
             }
         }
-        return to_route($this->resource . '.index')->with('success', 'Items deleted successfully');
+        return ApiResponse::deleted(null, __('Items deleted successfully')); 
     }
 
     public function bulkRestore(Request $request)
     {
-        $this->logThisMethod();
         $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:' . $this->modelClass . ',id']);
         $this->modelClass::whereIn('id', $request->ids)->restore();
+        return ApiResponse::updated($model, __('Items restored successfully'));
     }
 
     public function bulkForceDelete(Request $request)
     {
-        $this->logThisMethod();
         $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:' . $this->modelClass . ',id']);
         // $this->modelClass::whereIn('id', $request->ids)->forceDelete();
         foreach ($request->ids as $id) {
@@ -147,13 +114,12 @@ trait CrudTrait
                 $model->forceDelete();
             }
         }
+        return ApiResponse::deleted(null, __('Items permanently deleted successfully'));
     }
 
     public function export(Request $request)
     {
-        $this->logThisMethod();
         $search = $request->input('search');
-
         $filename = strtolower(class_basename($this->modelClass)) . '-' . now()->format('Y-m-d-H-i-s') . '.xlsx';
         return Excel::download(new $this->exportClass($search), $filename);
     }
@@ -162,15 +128,6 @@ trait CrudTrait
     {
         if (!$this->modelClass) {
             throw new \Exception("Model class not defined in trait usage");
-        }
-    }
-
-    public function logThisMethod()
-    {
-        $log = false;
-        if ($log == true) {
-            $backtrace = debug_backtrace();
-            logger()->info(__TRAIT__ . ' method called from : ' . $backtrace[1]['class']);
         }
     }
 }
