@@ -20,7 +20,7 @@
                 <div class="flex flex-col gap-6">
                     <div>
                         <label for="category" class="block font-bold mb-2">Category</label>
-                        <Dropdown v-model="form.category_id" :options="categories" option-label="name"
+                        <Select v-model="form.category_id" :options="categories" option-label="name"
                             option-value="id" placeholder="Select a Category" class="w-full" />
                         <small v-if="submitted && !form.category_id" class="text-red-500">Category is required.</small>
                     </div>

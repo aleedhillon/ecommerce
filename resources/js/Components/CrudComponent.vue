@@ -73,7 +73,7 @@
         </div>
 
         <!-- Create & Edit Form Dialog -->
-        <Dialog v-model:visible="itemDialog" maximizable :style="{ width: '600px' }"
+        <Dialog v-model:visible="itemDialog" maximizable :style="{ width: formWidth ?? '60vw' }"
             :header="`${vueProps.config.modelRaw} Details`" pt:mask:class="backdrop-blur-sm">
             
             <slot name="form" v-bind="{submitted, statuses, handlePhotoUpload, photoPreview, resolveImagePath}"></slot>
@@ -126,7 +126,7 @@ import { handlePagination } from '@/Helpers/pagination';
 import debounce from 'lodash/debounce';
 import { statuses } from '@/Helpers/enums.js';
 
-const { form } = defineProps(['form']);
+const { form, formWidth } = defineProps(['form', 'formWidth']);
 
 const page = usePage();
 const vueProps = computed(() => page.props);

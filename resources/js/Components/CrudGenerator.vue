@@ -97,7 +97,7 @@ const handleFileUpload = (event, fieldName) => {
                                         class="w-full" />
                                 </template>
                                 <template v-else-if="field.type === 'select'">
-                                    <Dropdown :id="field.name" v-model="form[field.name]" :options="field.options"
+                                    <Select :id="field.name" v-model="form[field.name]" :options="field.options"
                                         optionLabel="label" optionValue="value" :required="field.required"
                                         class="w-full" />
                                 </template>
