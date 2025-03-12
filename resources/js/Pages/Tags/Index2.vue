@@ -53,7 +53,7 @@
 import CrudComponent from '@/Components/CrudComponent.vue';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { ref, computed, defineProps, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
 import { router, useForm, Link } from '@inertiajs/vue3';

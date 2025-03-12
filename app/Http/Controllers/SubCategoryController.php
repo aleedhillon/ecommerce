@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
-use App\Models\SubCategory;
 use App\Exports\SubCategoriesExport;
-use App\Http\Controllers\BaseCrudController;
 use App\Http\Requests\SubCategoryStoreRequest;
 use App\Http\Requests\SubCategoryUpdateRequest;
+use App\Models\Category;
+use App\Models\SubCategory;
+use App\Traits\CrudTrait;
 
-class SubCategoryController extends BaseCrudController
+class SubCategoryController extends Controller
 {
+    use CrudTrait;
+
     public function __construct()
     {
-        parent::__construct([
+        $this->init([
             'resource' => 'sub-categories',
             'modelClass' => SubCategory::class,
             'storeRequestClass' => SubCategoryStoreRequest::class,

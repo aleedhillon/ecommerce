@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tag;
 use App\Exports\TagExport;
 use App\Http\Requests\TagStoreRequest;
 use App\Http\Requests\TagUpdateRequest;
-use App\Http\Controllers\BaseCrudController;
+use App\Models\Tag;
+use App\Traits\CrudTrait;
 
-class TagController extends BaseCrudController
+class TagController extends Controller
 {
+    use CrudTrait;
+
     public function __construct()
     {
-        parent::__construct([
+        $this->init([
             'resource' => 'tags',
             'modelClass' => Tag::class,
             'storeRequestClass' => TagStoreRequest::class,

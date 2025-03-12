@@ -28,14 +28,14 @@ trait ApiCrudTrait
         $perPage = $request->input('per_page', 15);
         $search = $request->input('search');
 
-        $query =  $this->modelClass::query();
+        $query = $this->modelClass::query();
 
-        if (!empty($this->withRelations)) {
+        if (! empty($this->withRelations)) {
             $query->with($this->withRelations);
         }
 
         $query->when($search, function ($query, $search) {
-            if (isset($this->searchColumns) && !empty($this->searchColumns)) {
+            if (isset($this->searchColumns) && ! empty($this->searchColumns)) {
                 $query->where(function ($query) use ($search) {
                     foreach ($this->searchColumns as $column) {
                         $query->orWhere($column, 'like', "%{$search}%");
@@ -45,7 +45,7 @@ trait ApiCrudTrait
         });
 
         if ($request->has('trashed')) {
-            $query->when($request->trashed, fn($query) => $query->onlyTrashed());
+            $query->when($request->trashed, fn ($query) => $query->onlyTrashed());
         }
 
         $query = $this->modifyQuery($query);

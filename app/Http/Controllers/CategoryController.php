@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Exports\CategoriesExport;
 use App\Http\Requests\CategoryStoreRequest;
-use App\Http\Controllers\BaseCrudController;
 use App\Http\Requests\CategoryUpdateRequest;
+use App\Models\Category;
+use App\Traits\CrudTrait;
 
-class CategoryController extends BaseCrudController
+class CategoryController extends Controller
 {
+    use CrudTrait;
+
     public function __construct()
     {
-        parent::__construct([
+        $this->init([
             'resource' => 'categories',
             'modelClass' => Category::class,
             'storeRequestClass' => CategoryStoreRequest::class,
