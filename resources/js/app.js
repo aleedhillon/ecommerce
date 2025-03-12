@@ -1,6 +1,7 @@
 import './bootstrap';
 import '../css/app.scss';
 import 'primeicons/primeicons.css'
+import Theme from './primevue/Theme';
 
 
 import { createInertiaApp } from '@inertiajs/vue3';
@@ -13,7 +14,6 @@ import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import DialogService from 'primevue/dialogservice';
 import ToastService from 'primevue/toastservice';
-import Noir from './primevue/Noir';
 import AppState from './primevue/AppState';
 
 const appName = import.meta.env.VITE_APP_NAME || 'E-Commerce';
@@ -45,7 +45,7 @@ createInertiaApp({
             .use(AppState)
             .use(PrimeVue, {
                 theme: {
-                    preset: Noir,
+                    preset: Theme,
                     options: {
                         darkModeSelector: '.app-dark'
                     }

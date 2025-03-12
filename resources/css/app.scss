@@ -57,6 +57,6 @@ body {
 }
 
 .border-bottom-2 {
-    border-bottom: 2px solid blue !important;
+    border-bottom: 2px solid var(--p-primary-500) !important;
     border-radius: 0px !important;
 }

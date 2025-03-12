@@ -1,13 +1,9 @@
 <template>
     <AuthenticatedLayout>
-        <!-- <pre>
-            {{ vueProps }}
-        </pre> -->
-            
         <div class="card">
             <Toolbar class="">
                 <template #start>
-                    <Button label="New" icon="pi pi-plus" class="mr-2" @click="openNew" text />
+                    <Button label="Create New" icon="pi pi-plus" class="mr-5" @click="openNew" outlined severity="primary" />
                     <ButtonGroup class="mr-2">
                         <Link :href="vueProps.config.indexRoute">
                         <Button label="All Items" icon="pi pi-list" :class="{ 'border-bottom-2': !isTrashedPage }"
