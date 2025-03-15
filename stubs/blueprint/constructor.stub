@@ -1,7 +1,15 @@
-    /**
-     * Create a new {{ type }} instance.
-     */
+
+    use use \App\Traits\CrudTrait;
     public function __construct()
     {
-        {{ body }}
+        $this->init(new CrudConfig(
+            resource: '{{ modelVariable }}',
+            modelClass: Category::class,
+            storeRequestClass: CategoryStoreRequest::class,
+            updateRequestClass: CategoryUpdateRequest::class,
+            searchColumns: ['name'],
+            exportClass: CategoryExport::class,
+            componentPath: 'Categories/Index',
+            withRelations: [],
+        ));
     }
