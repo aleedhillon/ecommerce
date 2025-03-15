@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\CategoriesExport;
+use App\Exports\CategoryExport;
 use App\Http\Requests\CategoryStoreRequest;
 use App\Http\Requests\CategoryUpdateRequest;
 use App\Models\Category;
@@ -21,7 +21,7 @@ class CategoryController extends Controller
             storeRequestClass: CategoryStoreRequest::class,
             updateRequestClass: CategoryUpdateRequest::class,
             searchColumns: ['name'],
-            exportClass: CategoriesExport::class,
+            exportClass: CategoryExport::class,
             componentPath: 'Categories/Index',
             withRelations: [],
         ));

@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\SubCategory;
+use App\Models\Category;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -11,7 +11,7 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class SubCategoriesExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping, WithStyles
+class CategoryExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping, WithStyles
 {
     protected $search;
 
@@ -25,7 +25,7 @@ class SubCategoriesExport implements FromCollection, ShouldAutoSize, WithHeading
      */
     public function collection()
     {
-        return SubCategory::query()
+        return Category::query()
             ->when($this->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
@@ -41,22 +41,20 @@ class SubCategoriesExport implements FromCollection, ShouldAutoSize, WithHeading
         return [
             'ID',
             'Name',
-            'Description',
             'Status',
             'Created At',
             'Updated At',
         ];
     }
 
-    public function map($subCategory): array
+    public function map($category): array
     {
         return [
-            $subCategory->id,
-            $subCategory->name,
-            $subCategory->description,
-            $subCategory->is_active ? 'Active' : 'Inactive',
-            Carbon::parse($subCategory->created_at)->format('Y-m-d H:i:s'),
-            Carbon::parse($subCategory->updated_at)->format('Y-m-d H:i:s'),
+            $category->id,
+            $category->name,
+            $category->is_active ? 'Active' : 'Inactive',
+            Carbon::parse($category->created_at)->format('Y-m-d H:i:s'),
+            Carbon::parse($category->updated_at)->format('Y-m-d H:i:s'),
         ];
     }
 

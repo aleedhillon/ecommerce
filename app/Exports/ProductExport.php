@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Category;
+use App\Models\Product;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -11,7 +11,7 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class CategoriesExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping, WithStyles
+class ProductExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping, WithStyles
 {
     protected $search;
 
@@ -25,7 +25,7 @@ class CategoriesExport implements FromCollection, ShouldAutoSize, WithHeadings, 
      */
     public function collection()
     {
-        return Category::query()
+        return Product::query()
             ->when($this->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
@@ -47,14 +47,14 @@ class CategoriesExport implements FromCollection, ShouldAutoSize, WithHeadings, 
         ];
     }
 
-    public function map($category): array
+    public function map($Product): array
     {
         return [
-            $category->id,
-            $category->name,
-            $category->is_active ? 'Active' : 'Inactive',
-            Carbon::parse($category->created_at)->format('Y-m-d H:i:s'),
-            Carbon::parse($category->updated_at)->format('Y-m-d H:i:s'),
+            $Product->id,
+            $Product->name,
+            $Product->is_active ? 'Active' : 'Inactive',
+            Carbon::parse($Product->created_at)->format('Y-m-d H:i:s'),
+            Carbon::parse($Product->updated_at)->format('Y-m-d H:i:s'),
         ];
     }
 

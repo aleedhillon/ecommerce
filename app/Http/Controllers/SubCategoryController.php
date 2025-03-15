@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\SubCategoriesExport;
+use App\Exports\SubCategoryExport;
 use App\Http\Requests\SubCategoryStoreRequest;
 use App\Http\Requests\SubCategoryUpdateRequest;
 use App\Models\Category;
@@ -22,7 +22,7 @@ class SubCategoryController extends Controller
             storeRequestClass: SubCategoryStoreRequest::class,
             updateRequestClass: SubCategoryUpdateRequest::class,
             searchColumns: ['name'],
-            exportClass: SubCategoriesExport::class,
+            exportClass: SubCategoryExport::class,
             componentPath: 'SubCategories/Index',
             withRelations: ['category'],
             addProps: $this->addProps(),

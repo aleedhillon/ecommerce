@@ -1,22 +1,20 @@
 <template>
     <div>
-        <CrudComponent :form formWidth="90vw">
+        <CrudComponent :form="form" formWidth="90vw">
             <template #columns>
                 <Column field="name" header="Name"></Column>
-                <Column field="is_active" header="Status">
-                    <template #body="{ data }">
-                        <Badge :severity="data.is_active ? 'success' : 'danger'">
-                            {{ data.is_active ? 'Active' : 'Inactive' }}
-                        </Badge>
+                <Column field="category.name" header="Category"></Column>
+                <Column field="sub_category.name" header="Sub-Category"></Column>
+                <Column field="brand.name" header="Brand"></Column>
+                <Column field="thumbnail" header="Brand">
+                    <template #body="{data}">
+                        <img :src="resolveImagePath(data.thumbnail)" alt="Thumbnail" class="w-10 h-10 object-cover rounded" />
                     </template>
                 </Column>
-
-                <Column field="created_at" header="Created At" sortable></Column>
-                <Column field="updated_at" header="Updated At" sortable></Column>
             </template>
 
-            <template #form="{ submitted, handlePhotoUpload, photoPreview, resolveImagePath }">
-                <div class="formgrid grid">
+            <template #form="{ submitted, handlePhotoUpload, photoPreview }">
+                <div class="grid">
                     <!-- Basic Information Section -->
                     <div class="col-12 mb-3">
                         <h3 class="text-xl font-semibold">Basic Information</h3>
@@ -223,8 +221,11 @@
 <script setup>
 import CrudComponent from '@/Components/CrudComponent.vue';
 import { useForm } from '@inertiajs/vue3';
-import { Select, ToggleSwitch } from 'primevue';
 import { ref, watch, onMounted } from 'vue';
+
+import { resolveImagePath } from '@/Helpers/imageHelper';
+
+const { categories, subCategories, brands, taxes } = defineProps(['categories', 'subCategories', 'brands', 'taxes']);
 
 // Define form
 const form = useForm({
@@ -271,8 +272,6 @@ const stockStatuses = [
 // const subCategories = ref([]);
 // const brands = ref([]);
 // const taxes = ref([]);
-
-const { categories, subCategories, brands, taxes } = defineProps(['categories', 'subCategories', 'brands', 'taxes']);
 
 // Function to load sub-categories when category changes
 const loadSubCategories = () => {

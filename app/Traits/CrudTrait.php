@@ -13,6 +13,9 @@ use Maatwebsite\Excel\Facades\Excel;
 
 trait CrudTrait
 {
+    use ConfigTrait;
+    use CustomLogger;
+    
     public string $resource;
 
     public string $modelClass;
@@ -44,7 +47,6 @@ trait CrudTrait
 
     public function index(Request $request)
     {
-        $this->logThisMethod();
         $this->ensureModelClass();
 
         $perPage = $request->input('per_page', 15);
@@ -67,7 +69,7 @@ trait CrudTrait
         });
 
         if ($request->has('trashed')) {
-            $query->when($request->trashed, fn ($query) => $query->onlyTrashed());
+            $query->when($request->trashed, fn($query) => $query->onlyTrashed());
         }
 
         $query = $this->modifyQuery($query);
@@ -91,53 +93,13 @@ trait CrudTrait
         return $query;
     }
 
-    private function makeConfig()
-    {
-        $modelRawName = class_basename($this->modelClass);
-        $modelLowerCase = Str::snake($modelRawName);
-
-        $routes = [
-            'indexRoute' => $this->resource.'.index',
-            'indexRouteTrashed' => $this->resource.'.index',
-            'storeRoute' => $this->resource.'.store',
-            'updateRoute' => $this->resource.'.update',
-            'deleteRoute' => $this->resource.'.destroy',
-            'bulkDeleteRoute' => $this->resource.'.bulk-destroy',
-            'bulkRestoreRoute' => $this->resource.'.bulk-restore',
-            'bulkForceDeleteRoute' => $this->resource.'.bulk-force-delete',
-            'exportRoute' => $this->resource.'.export',
-        ];
-
-        $config = [
-            'title' => Str::title($this->resource),
-            'modelSingular' => $modelLowerCase,
-            'modelRaw' => $modelRawName,
-            'resource' => $this->resource,
-        ];
-
-        foreach ($routes as $key => $route) {
-            if ($key === 'indexRouteTrashed' && Route::has($route)) {
-                $config[$key] = route($route, ['trashed' => true]);
-            } elseif (in_array($key, ['updateRoute', 'deleteRoute']) && Route::has($route)) {
-                $config[$key] = route($route, [$modelLowerCase => '__ID__']);
-            } else {
-                $config[$key] = Route::has($route) ? route($route) : '#';
-            }
-        }
-
-        return $config;
-    }
-
     public function create()
     {
-        $this->logThisMethod();
-
         return Inertia::render($this->componentPath);
     }
 
     public function store(Request $request)
     {
-        $this->logThisMethod();
         $this->ensureModelClass();
         $validatedData = app($this->storeRequestClass)->validated();
         if ($request->file('photo')) {
@@ -150,38 +112,33 @@ trait CrudTrait
 
     public function update(Request $request, $id)
     {
-        $this->logThisMethod();
         $validatedData = app($this->updateRequestClass)->validated();
-        Log::debug($validatedData);
         $model = $this->modelClass::findOrFail($id);
         if ($request->file('photo')) {
             $validatedData['photo'] = $request->file('photo')->store($this->resource);
-            // Delete existing photo
             if ($model->photo && Storage::fileExists($model->photo)) {
                 Storage::delete($model->photo);
             }
         }
         $res = $model->update($validatedData);
 
-        return to_route($this->resource.'.index')->with('success', 'Updated successfully');
+        return to_route($this->resource . '.index')->with('success', 'Updated successfully');
     }
 
     public function destroy($id)
     {
-        $this->logThisMethod();
         $model = $this->modelClass::findOrFail($id);
         // if ($model->photo && Storage::exists($model->photo)) {
         //     Storage::delete($model->photo);
         // }
         $model->delete();
 
-        return to_route($this->resource.'.index')->with('success', 'Deleted successfully');
+        return to_route($this->resource . '.index')->with('success', 'Deleted successfully');
     }
 
     public function bulkDestroy(Request $request)
     {
-        $this->logThisMethod();
-        $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:'.$this->modelClass.',id']);
+        $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:' . $this->modelClass . ',id']);
         foreach ($request->ids as $id) {
             $model = $this->modelClass::find($id);
             if ($model) {
@@ -189,20 +146,18 @@ trait CrudTrait
             }
         }
 
-        return to_route($this->resource.'.index')->with('success', 'Items deleted successfully');
+        return to_route($this->resource . '.index')->with('success', 'Items deleted successfully');
     }
 
     public function bulkRestore(Request $request)
     {
-        $this->logThisMethod();
-        $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:'.$this->modelClass.',id']);
+        $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:' . $this->modelClass . ',id']);
         $this->modelClass::whereIn('id', $request->ids)->restore();
     }
 
     public function bulkForceDelete(Request $request)
     {
-        $this->logThisMethod();
-        $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:'.$this->modelClass.',id']);
+        $request->validate(['ids' => 'required|array', 'ids.*' => 'exists:' . $this->modelClass . ',id']);
         // $this->modelClass::whereIn('id', $request->ids)->forceDelete();
         foreach ($request->ids as $id) {
             $model = $this->modelClass::withTrashed()->find($id);
@@ -217,10 +172,9 @@ trait CrudTrait
 
     public function export(Request $request)
     {
-        $this->logThisMethod();
         $search = $request->input('search');
 
-        $filename = strtolower(class_basename($this->modelClass)).'-'.now()->format('Y-m-d-H-i-s').'.xlsx';
+        $filename = strtolower(class_basename($this->modelClass)) . '-' . now()->format('Y-m-d-H-i-s') . '.xlsx';
 
         return Excel::download(new $this->exportClass($search), $filename);
     }
@@ -229,15 +183,6 @@ trait CrudTrait
     {
         if (! $this->modelClass) {
             throw new \Exception('Model class not defined in trait usage');
-        }
-    }
-
-    public function logThisMethod()
-    {
-        $log = false;
-        if ($log == true) {
-            $backtrace = debug_backtrace();
-            logger()->info(__TRAIT__.' method called from : '.$backtrace[1]['class']);
         }
     }
 }

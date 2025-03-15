@@ -4,6 +4,12 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Tag;
+use App\Models\Brand;
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\SubCategory;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,6 +20,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(UserTableSeeder::class);
+        $this->call(CustomTestSeeder::class);
+        
         // $this->call(CategoryTableSeeder::class);
         // $this->call(SubCategoryTableSeeder::class);
         // $this->call(BrandTableSeeder::class);
