@@ -3,10 +3,12 @@
 namespace {{ namespace }};
 
 {{ imports }}
+use App\Models\{{ modelClass }};
+// use App\Exports\{{ modelClass }}Export;
 use App\Utils\CrudConfig;
 use App\Traits\CrudTrait;
-use App\Http\Requests\Store{{ modelClass }}Request;
-use App\Http\Requests\Update{{ modelClass }}Request;
+use App\Http\Requests\{{ modelClass }}StoreRequest;
+use App\Http\Requests\{{ modelClass }}UpdateRequest;
 
 class {{ class }} extends Controller
 {
@@ -17,11 +19,11 @@ class {{ class }} extends Controller
         $this->init(new CrudConfig(
             resource: '{{ resource }}',
             modelClass: {{ modelClass }}::class,
-            storeRequestClass: Store{{ modelClass }}Request::class,
-            updateRequestClass: Update{{ modelClass }}Request::class,
+            storeRequestClass: {{ modelClass }}StoreRequest::class,
+            updateRequestClass: {{ modelClass }}UpdateRequest::class,
+            componentPath: '{{ modelClassPlural }}/Index',
             searchColumns: [],
-            exportClass: {{ modelClass }}Export::class,
-            componentPath: '{{ modelClass }}/Index',
+            // exportClass: {{ modelClass }}Export::class,
             withRelations: [],
         ));
     }

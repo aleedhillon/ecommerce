@@ -50,17 +50,19 @@ class InertiaVueGenerator implements Generator
 
         // Generate Vue components
         $output = array_merge($output, $this->generateCrud($model));
+
         // $output = array_merge($output, $this->generateIndex($model));
         // $output = array_merge($output, $this->generateCreate($model));
         // $output = array_merge($output, $this->generateEdit($model));
         // $output = array_merge($output, $this->generateShow($model));
-        // $output = array_merge($output, $this->generateForm($model));
+        $output = array_merge($output, $this->generateForm($model));
 
         return $output;
     }
 
     protected function generateCrud(Model $model): array
     {
+        // $modelPlural = Str::plural($model->name());
         $path = $this->getVueComponentPath($model, 'Index');
 
         if (!$this->filesystem->exists(dirname($path))) {
@@ -186,7 +188,8 @@ class InertiaVueGenerator implements Generator
 
     protected function getVueComponentPath(Model $model, string $type): string
     {
-        return resource_path("js/Pages/" . $model->name() . "/" . $type . ".vue");
+        $modelPlural = Str::plural($model->name());
+        return resource_path("js/Pages/" . $modelPlural . "/" . $type . ".vue");
     }
 
     protected function compileStub(string $stubName, array $replacements = []): string

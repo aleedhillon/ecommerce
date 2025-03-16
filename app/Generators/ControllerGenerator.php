@@ -9,19 +9,21 @@ use Illuminate\Support\Str;
 use Blueprint\Models\Policy;
 use Blueprint\Models\Controller;
 use Blueprint\Contracts\Generator;
+use Illuminate\Support\Facades\Gate;
 use Blueprint\Concerns\HandlesTraits;
 use Illuminate\Filesystem\Filesystem;
 use Blueprint\Concerns\HandlesImports;
 use Blueprint\Models\Statements\FireStatement;
 use Blueprint\Models\Statements\SendStatement;
 use Blueprint\Models\Statements\QueryStatement;
+use Blueprint\Generators\AbstractClassGenerator;
 use Blueprint\Models\Statements\RenderStatement;
 use Blueprint\Models\Statements\InertiaStatement;
 use Blueprint\Models\Statements\RespondStatement;
+
 use Blueprint\Models\Statements\SessionStatement;
 use Blueprint\Models\Statements\DispatchStatement;
 use Blueprint\Models\Statements\EloquentStatement;
-
 use Blueprint\Models\Statements\RedirectStatement;
 use Blueprint\Models\Statements\ResourceStatement;
 use Blueprint\Models\Statements\ValidateStatement;
@@ -32,13 +34,13 @@ class ControllerGenerator extends AbstractClassGenerator implements Generator
 
     protected array $types = ['controllers'];
 
-    protected $filesystem;
     protected $stubPath;
 
     public function __construct(Filesystem $filesystem)
     {
-        $this->filesystem = $filesystem;
         $this->stubPath = \base_path('stubs/custom');
+        parent::__construct($filesystem);
+
     }
 
     public function types() : array
@@ -51,7 +53,7 @@ class ControllerGenerator extends AbstractClassGenerator implements Generator
     {
         $this->tree = $tree;
 
-        $stub = $this->filesystem->stub('controller.class.stub');
+        $stub = $this->filesystem->get($this->stubPath . '/controller.class.stub');
 
         /** @var \Blueprint\Models\Controller $controller */
         foreach ($tree->controllers() as $controller) {
@@ -71,15 +73,20 @@ class ControllerGenerator extends AbstractClassGenerator implements Generator
     {
         $stub = str_replace('{{ namespace }}', $controller->fullyQualifiedNamespace(), $stub);
         $stub = str_replace('{{ class }}', $controller->className(), $stub);
-        $stub = str_replace('{{ methods }}', $this->buildMethods($controller), $stub);
+
+        $stub = str_replace('{{ methods }}', '', $stub);
+        // $stub = str_replace('{{ methods }}', $this->buildMethods($controller), $stub);
+
         $stub = str_replace('{{ imports }}', $this->buildImports($controller), $stub);
 
         $c = $controller->className();
         $modelClass = explode('Controller', $c)[0];
+        $modelClassPlural = Str::plural($modelClass);
         $resource = Str::plural(Str::snake($modelClass));
 
         $stub = str_replace('{{ resource }}', $resource, $stub);
         $stub = str_replace('{{ modelClass }}', $modelClass, $stub);
+        $stub = str_replace('{{ modelClassPlural }}', $modelClassPlural, $stub);
 
         return $stub;
     }

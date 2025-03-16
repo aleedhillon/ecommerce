@@ -18,13 +18,12 @@ use App\Services\DiscountService;
 use App\Services\ShoppingService;
 use App\Services\SupplierService;
 use App\Services\WarrantyService;
-use App\Utils\BlueprintGenerator;
 use App\Services\InventoryService;
 use App\Services\WarehouseService;
 use App\Services\SubCategoryService;
 use Illuminate\Support\Facades\Vite;
 use App\Services\ProductStockService;
-use App\Generator\InertiaVueGenerator;
+use App\Generators\InertiaVueGenerator;
 use App\Interfaces\TagServiceInterface;
 use App\Interfaces\TaxServiceInterface;
 use Illuminate\Support\ServiceProvider;
@@ -79,10 +78,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->app->extend(Blueprint::class, function (Blueprint $blueprint, $app) {
-            $blueprint->registerGenerator(new InertiaVueGenerator($app['files']));
-            return $blueprint;
-        });
+        // $this->app->extend(Blueprint::class, function (Blueprint $blueprint, $app) {
+        //     $blueprint->registerGenerator(new InertiaVueGenerator($app['files']));
+        //     return $blueprint;
+        // });
 
         Vite::prefetch(concurrency: 3);
     }

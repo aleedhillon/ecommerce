@@ -13,12 +13,12 @@ class InertiaPageGenerator extends StatementGenerator implements Generator
 {
     protected array $types = ['inertia_page', 'controllers'];
 
-    protected $filesystem;
     protected $stubPath;
 
     public function __construct(Filesystem $filesystem)
     {
-        $this->filesystem = $filesystem;
+        parent::__construct($filesystem);
+
         $this->stubPath = \base_path('stubs/custom');
     }
 
