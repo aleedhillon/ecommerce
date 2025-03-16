@@ -2,46 +2,49 @@
 
 namespace App\Providers;
 
-use App\Interfaces\BrandServiceInterface;
-use App\Interfaces\CartServiceInterface;
-use App\Interfaces\CategoryServiceInterface;
-use App\Interfaces\CouponServiceInterface;
-use App\Interfaces\CustomerServiceInterface;
-use App\Interfaces\DiscountServiceInterface;
-use App\Interfaces\InventoryServiceInterface;
-use App\Interfaces\OrderServiceInterface;
-use App\Interfaces\PaymentServiceInterface;
-use App\Interfaces\ProductServiceInterface;
-use App\Interfaces\ProductStockServiceInterface;
-use App\Interfaces\ShoppingServiceInterface;
-use App\Interfaces\SubCategoryServiceInterface;
-use App\Interfaces\SupplierServiceInterface;
-use App\Interfaces\TagServiceInterface;
-use App\Interfaces\TaxServiceInterface;
-use App\Interfaces\UnitServiceInterface;
-use App\Interfaces\WarehouseServiceInterface;
-use App\Interfaces\WarrantyServiceInterface;
-use App\Services\BrandService;
-use App\Services\CartService;
-use App\Services\CategoryService;
-use App\Services\CouponService;
-use App\Services\CustomerService;
-use App\Services\DiscountService;
-use App\Services\InventoryService;
-use App\Services\OrderService;
-use App\Services\PaymentService;
-use App\Services\ProductService;
-use App\Services\ProductStockService;
-use App\Services\ShoppingService;
-use App\Services\SubCategoryService;
-use App\Services\SupplierService;
+use Blueprint\Blueprint;
 use App\Services\TagService;
 use App\Services\TaxService;
+use App\Services\CartService;
 use App\Services\UnitService;
-use App\Services\WarehouseService;
+use App\Services\BrandService;
+use App\Services\OrderService;
+use App\Services\CouponService;
+use App\Services\PaymentService;
+use App\Services\ProductService;
+use App\Services\CategoryService;
+use App\Services\CustomerService;
+use App\Services\DiscountService;
+use App\Services\ShoppingService;
+use App\Services\SupplierService;
 use App\Services\WarrantyService;
+use App\Utils\BlueprintGenerator;
+use App\Services\InventoryService;
+use App\Services\WarehouseService;
+use App\Services\SubCategoryService;
 use Illuminate\Support\Facades\Vite;
+use App\Services\ProductStockService;
+use App\Generator\InertiaVueGenerator;
+use App\Interfaces\TagServiceInterface;
+use App\Interfaces\TaxServiceInterface;
 use Illuminate\Support\ServiceProvider;
+use App\Interfaces\CartServiceInterface;
+use App\Interfaces\UnitServiceInterface;
+use App\Interfaces\BrandServiceInterface;
+use App\Interfaces\OrderServiceInterface;
+use App\Interfaces\CouponServiceInterface;
+use App\Interfaces\PaymentServiceInterface;
+use App\Interfaces\ProductServiceInterface;
+use App\Interfaces\CategoryServiceInterface;
+use App\Interfaces\CustomerServiceInterface;
+use App\Interfaces\DiscountServiceInterface;
+use App\Interfaces\ShoppingServiceInterface;
+use App\Interfaces\SupplierServiceInterface;
+use App\Interfaces\WarrantyServiceInterface;
+use App\Interfaces\InventoryServiceInterface;
+use App\Interfaces\WarehouseServiceInterface;
+use App\Interfaces\SubCategoryServiceInterface;
+use App\Interfaces\ProductStockServiceInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -76,6 +79,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->app->extend(Blueprint::class, function (Blueprint $blueprint, $app) {
+            $blueprint->registerGenerator(new InertiaVueGenerator($app['files']));
+            return $blueprint;
+        });
+
         Vite::prefetch(concurrency: 3);
     }
 }

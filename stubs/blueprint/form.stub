@@ -1,0 +1,14 @@
+<template>
+  <div>
+{{ formFields }}
+  </div>
+</template>
+
+<script setup>
+defineProps({
+  form: {
+    type: Object,
+    required: true
+  }
+});
+</script>
