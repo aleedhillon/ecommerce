@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Generator;
+namespace App\Generators;
 
-use Blueprint\Blueprint;
-use Blueprint\Contracts\Generator;
-use Blueprint\Generators\Statements\ModelGenerator;
-use Blueprint\Models\Model;
 use Blueprint\Tree;
+use Blueprint\Models\Model;
 use Illuminate\Support\Str;
+use Blueprint\Contracts\Generator;
 use Illuminate\Filesystem\Filesystem;
 
 class InertiaVueGenerator implements Generator
@@ -18,7 +16,7 @@ class InertiaVueGenerator implements Generator
     public function __construct(Filesystem $filesystem)
     {
         $this->filesystem = $filesystem;
-        $this->stubPath = \base_path('stubs/blueprint');
+        $this->stubPath = \base_path('stubs/custom');
     }
 
     public function types(): array
@@ -51,13 +49,36 @@ class InertiaVueGenerator implements Generator
         $output = [];
 
         // Generate Vue components
-        $output = array_merge($output, $this->generateIndex($model));
-        $output = array_merge($output, $this->generateCreate($model));
-        $output = array_merge($output, $this->generateEdit($model));
-        $output = array_merge($output, $this->generateShow($model));
-        $output = array_merge($output, $this->generateForm($model));
+        $output = array_merge($output, $this->generateCrud($model));
+        // $output = array_merge($output, $this->generateIndex($model));
+        // $output = array_merge($output, $this->generateCreate($model));
+        // $output = array_merge($output, $this->generateEdit($model));
+        // $output = array_merge($output, $this->generateShow($model));
+        // $output = array_merge($output, $this->generateForm($model));
 
         return $output;
+    }
+
+    protected function generateCrud(Model $model): array
+    {
+        $path = $this->getVueComponentPath($model, 'Index');
+
+        if (!$this->filesystem->exists(dirname($path))) {
+            $this->filesystem->makeDirectory(dirname($path), 0755, true);
+        }
+
+        $this->filesystem->put(
+            $path,
+            $this->compileStub('crud', [
+                '{{ ModelName }}' => $model->name(),
+                '{{ modelName }}' => Str::camel($model->name()),
+                '{{ modelVariablePlural }}' => Str::plural(Str::camel($model->name())),
+                '{{ modelRouteName }}' => Str::kebab(Str::plural($model->name())),
+                '{{ modelFields }}' => $this->getFieldsForIndex($model),
+            ])
+        );
+
+        return [$path];
     }
 
     protected function generateIndex(Model $model): array

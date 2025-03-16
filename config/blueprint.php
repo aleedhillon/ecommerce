@@ -1,5 +1,10 @@
 <?php
 
+use App\Generators\ControllerGenerator;
+use App\Generators\InertiaVueGenerator;
+use App\Generators\InertiaPageGenerator;
+use App\Generators\InertiaResourceGenerator;
+
 return [
 
     /*
@@ -128,7 +133,7 @@ return [
     | constructor to set properties with "constructor property promotion".
     |
     */
-    'property_promotion' => false,
+    'property_promotion' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -155,7 +160,7 @@ return [
     |
     */
     'generators' => [
-        'controller' => \Blueprint\Generators\ControllerGenerator::class,
+        'controller' => ControllerGenerator::class,
         'factory' => \Blueprint\Generators\FactoryGenerator::class,
         'migration' => \Blueprint\Generators\MigrationGenerator::class,
         'model' => \Blueprint\Generators\ModelGenerator::class,
@@ -168,9 +173,11 @@ return [
         'job' => \Blueprint\Generators\Statements\JobGenerator::class,
         'mail' => \Blueprint\Generators\Statements\MailGenerator::class,
         'notification' => \Blueprint\Generators\Statements\NotificationGenerator::class,
-        'resource' => \Blueprint\Generators\Statements\ResourceGenerator::class,
+        'resource' => InertiaResourceGenerator::class,
+        // 'resource' => \Blueprint\Generators\Statements\ResourceGenerator::class,
         'view' => \Blueprint\Generators\Statements\ViewGenerator::class,
-        'inertia_page' => \Blueprint\Generators\Statements\InertiaPageGenerator::class,
+        'inertia_page' => InertiaPageGenerator::class,
+        'vue' => InertiaVueGenerator::class,
         'policy' => \Blueprint\Generators\PolicyGenerator::class,
     ],
 
