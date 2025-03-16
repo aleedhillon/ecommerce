@@ -21,3 +21,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     CrudRouter::setFor('brands', BrandController::class);
     CrudRouter::setFor('sub-categories', SubCategoryController::class);
 });
+
+CrudRouter::setFor('todos', App\Http\Controllers\TodoController::class);
