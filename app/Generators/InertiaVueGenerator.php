@@ -76,7 +76,7 @@ class InertiaVueGenerator implements Generator
                 '{{ modelName }}' => Str::camel($model->name()),
                 '{{ modelVariablePlural }}' => Str::plural(Str::camel($model->name())),
                 '{{ modelRouteName }}' => Str::kebab(Str::plural($model->name())),
-                '{{ modelFields }}' => $this->getFieldsForIndex($model),
+                '{{ modelFields }}' => $this->getFieldsForCrudIndex($model),
             ])
         );
 
@@ -203,6 +203,19 @@ class InertiaVueGenerator implements Generator
         return $stub;
     }
 
+    protected function getFieldsForCrudIndex(Model $model): string
+    {
+        $fields = [];
+
+        foreach ($model->columns() as $column) {
+            if (in_array($column->name(), ['id', 'password', 'remember_token', 'deleted_at'])) {
+                continue;
+            }
+            $fields[] = $column->name() . ": '',";
+        }
+
+        return implode("\n    ", $fields);
+    }
     protected function getFieldsForIndex(Model $model): string
     {
         $fields = [];
@@ -232,9 +245,9 @@ class InertiaVueGenerator implements Generator
             $label = Str::title(str_replace('_', ' ', $column->name()));
 
             $fields[] = "        <div class=\"mb-4\">\n" .
-                        "            <h3 class=\"text-lg font-medium\">{$label}:</h3>\n" .
-                        "            <p>{{ " . Str::camel($model->name()) . ".{$column->name()} }}</p>\n" .
-                        "        </div>";
+                "            <h3 class=\"text-lg font-medium\">{$label}:</h3>\n" .
+                "            <p>{{ " . Str::camel($model->name()) . ".{$column->name()} }}</p>\n" .
+                "        </div>";
         }
 
         return implode("\n\n", $fields);
@@ -254,33 +267,113 @@ class InertiaVueGenerator implements Generator
             $name = $column->name();
             $modelVariable = Str::camel($model->name());
 
+            // Use different PrimeVue (or privevue) components based on column type and name
+            if ($name === 'password') {
+                $fields[] = "    <div class=\"mb-4\">
+        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>
+        <Password id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full\" />
+        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>
+    </div>";
+            } elseif (str_contains($column->dataType(), 'text')) {
+                $fields[] = "    <div class=\"mb-4\">
+        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>
+        <InputTextarea id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full\" rows=\"3\" />
+        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>
+    </div>";
+            } elseif (str_contains($column->dataType(), 'boolean')) {
+                $fields[] = "    <div class=\"mb-4\">
+        <div class=\"flex items-center\">
+            <Checkbox id=\"{$name}\" v-model=\"form.{$name}\" class=\"h-4 w-4\" />
+            <label for=\"{$name}\" class=\"ml-2 block text-sm font-medium text-gray-700\">{$label}</label>
+        </div>
+        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>
+    </div>";
+            } elseif (
+                str_contains($column->dataType(), 'int')
+                || str_contains($column->dataType(), 'decimal')
+                || str_contains($column->dataType(), 'float')
+            ) {
+                $fields[] = "    <div class=\"mb-4\">
+        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>
+        <InputNumber id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full\" />
+        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>
+    </div>";
+            } elseif (
+                str_contains($column->dataType(), 'date')
+                || str_contains($column->dataType(), 'time')
+                || str_contains($column->dataType(), 'datetime')
+            ) {
+                $fields[] = "    <div class=\"mb-4\">
+        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>
+        <Calendar id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full\" />
+        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>
+    </div>";
+            } elseif ($name === 'email') {
+                $fields[] = "    <div class=\"mb-4\">
+        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>
+        <InputText id=\"{$name}\" v-model=\"form.{$name}\" type=\"email\" class=\"mt-1 block w-full\" />
+        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>
+    </div>";
+            } elseif (str_contains($column->dataType(), 'file')) {
+                $fields[] = "    <div class=\"mb-4\">
+        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>
+        <FileUpload id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full\" />
+        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>
+    </div>";
+            } else {
+                $fields[] = "    <div class=\"mb-4\">
+        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>
+        <InputText id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full\" />
+        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>
+    </div>";
+            }
+        }
+
+        return implode("\n\n", $fields);
+    }
+
+
+    protected function getFormFields2(Model $model): string
+    {
+        $fields = [];
+
+        foreach ($model->columns() as $column) {
+            // Skip fields that shouldn't be in forms
+            if (in_array($column->name(), ['id', 'created_at', 'updated_at', 'deleted_at'])) {
+                continue;
+            }
+
+            $label = Str::title(str_replace('_', ' ', $column->name()));
+            $name = $column->name();
+            $modelVariable = Str::camel($model->name());
+
             // Handle different field types
             if ($name === 'password') {
                 $fields[] = "    <div class=\"mb-4\">\n" .
-                            "        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>\n" .
-                            "        <input type=\"password\" id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500\" />\n" .
-                            "        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>\n" .
-                            "    </div>";
+                    "        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>\n" .
+                    "        <input type=\"password\" id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500\" />\n" .
+                    "        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>\n" .
+                    "    </div>";
             } elseif (str_contains($column->dataType(), 'text')) {
                 $fields[] = "    <div class=\"mb-4\">\n" .
-                            "        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>\n" .
-                            "        <textarea id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500\" rows=\"3\"></textarea>\n" .
-                            "        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>\n" .
-                            "    </div>";
+                    "        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>\n" .
+                    "        <textarea id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500\" rows=\"3\"></textarea>\n" .
+                    "        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>\n" .
+                    "    </div>";
             } elseif (str_contains($column->dataType(), 'boolean')) {
                 $fields[] = "    <div class=\"mb-4\">\n" .
-                            "        <div class=\"flex items-center\">\n" .
-                            "            <input type=\"checkbox\" id=\"{$name}\" v-model=\"form.{$name}\" class=\"h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500\" />\n" .
-                            "            <label for=\"{$name}\" class=\"ml-2 block text-sm font-medium text-gray-700\">{$label}</label>\n" .
-                            "        </div>\n" .
-                            "        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>\n" .
-                            "    </div>";
+                    "        <div class=\"flex items-center\">\n" .
+                    "            <input type=\"checkbox\" id=\"{$name}\" v-model=\"form.{$name}\" class=\"h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500\" />\n" .
+                    "            <label for=\"{$name}\" class=\"ml-2 block text-sm font-medium text-gray-700\">{$label}</label>\n" .
+                    "        </div>\n" .
+                    "        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>\n" .
+                    "    </div>";
             } else {
                 $fields[] = "    <div class=\"mb-4\">\n" .
-                            "        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>\n" .
-                            "        <input type=\"text\" id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500\" />\n" .
-                            "        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>\n" .
-                            "    </div>";
+                    "        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>\n" .
+                    "        <input type=\"text\" id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500\" />\n" .
+                    "        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>\n" .
+                    "    </div>";
             }
         }
 

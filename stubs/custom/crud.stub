@@ -2,8 +2,8 @@
   <div>
     <CrudComponent :form="form">
       <template #columns>
-        <Column field="name" header="Name"></Column>
-        <Column field="created_at" header="Created At" sortable></Column>
+        <!-- <Column field="name" header="Name"></Column> -->
+        <!-- <Column field="created_at" header="Created At" sortable></Column> -->
       </template>
 
       <template #form="{ submitted, handlePhotoUpload, photoPreview, resolveImagePath }">
@@ -18,7 +18,7 @@ import Form from './Form.vue';
 import { useForm } from '@inertiajs/vue3';
 
 const form = useForm({
-    //
+    {{ modelFields }}
 });
 
 </script>
