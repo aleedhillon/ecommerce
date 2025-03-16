@@ -25,7 +25,8 @@
                         v-show="!(!selectedItems || !selectedItems?.length) && isTrashedPage" />
                 </template>
                 <template #end>
-                    <Button label="Export" class="mx-2" icon="pi pi-upload" severity="secondary" @click="exportExcel" />
+                    <Button label="Export" v-if="vueProps?.config?.exportRoute" class="mx-2" icon="pi pi-upload" severity="secondary" @click="exportExcel" />
+
                 </template>
             </Toolbar>
 
@@ -71,7 +72,7 @@
         <!-- Create & Edit Form Dialog -->
         <Dialog v-model:visible="itemDialog" maximizable :style="{ width: formWidth ?? '60vw' }"
             :header="`${vueProps.config.modelRaw} Details`" pt:mask:class="backdrop-blur-sm">
-            
+
             <slot name="form" v-bind="{submitted, statuses, handlePhotoUpload, photoPreview, resolveImagePath}"></slot>
 
             <template #footer>
@@ -197,7 +198,7 @@ const updateItem = () => {
         _method: 'put',
         ...form
     };
-    
+
     router.post(url, data, {
         onSuccess: () => {
             hideDialog();
@@ -228,7 +229,7 @@ const confirmDeleteItem = (prod) => {
     deleteItemDialog.value = true;
 
     photoPreview.value = null;
-    
+
     Object.assign(form, prod);
 
     editingId.value = prod.id;

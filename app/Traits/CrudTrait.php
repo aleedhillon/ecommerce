@@ -15,7 +15,7 @@ trait CrudTrait
 {
     use ConfigTrait;
     use CustomLogger;
-    
+
     public string $resource;
 
     public string $modelClass;

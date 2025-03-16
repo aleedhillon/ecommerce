@@ -270,23 +270,23 @@ class InertiaVueGenerator implements Generator
             // Use different PrimeVue (or privevue) components based on column type and name
             if ($name === 'password') {
                 $fields[] = "    <div class=\"mb-4\">
-        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>
+        <label for=\"{$name}\" class=\"\">{$label}</label>
         <Password id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full\" />
-        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>
+        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>
     </div>";
             } elseif (str_contains($column->dataType(), 'text')) {
                 $fields[] = "    <div class=\"mb-4\">
-        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>
+        <label for=\"{$name}\" class=\"\">{$label}</label>
         <InputTextarea id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full\" rows=\"3\" />
-        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>
+        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>
     </div>";
             } elseif (str_contains($column->dataType(), 'boolean')) {
                 $fields[] = "    <div class=\"mb-4\">
         <div class=\"flex items-center\">
-            <Checkbox id=\"{$name}\" v-model=\"form.{$name}\" class=\"h-4 w-4\" />
-            <label for=\"{$name}\" class=\"ml-2 block text-sm font-medium text-gray-700\">{$label}</label>
+            <Checkbox id=\"{$name}\" v-model=\"form.{$name}\" class=\"h-4 w-4\" binary />
+            <label for=\"{$name}\" class=\"ml-2 \">{$label}</label>
         </div>
-        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>
+        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>
     </div>";
             } elseif (
                 str_contains($column->dataType(), 'int')
@@ -294,9 +294,9 @@ class InertiaVueGenerator implements Generator
                 || str_contains($column->dataType(), 'float')
             ) {
                 $fields[] = "    <div class=\"mb-4\">
-        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>
+        <label for=\"{$name}\" class=\"\">{$label}</label>
         <InputNumber id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full\" />
-        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>
+        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>
     </div>";
             } elseif (
                 str_contains($column->dataType(), 'date')
@@ -304,27 +304,27 @@ class InertiaVueGenerator implements Generator
                 || str_contains($column->dataType(), 'datetime')
             ) {
                 $fields[] = "    <div class=\"mb-4\">
-        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>
+        <label for=\"{$name}\" class=\"\">{$label}</label>
         <Calendar id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full\" />
-        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>
+        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>
     </div>";
             } elseif ($name === 'email') {
                 $fields[] = "    <div class=\"mb-4\">
-        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>
+        <label for=\"{$name}\" class=\"\">{$label}</label>
         <InputText id=\"{$name}\" v-model=\"form.{$name}\" type=\"email\" class=\"mt-1 block w-full\" />
-        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>
+        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>
     </div>";
             } elseif (str_contains($column->dataType(), 'file')) {
                 $fields[] = "    <div class=\"mb-4\">
-        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>
+        <label for=\"{$name}\" class=\"\">{$label}</label>
         <FileUpload id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full\" />
-        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>
+        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>
     </div>";
             } else {
                 $fields[] = "    <div class=\"mb-4\">
-        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>
+        <label for=\"{$name}\" class=\"\">{$label}</label>
         <InputText id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full\" />
-        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>
+        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>
     </div>";
             }
         }
@@ -352,13 +352,13 @@ class InertiaVueGenerator implements Generator
                 $fields[] = "    <div class=\"mb-4\">\n" .
                     "        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>\n" .
                     "        <input type=\"password\" id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500\" />\n" .
-                    "        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>\n" .
+                    "        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>\n" .
                     "    </div>";
             } elseif (str_contains($column->dataType(), 'text')) {
                 $fields[] = "    <div class=\"mb-4\">\n" .
                     "        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>\n" .
                     "        <textarea id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500\" rows=\"3\"></textarea>\n" .
-                    "        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>\n" .
+                    "        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>\n" .
                     "    </div>";
             } elseif (str_contains($column->dataType(), 'boolean')) {
                 $fields[] = "    <div class=\"mb-4\">\n" .
@@ -366,13 +366,13 @@ class InertiaVueGenerator implements Generator
                     "            <input type=\"checkbox\" id=\"{$name}\" v-model=\"form.{$name}\" class=\"h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500\" />\n" .
                     "            <label for=\"{$name}\" class=\"ml-2 block text-sm font-medium text-gray-700\">{$label}</label>\n" .
                     "        </div>\n" .
-                    "        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>\n" .
+                    "        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>\n" .
                     "    </div>";
             } else {
                 $fields[] = "    <div class=\"mb-4\">\n" .
                     "        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>\n" .
                     "        <input type=\"text\" id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500\" />\n" .
-                    "        <div v-if=\"form.errors.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form.errors.{$name} }}</div>\n" .
+                    "        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>\n" .
                     "    </div>";
             }
         }

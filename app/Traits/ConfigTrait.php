@@ -36,8 +36,11 @@ trait ConfigTrait
                 $config[$key] = route($route, ['trashed' => true]);
             } elseif (in_array($key, ['updateRoute', 'deleteRoute']) && Route::has($route)) {
                 $config[$key] = route($route, [$modelLowerCase => '__ID__']);
+            } else if ($key === 'exportRoute') {
+                $config[$key] = Route::has($route) ? route($route) : '';
+                $config[$key] = isset($this->exportClass) && !empty($this->exportClass) ? $config[$key] : '';
             } else {
-                $config[$key] = Route::has($route) ? route($route) : '#';
+                $config[$key] = Route::has($route) ? route($route) : '';
             }
         }
 

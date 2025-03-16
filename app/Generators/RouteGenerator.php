@@ -25,7 +25,7 @@ class RouteGenerator extends AbstractClassGenerator implements Generator
          */
         foreach ($tree->controllers() as $controller) {
             $type = $controller->isApiResource() ? 'api' : 'web';
-            $routes[$type] .= PHP_EOL . PHP_EOL . $this->buildRoutes($controller);
+            $routes[$type] .= PHP_EOL . $this->buildRoutes($controller);
         }
 
         $paths = [];
@@ -36,7 +36,7 @@ class RouteGenerator extends AbstractClassGenerator implements Generator
 
         foreach (array_filter($routes) as $type => $definitions) {
             $path = 'routes/' . $type . '.php';
-            $this->filesystem->append($path, $definitions . PHP_EOL);
+            $this->filesystem->append($path, $definitions);
             $paths[] = $path;
         }
 
@@ -65,7 +65,10 @@ class RouteGenerator extends AbstractClassGenerator implements Generator
         if (count($resource_methods)) {
             $routes .= $controller->isApiResource()
                 ? sprintf("Route::apiResource('%s', %s)", $slug, $className)
-                : sprintf("Route::resource('%s', %s)", $slug, $className);
+                : sprintf("CrudRouter::setFor('%s', %s)", $slug, $className);
+            // $routes .= $controller->isApiResource()
+            //     ? sprintf("Route::apiResource('%s', %s)", $slug, $className)
+            //     : sprintf("Route::resource('%s', %s)", $slug, $className);
 
             $missing_methods = $controller->isApiResource()
                 ? array_diff(Controller::$apiResourceMethods, $resource_methods)
