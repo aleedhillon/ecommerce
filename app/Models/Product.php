@@ -29,6 +29,8 @@ class Product extends Model
         'created_by',
         'name',
         'slug',
+        'thumbnail',
+        'images',
         'sku',
         'barcode',
         'code',
@@ -43,7 +45,6 @@ class Product extends Model
         'description',
         'additional_info',
         'is_active',
-        'thumbnail',
         'meta_title',
         'meta_description',
         'meta_keywords',
@@ -55,6 +56,7 @@ class Product extends Model
         'base_discount_price' => 'decimal:2',
         'dimensions' => 'array',
         'materials' => 'array',
+        'images' => 'array',
     ];
 
     // Relationships

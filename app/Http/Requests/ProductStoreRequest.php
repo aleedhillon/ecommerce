@@ -53,6 +53,7 @@ class ProductStoreRequest extends FormRequest
             'additional_info' => 'nullable|string',
             'is_active' => 'boolean',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'images' => 'nullable|array',
 
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',

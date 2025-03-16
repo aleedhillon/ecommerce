@@ -23,6 +23,8 @@ return new class extends Migration
 
             $table->string('name');
             $table->string('slug')->unique();
+            $table->string('thumbnail')->nullable();
+            $table->text('images')->nullable();
             $table->string('sku')->nullable()->unique();
             $table->string('barcode')->nullable()->unique();
             $table->string('code')->nullable()->unique();
@@ -45,7 +47,6 @@ return new class extends Migration
             $table->longText('description')->nullable();
             $table->longText('additional_info')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->string('thumbnail')->nullable();
 
             // SEO fields
             $table->string('meta_title')->nullable();

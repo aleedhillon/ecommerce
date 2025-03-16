@@ -7,6 +7,7 @@ use App\Models\Brand;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\SubCategory;
+use App\Utils\FakeImageUtil;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -80,7 +81,12 @@ class CustomTestSeeder extends Seeder
             'base_price' => 999.99,
             'stock_status' => 'in_stock',
             'is_active' => true,
-            'thumbnail' => fake()->imageUrl(),
+            'thumbnail' => FakeImageUtil::imagePath(),
+            'images' => [
+                FakeImageUtil::imagePath(),
+                FakeImageUtil::imagePath(),
+                FakeImageUtil::imagePath(),
+            ],
         ];
         $productAttr['slug'] = Str::slug($productAttr['name']);
         $productAttr['sku'] = 'IP13' . random_int(1000, 9999);

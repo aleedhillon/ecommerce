@@ -1,7 +1,7 @@
 import './bootstrap';
 import '../css/app.scss';
 import 'primeicons/primeicons.css'
-import Theme from './primevue/Theme';
+import Theme from './Helpers/Theme';
 
 
 import { createInertiaApp } from '@inertiajs/vue3';
@@ -14,7 +14,7 @@ import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import DialogService from 'primevue/dialogservice';
 import ToastService from 'primevue/toastservice';
-import AppState from './primevue/AppState';
+import AppState from './Helpers/AppState';
 
 const appName = import.meta.env.VITE_APP_NAME || 'E-Commerce';
 
