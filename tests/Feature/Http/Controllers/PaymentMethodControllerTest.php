@@ -35,7 +35,6 @@ final class PaymentMethodControllerTest extends TestCase
         $response = $this->post(route('payment-methods.store'), [
             'name' => $name,
             'is_active' => $is_active,
-            'softDelete' => $softDelete,
         ]);
     }
 
@@ -61,7 +60,6 @@ final class PaymentMethodControllerTest extends TestCase
         $response = $this->put(route('payment-methods.update', $paymentMethod), [
             'name' => $name,
             'is_active' => $is_active,
-            'softDelete' => $softDelete,
         ]);
     }
 }
