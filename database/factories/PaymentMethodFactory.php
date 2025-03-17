@@ -22,8 +22,7 @@ class PaymentMethodFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'is_active' => fake()->boolean(),
-            'softDelete' => fake()->word(),
+            'is_active' => fake()->boolean()
         ];
     }
 }
