@@ -2,26 +2,15 @@
 
 namespace App\Traits;
 
-use App\Http\Response\ApiResponse;
+use App\Traits\ConfigTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use App\Http\Response\ApiResponse;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 
 trait ApiCrudTrait
 {
-    public string $modelClass;
-
-    public string $storeRequestClass;
-
-    public string $updateRequestClass;
-
-    public string $exportClass;
-
-    public string $resource;
-
-    public array $searchColumns;
-
-    protected array $withRelations = [];
+    use ConfigTrait;
 
     public function index(Request $request)
     {

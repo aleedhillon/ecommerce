@@ -26,3 +26,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     CrudRouter::setFor('payment-methods', PaymentMethodController::class);
     CrudRouter::setFor('todos', TodoController::class);
 });
+CrudRouter::setFor('tasks', App\Http\Controllers\TaskController::class);
