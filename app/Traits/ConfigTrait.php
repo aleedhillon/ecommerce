@@ -2,11 +2,41 @@
 
 namespace App\Traits;
 
+use App\Utils\CrudConfig;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Route;
 
 trait ConfigTrait
 {
+    public string $resource;
+
+    public string $modelClass;
+
+    public string $storeRequestClass;
+
+    public string $updateRequestClass;
+
+    public array $searchColumns;
+
+    public string $exportClass;
+
+    public string $componentPath;
+
+    public array $withRelations = [];
+
+    public function init(CrudConfig $config): void
+    {
+        $this->resource = $config->resource ?? $this->resource;
+        $this->modelClass = $config->modelClass ?? $this->modelClass;
+        $this->storeRequestClass = $config->storeRequestClass ?? $this->storeRequestClass;
+        $this->updateRequestClass = $config->updateRequestClass ?? $this->updateRequestClass;
+        $this->searchColumns = $config->searchColumns ?? $this->searchColumns;
+        $this->exportClass = $config->exportClass ?? $this->exportClass;
+        $this->componentPath = $config->componentPath ?? $this->componentPath;
+        $this->withRelations = $config->withRelations ?? $this->withRelations;
+        $this->addProps = $config->addProps ?? $this->addProps();
+    }
+
     private function makeConfig()
     {
         $modelRawName = class_basename($this->modelClass);

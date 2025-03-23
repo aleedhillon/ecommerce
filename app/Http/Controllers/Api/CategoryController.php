@@ -7,6 +7,7 @@ use App\Http\Requests\CategoryStoreRequest;
 use App\Http\Requests\CategoryUpdateRequest;
 use App\Models\Category;
 use App\Traits\ApiCrudTrait;
+use App\Utils\CrudConfig;
 
 class CategoryController extends Controller
 {
@@ -14,11 +15,12 @@ class CategoryController extends Controller
 
     public function __construct()
     {
-        $this->resource = 'categories';
-        $this->modelClass = Category::class;
-        $this->storeRequestClass = CategoryStoreRequest::class;
-        $this->updateRequestClass = CategoryUpdateRequest::class;
-
-        $this->searchColumns = ['name'];
+        $this->init(new CrudConfig(
+            resource: 'categories',
+            modelClass: Category::class,
+            storeRequestClass: CategoryStoreRequest::class,
+            updateRequestClass: CategoryUpdateRequest::class,
+            searchColumns: ['name'],
+        ));
     }
 }

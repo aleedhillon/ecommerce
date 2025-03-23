@@ -12,7 +12,7 @@ class CrudConfig
 
     public string $updateRequestClass;
 
-    public string $componentPath;
+    public ?string $componentPath;
 
     public ?array $searchColumns;
 
@@ -27,7 +27,7 @@ class CrudConfig
         string $modelClass,
         string $storeRequestClass,
         string $updateRequestClass,
-        string $componentPath,
+        ?string $componentPath = '',
         ?array $searchColumns = [],
         ?string $exportClass = '',
         ?array $withRelations = [],
