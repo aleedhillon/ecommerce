@@ -7,52 +7,21 @@ use App\Http\Requests\TagStoreRequest;
 use App\Http\Requests\TagUpdateRequest;
 use App\Interfaces\TagServiceInterface;
 use App\Models\Tag;
+use App\Traits\ApiCrudTrait;
+use App\Utils\CrudConfig;
 
 class TagController extends Controller
 {
-    protected $tagService;
+    use ApiCrudTrait;
 
-    public function __construct(TagServiceInterface $tagService)
+    public function __construct()
     {
-        $this->tagService = $tagService;
-    }
-
-    public function index()
-    {
-        return $this->tagService->all();
-    }
-
-    public function create()
-    {
-        //
-    }
-
-    public function store(TagStoreRequest $request)
-    {
-        $tagStore = $this->tagService->store($request->validated());
-
-        return response()->json(['data' => $tagStore, 'message' => 'Tag created successfully!'], 201);
-    }
-
-    public function show(Tag $tag)
-    {
-        return $this->tagService->find($tag);
-    }
-
-    public function edit(Tag $tag)
-    {
-        //
-    }
-
-    public function update(TagUpdateRequest $request, Tag $tag)
-    {
-        $tagUpdate = $this->tagService->update($request->validated(), $tag);
-
-        return response()->json(['data' => $tagUpdate, 'message' => 'Tag updated successfully!'], 201);
-    }
-
-    public function destroy(Tag $tag)
-    {
-        return $this->tagService->delete($tag);
+        $this->init(new CrudConfig(
+            resource: 'tags',
+            modelClass: Tag::class,
+            storeRequestClass: TagStoreRequest::class,
+            updateRequestClass: TagUpdateRequest::class,
+            searchColumns: ['name'],
+        ));
     }
 }
