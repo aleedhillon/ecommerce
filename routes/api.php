@@ -36,7 +36,7 @@ Route::middleware(['auth:sanctum', 'verified'])->name('api.')->group(function ()
         'products' => ProductController::class,
         'taxes' => TaxController::class,
         'brands' => BrandController::class,
-        'subCategories' => SubCategoryController::class,
+        'sub-categories' => SubCategoryController::class,
         'customers' => CustomerController::class,
         'suppliers' => SupplierController::class,
         'productStocks' => ProductStockController::class,
