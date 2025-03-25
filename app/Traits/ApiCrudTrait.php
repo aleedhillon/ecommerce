@@ -2,11 +2,10 @@
 
 namespace App\Traits;
 
-use App\Traits\ConfigTrait;
-use Illuminate\Http\Request;
 use App\Http\Response\ApiResponse;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 trait ApiCrudTrait
 {

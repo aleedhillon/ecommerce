@@ -1,10 +1,10 @@
 <?php
 
-use App\Generators\RouteGenerator;
-use App\Generators\ResourceGenerator;
 use App\Generators\ControllerGenerator;
-use App\Generators\InertiaVueGenerator;
 use App\Generators\InertiaPageGenerator;
+use App\Generators\InertiaVueGenerator;
+use App\Generators\ResourceGenerator;
+use App\Generators\RouteGenerator;
 
 return [
 

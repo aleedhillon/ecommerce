@@ -35,7 +35,6 @@ final class TaskControllerTest extends TestCase
         ]);
     }
 
-
     #[Test]
     public function update_uses_form_request_validation(): void
     {

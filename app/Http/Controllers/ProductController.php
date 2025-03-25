@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tag;
-use Inertia\Inertia;
-use App\Models\Brand;
-use App\Models\Product;
-use App\Models\Category;
-use App\Traits\CrudTrait;
-use App\Utils\CrudConfig;
-use App\Models\SubCategory;
-use Illuminate\Http\Request;
 use App\Exports\ProductExport;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\SubCategory;
+use App\Models\Tag;
+use App\Traits\CrudTrait;
+use App\Utils\CrudConfig;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ProductController extends Controller
 {
@@ -65,7 +64,7 @@ class ProductController extends Controller
         });
 
         if ($request->has('trashed')) {
-            $query->when($request->trashed, fn($query) => $query->onlyTrashed());
+            $query->when($request->trashed, fn ($query) => $query->onlyTrashed());
         }
 
         $query = $this->modifyQuery($query);

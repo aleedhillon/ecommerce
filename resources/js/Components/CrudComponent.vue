@@ -60,9 +60,9 @@
 
                 <Column :exportable="false" style="min-width: 12rem">
                     <template #body="slotProps">
-                        <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editItem(slotProps.data)"
+                        <Button v-if="!hideEditAction" icon="pi pi-pencil" outlined rounded class="mr-2" @click="editItem(slotProps.data)"
                             :disabled="isTrashedPage" />
-                        <Button icon="pi pi-trash" outlined rounded severity="danger"
+                        <Button v-if="!hideDeleteAction" icon="pi pi-trash" outlined rounded severity="danger"
                             @click="confirmDeleteItem(slotProps.data)" :disabled="isTrashedPage" />
                     </template>
                 </Column>
@@ -123,7 +123,10 @@ import { handlePagination } from '@/Helpers/pagination';
 import debounce from 'lodash/debounce';
 import { statuses } from '@/Helpers/enums.js';
 
-const { form, formWidth } = defineProps(['form', 'formWidth']);
+const { form, formWidth, canEdit, canDelete } = defineProps(['form', 'formWidth', 'canEdit', 'canDelete']);
+
+const hideDeleteAction = computed(() => canDelete === false);
+const hideEditAction = computed(() => canEdit === false);
 
 const page = usePage();
 const vueProps = computed(() => page.props);

@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\PaymentMethod;
-// use App\Exports\PaymentMethodExport;
-use App\Utils\CrudConfig;
-use App\Traits\CrudTrait;
 use App\Http\Requests\PaymentMethodStoreRequest;
+// use App\Exports\PaymentMethodExport;
 use App\Http\Requests\PaymentMethodUpdateRequest;
+use App\Models\PaymentMethod;
+use App\Traits\CrudTrait;
+use App\Utils\CrudConfig;
 
 class PaymentMethodController extends Controller
 {

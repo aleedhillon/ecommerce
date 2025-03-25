@@ -2,15 +2,14 @@
 
 namespace Database\Seeders;
 
-use App\Models\Tag;
 use App\Models\Brand;
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\SubCategory;
+use App\Models\Tag;
 use App\Utils\FakeImageUtil;
-use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Str;
 
 class CustomTestSeeder extends Seeder
 {
@@ -89,9 +88,9 @@ class CustomTestSeeder extends Seeder
             ],
         ];
         $productAttr['slug'] = Str::slug($productAttr['name']);
-        $productAttr['sku'] = 'IP13' . random_int(1000, 9999);
-        $productAttr['barcode'] = 'IP13' . random_int(1000, 9999);
-        $productAttr['code'] = 'IP13' . random_int(1000, 9999);
+        $productAttr['sku'] = 'IP13'.random_int(1000, 9999);
+        $productAttr['barcode'] = 'IP13'.random_int(1000, 9999);
+        $productAttr['code'] = 'IP13'.random_int(1000, 9999);
         $product = Product::create($productAttr);
         $product->tags()->attach([Tag::first()->id, Tag::skip(1)->first()->id, Tag::skip(2)->first()->id]);
     }

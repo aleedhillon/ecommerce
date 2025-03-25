@@ -2,9 +2,8 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\PaymentMethod;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PaymentMethodFactory extends Factory
 {
@@ -22,7 +21,7 @@ class PaymentMethodFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'is_active' => fake()->boolean()
+            'is_active' => fake()->boolean(),
         ];
     }
 }
