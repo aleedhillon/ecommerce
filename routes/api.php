@@ -16,7 +16,9 @@ use App\Http\Controllers\Api\ShoppingController;
 use App\Http\Controllers\Api\SubCategoryController;
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\TagController;
+use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\TaxController;
+use App\Http\Controllers\Api\TodoController;
 use App\Http\Controllers\Api\UnitController;
 use App\Http\Controllers\Api\WarehouseController;
 use App\Http\Controllers\Api\WarrantyGuaranteeController;
@@ -32,6 +34,8 @@ Route::middleware(['auth:sanctum', 'verified'])->name('api.')->group(function ()
 
     Route::apiResources([
         'tags' => TagController::class,
+        'tasks' => TaskController::class,
+        'todos' => TodoController::class,
         'coupons' => CouponController::class,
         'products' => ProductController::class,
         'taxes' => TaxController::class,
