@@ -1,7 +1,6 @@
 <template>
     <div>
         <CrudComponent :form>
-            {{ items }}
             <template #columns>
                 <Column field="name" header="Name"></Column>
                 <Column field="is_active" header="Status">

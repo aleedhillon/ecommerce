@@ -25,10 +25,12 @@
                         @click="forceDeleteSelected"
                         v-show="!(!selectedItems || !selectedItems?.length) && isTrashedPage" v-if="vueProps.config.bulkRestoreRoute" />
                 </template>
+                <template #center>
+                    <slot name="messages"></slot>
+                </template>
                 <template #end>
                     <Button label="Export" v-if="vueProps?.config?.exportRoute" class="mx-2" icon="pi pi-upload"
                         severity="secondary" @click="exportExcel" />
-
                 </template>
             </Toolbar>
 
@@ -56,7 +58,7 @@
                         </IconField>
                     </div>
                 </template>
-                <Column selectionMode="multiple" style="width: 3rem" :exportable="false" header=""></Column>
+                <Column selectionMode="multiple" style="width: 3rem" :exportable="false" header="" v-if="vueProps.config.bulkRestoreRoute"></Column>
 
                 <slot name="columns"></slot>
 
@@ -173,6 +175,9 @@ const hideDialog = () => {
 
 const saveItem = (saveAndContinue = false) => {
     submitted.value = true;
+    if (form.ids !== undefined) { // Only `id` columns is enough compared to send entire row to the backend with request for multiple selection
+        form.ids = form.ids.map(i => i.id);
+    }
     form.post(vueProps.value.config.storeRoute, {
         onSuccess: () => {
             form.reset();
@@ -200,6 +205,8 @@ const updateItem = () => {
     submitted.value = true;
     const url = vueProps.value.config.updateRoute.replace('__ID__', editingId.value);
 
+    form.ids = form.ids.map(i => i.id);
+
     const data = {
         _method: 'put',
         ...form
@@ -220,7 +227,12 @@ const updateItem = () => {
     });
 };
 
+const emit = defineEmits(['editingItem']);
+
 const editItem = (prod) => {
+
+    emit('editingItem', prod)
+
     itemDialog.value = true;
     isEdit.value = true;
 

@@ -42,12 +42,17 @@ trait CrudTrait
         $query = $this->modifyQuery($query);
         $items = $query->latest()->paginate($perPage);
 
-        return Inertia::render($this->componentPath, [
+
+        $dataArray = [
             'items' => $items,
             'filters' => ['search' => $search],
             'config' => $this->makeConfig(),
             ...$this->addProps(),
-        ]);
+        ];
+
+        // dd($dataArray);
+
+        return Inertia::render($this->componentPath, $dataArray);
     }
 
     protected function addProps(): array

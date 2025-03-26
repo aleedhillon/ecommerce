@@ -1,6 +1,11 @@
 <template>
     <div>
         <CrudComponent :form="form" :can-delete="false" :can-edit="false">
+            <template #messages>
+                <small class="text-red-500">
+                    *Permissions deletion disabled intentionally
+                </small>
+            </template>
             <template #columns>
                 <Column field="name" header="Action Name"></Column>
                 <!-- <Column field="isItCompleted" header="Is Completed"></Column> -->
@@ -15,10 +20,14 @@
 <script setup>
 import CrudComponent from '@/Components/CrudComponent.vue';
 import Form from './Form.vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, defineOptions } from '@inertiajs/vue3';
 
 const form = useForm({
     name: '',
+});
+
+defineOptions({
+    layout: AppLayout, // Explicitly set the layout
 });
 
 </script>

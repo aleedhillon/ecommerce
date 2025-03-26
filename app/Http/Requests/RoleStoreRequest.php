@@ -23,6 +23,7 @@ class RoleStoreRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:3', 'max:255'],
+            'ids' => ['required', 'array'],
         ];
     }
 }
