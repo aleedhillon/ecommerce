@@ -1,20 +1,20 @@
 <?php
 
-use App\Http\Controllers\BrandController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\PaymentMethodController;
-use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\SubCategoryController;
-use App\Http\Controllers\TagController;
-use App\Http\Controllers\TaskController;
-use App\Http\Controllers\TodoController;
-use App\Http\Controllers\WelcomePageController;
+use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\PaymentMethodController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SubCategoryController;
+use App\Http\Controllers\Admin\TagController;
+use App\Http\Controllers\Admin\TaskController;
+use App\Http\Controllers\Admin\TodoController;
+use App\Http\Controllers\Frontend\WelcomePageController;
 use App\Utils\CrudRouter;
 use Illuminate\Support\Facades\Route;
 
-require_once __DIR__ . '/auth.php';
+require_once __DIR__.'/auth.php';
 
 Route::get('/', WelcomePageController::class)->name('welcome');
 

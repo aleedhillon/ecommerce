@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Admin;
 
+use App\Exports\CategoryExport;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CategoryStoreRequest;
-use App\Http\Requests\CategoryUpdateRequest;
+use App\Http\Requests\Admin\CategoryStoreRequest;
+use App\Http\Requests\Admin\CategoryUpdateRequest;
 use App\Models\Category;
-use App\Traits\HasApiCrud;
+use App\Traits\HasCrud;
 use App\Utils\CrudConfig;
 
 class CategoryController extends Controller
 {
-    use HasApiCrud;
+    use HasCrud;
 
     public function __construct()
     {
@@ -21,6 +22,9 @@ class CategoryController extends Controller
             storeRequestClass: CategoryStoreRequest::class,
             updateRequestClass: CategoryUpdateRequest::class,
             searchColumns: ['name'],
+            exportClass: CategoryExport::class,
+            componentPath: 'Admin/Categories/Index',
+            withRelations: [],
         ));
     }
 }

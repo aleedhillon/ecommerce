@@ -6,12 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SubCategoryStoreRequest;
 use App\Http\Requests\SubCategoryUpdateRequest;
 use App\Models\SubCategory;
-use App\Traits\ApiCrudTrait;
+use App\Traits\HasApiCrud;
 use App\Utils\CrudConfig;
 
 class SubCategoryController extends Controller
 {
-    use ApiCrudTrait;
+    use HasApiCrud;
 
     public function __construct()
     {

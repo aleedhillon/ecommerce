@@ -6,13 +6,13 @@ namespace {{ namespace }};
 use App\Models\{{ modelClass }};
 // use App\Exports\{{ modelClass }}Export;
 use App\Utils\CrudConfig;
-use App\Traits\CrudTrait;
+use App\Traits\HasCrud;
 use App\Http\Requests\{{ modelClass }}StoreRequest;
 use App\Http\Requests\{{ modelClass }}UpdateRequest;
 
 class {{ class }} extends Controller
 {
-    use CrudTrait;
+    use HasCrud;
 
     public function __construct()
     {

@@ -6,12 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TaskStoreRequest;
 use App\Http\Requests\TaskUpdateRequest;
 use App\Models\Task;
-use App\Traits\ApiCrudTrait;
+use App\Traits\HasApiCrud;
 use App\Utils\CrudConfig;
 
 class TaskController extends Controller
 {
-    use ApiCrudTrait;
+    use HasApiCrud;
 
     public function __construct()
     {

@@ -1,5 +1,5 @@
 
-    use use \App\Traits\CrudTrait;
+    use use \App\Traits\HasCrud;
     public function __construct()
     {
         $this->init(new CrudConfig(

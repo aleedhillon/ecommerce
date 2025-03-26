@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Admin;
 
+use App\Exports\TodoExport;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\TodoStoreRequest;
-use App\Http\Requests\TodoUpdateRequest;
+use App\Http\Requests\Admin\TodoStoreRequest;
+use App\Http\Requests\Admin\TodoUpdateRequest;
 use App\Models\Todo;
-use App\Traits\HasApiCrud;
+use App\Traits\HasCrud;
 use App\Utils\CrudConfig;
 
 class TodoController extends Controller
 {
-    use HasApiCrud;
+    use HasCrud;
 
     public function __construct()
     {
@@ -20,7 +21,10 @@ class TodoController extends Controller
             modelClass: Todo::class,
             storeRequestClass: TodoStoreRequest::class,
             updateRequestClass: TodoUpdateRequest::class,
+            componentPath: 'Admin/Todos/Index',
             searchColumns: ['title'],
+            exportClass: TodoExport::class,
+            withRelations: [],
         ));
     }
 }

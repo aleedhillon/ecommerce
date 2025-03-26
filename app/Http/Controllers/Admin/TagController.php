@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Admin;
 
+use App\Exports\TagExport;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\TagStoreRequest;
-use App\Http\Requests\TagUpdateRequest;
+use App\Http\Requests\Admin\TagStoreRequest;
+use App\Http\Requests\Admin\TagUpdateRequest;
 use App\Models\Tag;
-use App\Traits\HasApiCrud;
+use App\Traits\HasCrud;
 use App\Utils\CrudConfig;
 
 class TagController extends Controller
 {
-    use HasApiCrud;
+    use HasCrud;
 
     public function __construct()
     {
@@ -20,7 +21,11 @@ class TagController extends Controller
             modelClass: Tag::class,
             storeRequestClass: TagStoreRequest::class,
             updateRequestClass: TagUpdateRequest::class,
+            componentPath: 'Admin/Tags/Index',
             searchColumns: ['name'],
+            exportClass: TagExport::class,
+            withRelations: [],
+
         ));
     }
 }
