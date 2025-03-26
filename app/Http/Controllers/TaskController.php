@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Task;
-// use App\Exports\TaskExport;
-use App\Utils\CrudConfig;
-use App\Traits\CrudTrait;
 use App\Http\Requests\TaskStoreRequest;
+// use App\Exports\TaskExport;
 use App\Http\Requests\TaskUpdateRequest;
+use App\Models\Task;
+use App\Traits\CrudTrait;
+use App\Utils\CrudConfig;
 
 class TaskController extends Controller
 {
@@ -27,6 +26,4 @@ class TaskController extends Controller
             withRelations: [],
         ));
     }
-
-    
 }

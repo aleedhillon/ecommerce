@@ -3,8 +3,8 @@
 namespace App\Traits;
 
 use App\Utils\CrudConfig;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 trait ConfigTrait
 {
@@ -43,15 +43,15 @@ trait ConfigTrait
         $modelLowerCase = Str::snake($modelRawName);
 
         $routes = [
-            'indexRoute' => $this->resource . '.index',
-            'indexRouteTrashed' => $this->resource . '.index',
-            'storeRoute' => $this->resource . '.store',
-            'updateRoute' => $this->resource . '.update',
-            'deleteRoute' => $this->resource . '.destroy',
-            'bulkDeleteRoute' => $this->resource . '.bulk-destroy',
-            'bulkRestoreRoute' => $this->resource . '.bulk-restore',
-            'bulkForceDeleteRoute' => $this->resource . '.bulk-force-delete',
-            'exportRoute' => $this->resource . '.export',
+            'indexRoute' => $this->resource.'.index',
+            'indexRouteTrashed' => $this->resource.'.index',
+            'storeRoute' => $this->resource.'.store',
+            'updateRoute' => $this->resource.'.update',
+            'deleteRoute' => $this->resource.'.destroy',
+            'bulkDeleteRoute' => $this->resource.'.bulk-destroy',
+            'bulkRestoreRoute' => $this->resource.'.bulk-restore',
+            'bulkForceDeleteRoute' => $this->resource.'.bulk-force-delete',
+            'exportRoute' => $this->resource.'.export',
         ];
 
         $config = [
@@ -66,14 +66,15 @@ trait ConfigTrait
                 $config[$key] = route($route, ['trashed' => true]);
             } elseif (in_array($key, ['updateRoute', 'deleteRoute']) && Route::has($route)) {
                 $config[$key] = route($route, [$modelLowerCase => '__ID__']);
-            } else if ($key === 'exportRoute') {
+            } elseif ($key === 'exportRoute') {
                 $config[$key] = Route::has($route) ? route($route) : '';
-                $config[$key] = isset($this->exportClass) && !empty($this->exportClass) ? $config[$key] : '';
+                $config[$key] = isset($this->exportClass) && ! empty($this->exportClass) ? $config[$key] : '';
             } else {
                 $config[$key] = Route::has($route) ? route($route) : '';
             }
         }
 
+        // dd($config);
         return $config;
     }
 }

@@ -2,12 +2,12 @@
 
 namespace App\Generators;
 
-use Blueprint\Tree;
-use Illuminate\Support\Str;
 use Blueprint\Contracts\Generator;
-use Illuminate\Filesystem\Filesystem;
 use Blueprint\Generators\StatementGenerator;
 use Blueprint\Models\Statements\InertiaStatement;
+use Blueprint\Tree;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Str;
 
 class InertiaPageGenerator extends StatementGenerator implements Generator
 {
@@ -27,7 +27,6 @@ class InertiaPageGenerator extends StatementGenerator implements Generator
         return $this->types;
     }
 
-
     protected array $adapters = [
         'vue3' => ['framework' => 'vue', 'extension' => '.vue'],
         'react' => ['framework' => 'react', 'extension' => '.jsx'],
@@ -40,11 +39,11 @@ class InertiaPageGenerator extends StatementGenerator implements Generator
     {
         $this->adapter = $this->getAdapter();
 
-        if (!$this->adapter) {
+        if (! $this->adapter) {
             return $this->output;
         }
 
-        $stub = $this->filesystem->stub('inertia.' . $this->adapter['framework'] . '.stub');
+        $stub = $this->filesystem->stub('inertia.'.$this->adapter['framework'].'.stub');
 
         /**
          * @var \Blueprint\Models\Controller $controller
@@ -52,7 +51,7 @@ class InertiaPageGenerator extends StatementGenerator implements Generator
         foreach ($tree->controllers() as $controller) {
             foreach ($controller->methods() as $statements) {
                 foreach ($statements as $statement) {
-                    if (!$statement instanceof InertiaStatement) {
+                    if (! $statement instanceof InertiaStatement) {
                         continue;
                     }
 
@@ -60,6 +59,7 @@ class InertiaPageGenerator extends StatementGenerator implements Generator
 
                     if ($this->filesystem->exists($path)) {
                         $this->output['skipped'][] = $path;
+
                         continue;
                     }
 
@@ -75,7 +75,7 @@ class InertiaPageGenerator extends StatementGenerator implements Generator
     {
         $packagePath = base_path('package.json');
 
-        if (!$this->filesystem->exists($packagePath)) {
+        if (! $this->filesystem->exists($packagePath)) {
             return null;
         }
 
@@ -92,13 +92,13 @@ class InertiaPageGenerator extends StatementGenerator implements Generator
 
     protected function getStatementPath(string $view): string
     {
-        return 'resources/js/Pages/' . str_replace('.', '/', $view) . $this->adapter['extension'];
+        return 'resources/js/Pages/'.str_replace('.', '/', $view).$this->adapter['extension'];
     }
 
     protected function populateStub(string $stub, InertiaStatement $inertiaStatement): string
     {
         $data = $inertiaStatement->data();
-        $props = $this->adapter['framework'] === 'vue' ? json_encode($data) : '{ ' . implode(', ', $data) . ' }';
+        $props = $this->adapter['framework'] === 'vue' ? json_encode($data) : '{ '.implode(', ', $data).' }';
         $componentName = $this->adapter['framework'] === 'react' ? Str::afterLast($inertiaStatement->view(), '/') : null;
 
         return str_replace([

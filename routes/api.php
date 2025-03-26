@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\RegistrationController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CategoryController;
@@ -22,6 +24,10 @@ use App\Http\Controllers\Api\WarehouseController;
 use App\Http\Controllers\Api\WarrantyGuaranteeController;
 use App\Utils\CrudRouter;
 use Illuminate\Support\Facades\Route;
+
+// Authentication using Sanctum JWT strategy
+Route::post('login', [LoginController::class, 'login'])->name('login');
+Route::post('register', [RegistrationController::class, 'register'])->name('register');
 
 Route::middleware(['auth:sanctum', 'verified'])->name('api.')->group(function () {
     CrudRouter::setApiFor('categories', CategoryController::class);

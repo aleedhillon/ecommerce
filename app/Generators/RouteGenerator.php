@@ -2,11 +2,11 @@
 
 namespace App\Generators;
 
-use Blueprint\Tree;
-use Illuminate\Support\Str;
-use Blueprint\Models\Controller;
 use Blueprint\Contracts\Generator;
 use Blueprint\Generators\AbstractClassGenerator;
+use Blueprint\Models\Controller;
+use Blueprint\Tree;
+use Illuminate\Support\Str;
 
 class RouteGenerator extends AbstractClassGenerator implements Generator
 {
@@ -25,7 +25,7 @@ class RouteGenerator extends AbstractClassGenerator implements Generator
          */
         foreach ($tree->controllers() as $controller) {
             $type = $controller->isApiResource() ? 'api' : 'web';
-            $routes[$type] .= PHP_EOL . $this->buildRoutes($controller);
+            $routes[$type] .= PHP_EOL.$this->buildRoutes($controller);
         }
 
         $paths = [];
@@ -35,7 +35,7 @@ class RouteGenerator extends AbstractClassGenerator implements Generator
         }
 
         foreach (array_filter($routes) as $type => $definitions) {
-            $path = 'routes/' . $type . '.php';
+            $path = 'routes/'.$type.'.php';
             $this->filesystem->append($path, $definitions);
             $paths[] = $path;
         }
@@ -52,8 +52,8 @@ class RouteGenerator extends AbstractClassGenerator implements Generator
 
         if ($controller->parent()) {
             $parentSlug = config('blueprint.singular_routes') ? Str::kebab($controller->parent()) : Str::plural(Str::kebab($controller->parent()));
-            $parentBinding = '/{' . Str::kebab($controller->parent()) . '}/';
-            $slug = $parentSlug . $parentBinding . $slug;
+            $parentBinding = '/{'.Str::kebab($controller->parent()).'}/';
+            $slug = $parentSlug.$parentBinding.$slug;
         }
 
         foreach (array_diff($methods, Controller::$resourceMethods) as $method) {
@@ -82,7 +82,7 @@ class RouteGenerator extends AbstractClassGenerator implements Generator
                 }
             }
 
-            $routes .= ';' . PHP_EOL;
+            $routes .= ';'.PHP_EOL;
         }
 
         return trim($routes);
@@ -90,7 +90,7 @@ class RouteGenerator extends AbstractClassGenerator implements Generator
 
     protected function getClassName(Controller $controller): string
     {
-        return $controller->fullyQualifiedClassName() . '::class';
+        return $controller->fullyQualifiedClassName().'::class';
     }
 
     protected function buildRouteLine($className, $slug, $method): string
@@ -110,7 +110,7 @@ class RouteGenerator extends AbstractClassGenerator implements Generator
     protected function createApiRoutesFileIfMissing(): void
     {
         $apiPath = 'routes/api.php';
-        if (!$this->filesystem->exists($apiPath)) {
+        if (! $this->filesystem->exists($apiPath)) {
             $this->filesystem->put($apiPath, $this->filesystem->stub('routes.api.stub'));
             $this->configureApiRoutesInAppBootstrap();
         }
@@ -130,7 +130,7 @@ class RouteGenerator extends AbstractClassGenerator implements Generator
         } elseif (str_contains($content, 'web: __DIR__.\'/../routes/web.php\',')) {
             $this->filesystem->replaceInFile(
                 'web: __DIR__.\'/../routes/web.php\',',
-                'web: __DIR__.\'/../routes/web.php\',' . PHP_EOL . '        api: __DIR__.\'/../routes/api.php\',',
+                'web: __DIR__.\'/../routes/web.php\','.PHP_EOL.'        api: __DIR__.\'/../routes/api.php\',',
                 $appBootstrapPath,
             );
         }

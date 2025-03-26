@@ -2,15 +2,16 @@
 
 namespace App\Generators;
 
-use Blueprint\Tree;
-use Blueprint\Models\Model;
-use Illuminate\Support\Str;
 use Blueprint\Contracts\Generator;
+use Blueprint\Models\Model;
+use Blueprint\Tree;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Str;
 
 class InertiaVueGenerator implements Generator
 {
     protected $filesystem;
+
     protected $stubPath;
 
     public function __construct(Filesystem $filesystem)
@@ -36,7 +37,7 @@ class InertiaVueGenerator implements Generator
 
         foreach ($models as $model) {
             $paths = $this->generateForModel($model);
-            if (!empty($paths)) {
+            if (! empty($paths)) {
                 $output = array_merge($output, $paths);
             }
         }
@@ -65,7 +66,7 @@ class InertiaVueGenerator implements Generator
         // $modelPlural = Str::plural($model->name());
         $path = $this->getVueComponentPath($model, 'Index');
 
-        if (!$this->filesystem->exists(dirname($path))) {
+        if (! $this->filesystem->exists(dirname($path))) {
             $this->filesystem->makeDirectory(dirname($path), 0755, true);
         }
 
@@ -87,7 +88,7 @@ class InertiaVueGenerator implements Generator
     {
         $path = $this->getVueComponentPath($model, 'Index');
 
-        if (!$this->filesystem->exists(dirname($path))) {
+        if (! $this->filesystem->exists(dirname($path))) {
             $this->filesystem->makeDirectory(dirname($path), 0755, true);
         }
 
@@ -109,7 +110,7 @@ class InertiaVueGenerator implements Generator
     {
         $path = $this->getVueComponentPath($model, 'Create');
 
-        if (!$this->filesystem->exists(dirname($path))) {
+        if (! $this->filesystem->exists(dirname($path))) {
             $this->filesystem->makeDirectory(dirname($path), 0755, true);
         }
 
@@ -129,7 +130,7 @@ class InertiaVueGenerator implements Generator
     {
         $path = $this->getVueComponentPath($model, 'Edit');
 
-        if (!$this->filesystem->exists(dirname($path))) {
+        if (! $this->filesystem->exists(dirname($path))) {
             $this->filesystem->makeDirectory(dirname($path), 0755, true);
         }
 
@@ -149,7 +150,7 @@ class InertiaVueGenerator implements Generator
     {
         $path = $this->getVueComponentPath($model, 'Show');
 
-        if (!$this->filesystem->exists(dirname($path))) {
+        if (! $this->filesystem->exists(dirname($path))) {
             $this->filesystem->makeDirectory(dirname($path), 0755, true);
         }
 
@@ -170,7 +171,7 @@ class InertiaVueGenerator implements Generator
     {
         $path = $this->getVueComponentPath($model, 'Form');
 
-        if (!$this->filesystem->exists(dirname($path))) {
+        if (! $this->filesystem->exists(dirname($path))) {
             $this->filesystem->makeDirectory(dirname($path), 0755, true);
         }
 
@@ -189,7 +190,8 @@ class InertiaVueGenerator implements Generator
     protected function getVueComponentPath(Model $model, string $type): string
     {
         $modelPlural = Str::plural($model->name());
-        return resource_path("js/Pages/" . $modelPlural . "/" . $type . ".vue");
+
+        return resource_path('js/Pages/'.$modelPlural.'/'.$type.'.vue');
     }
 
     protected function compileStub(string $stubName, array $replacements = []): string
@@ -211,11 +213,12 @@ class InertiaVueGenerator implements Generator
             if (in_array($column->name(), ['id', 'password', 'remember_token', 'deleted_at'])) {
                 continue;
             }
-            $fields[] = $column->name() . ": '',";
+            $fields[] = $column->name().": '',";
         }
 
         return implode("\n    ", $fields);
     }
+
     protected function getFieldsForIndex(Model $model): string
     {
         $fields = [];
@@ -244,10 +247,10 @@ class InertiaVueGenerator implements Generator
 
             $label = Str::title(str_replace('_', ' ', $column->name()));
 
-            $fields[] = "        <div class=\"mb-4\">\n" .
-                "            <h3 class=\"text-lg font-medium\">{$label}:</h3>\n" .
-                "            <p>{{ " . Str::camel($model->name()) . ".{$column->name()} }}</p>\n" .
-                "        </div>";
+            $fields[] = "        <div class=\"mb-4\">\n".
+                "            <h3 class=\"text-lg font-medium\">{$label}:</h3>\n".
+                '            <p>{{ '.Str::camel($model->name()).".{$column->name()} }}</p>\n".
+                '        </div>';
         }
 
         return implode("\n\n", $fields);
@@ -332,7 +335,6 @@ class InertiaVueGenerator implements Generator
         return implode("\n\n", $fields);
     }
 
-
     protected function getFormFields2(Model $model): string
     {
         $fields = [];
@@ -349,31 +351,31 @@ class InertiaVueGenerator implements Generator
 
             // Handle different field types
             if ($name === 'password') {
-                $fields[] = "    <div class=\"mb-4\">\n" .
-                    "        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>\n" .
-                    "        <input type=\"password\" id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500\" />\n" .
-                    "        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>\n" .
-                    "    </div>";
+                $fields[] = "    <div class=\"mb-4\">\n".
+                    "        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>\n".
+                    "        <input type=\"password\" id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500\" />\n".
+                    "        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>\n".
+                    '    </div>';
             } elseif (str_contains($column->dataType(), 'text')) {
-                $fields[] = "    <div class=\"mb-4\">\n" .
-                    "        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>\n" .
-                    "        <textarea id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500\" rows=\"3\"></textarea>\n" .
-                    "        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>\n" .
-                    "    </div>";
+                $fields[] = "    <div class=\"mb-4\">\n".
+                    "        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>\n".
+                    "        <textarea id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500\" rows=\"3\"></textarea>\n".
+                    "        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>\n".
+                    '    </div>';
             } elseif (str_contains($column->dataType(), 'boolean')) {
-                $fields[] = "    <div class=\"mb-4\">\n" .
-                    "        <div class=\"flex items-center\">\n" .
-                    "            <input type=\"checkbox\" id=\"{$name}\" v-model=\"form.{$name}\" class=\"h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500\" />\n" .
-                    "            <label for=\"{$name}\" class=\"ml-2 block text-sm font-medium text-gray-700\">{$label}</label>\n" .
-                    "        </div>\n" .
-                    "        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>\n" .
-                    "    </div>";
+                $fields[] = "    <div class=\"mb-4\">\n".
+                    "        <div class=\"flex items-center\">\n".
+                    "            <input type=\"checkbox\" id=\"{$name}\" v-model=\"form.{$name}\" class=\"h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500\" />\n".
+                    "            <label for=\"{$name}\" class=\"ml-2 block text-sm font-medium text-gray-700\">{$label}</label>\n".
+                    "        </div>\n".
+                    "        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>\n".
+                    '    </div>';
             } else {
-                $fields[] = "    <div class=\"mb-4\">\n" .
-                    "        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>\n" .
-                    "        <input type=\"text\" id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500\" />\n" .
-                    "        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>\n" .
-                    "    </div>";
+                $fields[] = "    <div class=\"mb-4\">\n".
+                    "        <label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700\">{$label}</label>\n".
+                    "        <input type=\"text\" id=\"{$name}\" v-model=\"form.{$name}\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500\" />\n".
+                    "        <div v-if=\"form?.errors?.{$name}\" class=\"text-red-500 text-sm mt-1\">{{ form?.errors?.{$name} }}</div>\n".
+                    '    </div>';
             }
         }
 

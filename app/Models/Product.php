@@ -2,20 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\Tag;
-use App\Models\Tax;
-use App\Models\Brand;
-use App\Models\Category;
-use App\Models\SubCategory;
-use App\Models\ProductAttribute;
-use App\Models\ProductVariation;
-use App\Models\ProductAttributeValue;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {

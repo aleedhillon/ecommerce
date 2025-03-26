@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Todo;
 use App\Exports\TodoExport;
-use App\Utils\CrudConfig;
-use App\Traits\CrudTrait;
 use App\Http\Requests\TodoStoreRequest;
 use App\Http\Requests\TodoUpdateRequest;
+use App\Models\Todo;
+use App\Traits\CrudTrait;
+use App\Utils\CrudConfig;
 
 class TodoController extends Controller
 {
@@ -27,6 +26,4 @@ class TodoController extends Controller
             withRelations: [],
         ));
     }
-
-
 }

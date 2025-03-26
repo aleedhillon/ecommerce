@@ -17,6 +17,13 @@ const model = ref([
             { label: 'Payment Method', icon: 'pi pi-fw pi-check-square', to: route('payment-methods.index') },
         ]
     },
+    {
+        label: 'User',
+        items: [
+            { label: 'Role', icon: 'pi pi-fw pi-id-card', to: route('roles.index') },
+            { label: 'Permission', icon: 'pi pi-fw pi-id-card', to: route('permissions.index') },
+        ]
+    },
 ]);
 </script>
 
