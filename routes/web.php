@@ -14,7 +14,7 @@ use App\Http\Controllers\WelcomePageController;
 use App\Utils\CrudRouter;
 use Illuminate\Support\Facades\Route;
 
-require_once __DIR__.'/auth.php';
+require_once __DIR__ . '/auth.php';
 
 Route::get('/', WelcomePageController::class)->name('welcome');
 
@@ -29,6 +29,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
     CrudRouter::setFor('payment-methods', PaymentMethodController::class);
     CrudRouter::setFor('todos', TodoController::class);
     CrudRouter::setFor('tasks', TaskController::class);
-    CrudRouter::setFor('roles', RoleController::class);
-    CrudRouter::setFor('permissions', PermissionController::class);
+
+    Route::resource('roles', RoleController::class);
+    Route::resource('permissions', PermissionController::class);
 });

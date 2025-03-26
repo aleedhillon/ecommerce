@@ -3,35 +3,37 @@
         <div class="card">
             <Toolbar class="">
                 <template #start>
-                    <Button label="Create New" icon="pi pi-plus" class="mr-5" @click="openNew" outlined severity="primary" />
+                    <Button label="Create New" icon="pi pi-plus" class="mr-5" @click="openNew" outlined
+                        severity="primary" />
                     <ButtonGroup class="mr-2">
-                        <Link :href="vueProps.config.indexRoute">
+                        <Link :href="vueProps.config.indexRoute" v-if="vueProps.config.indexRoute">
                         <Button label="All Items" icon="pi pi-list" :class="{ 'border-bottom-2': !isTrashedPage }"
                             text />
                         </Link>
-                        <Link :href="vueProps.config.indexRouteTrashed">
+                        <Link :href="vueProps.config.indexRouteTrashed" v-if="vueProps.config.bulkRestoreRoute">
                         <Button label="Trashed" icon="pi pi-ban" :class="{ 'border-bottom-2': isTrashedPage }" text />
                         </Link>
                     </ButtonGroup>
                     <Button label="Bulk Delete" icon="pi pi-trash" class="mr-2" severity="danger" outlined
                         @click="confirmDeleteSelected"
-                        v-show="!(!selectedItems || !selectedItems?.length) && !isTrashedPage" />
+                        v-show="!(!selectedItems || !selectedItems?.length) && !isTrashedPage" v-if="vueProps.config.bulkRestoreRoute" />
                     <Button label="Bulk Restore" icon="pi pi-undo" class="mr-2" severity="warn" outlined
                         @click="restoreSelected"
-                        v-show="!(!selectedItems || !selectedItems?.length) && isTrashedPage" />
+                        v-show="!(!selectedItems || !selectedItems?.length) && isTrashedPage" v-if="vueProps.config.bulkRestoreRoute" />
 
                     <Button label="Force Delete" icon="pi pi-trash" class="mr-2" severity="danger" outlined
                         @click="forceDeleteSelected"
-                        v-show="!(!selectedItems || !selectedItems?.length) && isTrashedPage" />
+                        v-show="!(!selectedItems || !selectedItems?.length) && isTrashedPage" v-if="vueProps.config.bulkRestoreRoute" />
                 </template>
                 <template #end>
-                    <Button label="Export" v-if="vueProps?.config?.exportRoute" class="mx-2" icon="pi pi-upload" severity="secondary" @click="exportExcel" />
+                    <Button label="Export" v-if="vueProps?.config?.exportRoute" class="mx-2" icon="pi pi-upload"
+                        severity="secondary" @click="exportExcel" />
 
                 </template>
             </Toolbar>
 
-            <DataTable ref="dt" v-model:selection="selectedItems" :value="vueProps.items.data" dataKey="id" :paginator="true"
-                :rows="15" :filters="filters" :totalRecords="vueProps.items.total" :lazy="true"
+            <DataTable ref="dt" v-model:selection="selectedItems" :value="vueProps.items.data" dataKey="id"
+                :paginator="true" :rows="15" :filters="filters" :totalRecords="vueProps.items.total" :lazy="true"
                 @page="handlePagination($event, vueProps.config.indexRoute, vueProps.config.resource)"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
@@ -60,8 +62,8 @@
 
                 <Column :exportable="false" style="min-width: 12rem">
                     <template #body="slotProps">
-                        <Button v-if="!hideEditAction" icon="pi pi-pencil" outlined rounded class="mr-2" @click="editItem(slotProps.data)"
-                            :disabled="isTrashedPage" />
+                        <Button v-if="!hideEditAction" icon="pi pi-pencil" outlined rounded class="mr-2"
+                            @click="editItem(slotProps.data)" :disabled="isTrashedPage" />
                         <Button v-if="!hideDeleteAction" icon="pi pi-trash" outlined rounded severity="danger"
                             @click="confirmDeleteItem(slotProps.data)" :disabled="isTrashedPage" />
                     </template>
@@ -73,7 +75,8 @@
         <Dialog v-model:visible="itemDialog" maximizable :style="{ width: formWidth ?? '60vw' }"
             :header="`${vueProps.config.modelRaw} Details`" pt:mask:class="backdrop-blur-sm">
 
-            <slot name="form" v-bind="{submitted, statuses, handlePhotoUpload, photoPreview, resolveImagePath}"></slot>
+            <slot name="form" v-bind="{ submitted, statuses, handlePhotoUpload, photoPreview, resolveImagePath }">
+            </slot>
 
             <template #footer>
                 <div class="mt-3">
