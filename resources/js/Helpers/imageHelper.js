@@ -1,5 +1,4 @@
 export const resolveImagePath = (src, prefix = '/storage/') => {
-    console.log(src);
     if (typeof (src) === 'string') {
         if (src.startsWith('http')) return src;
         return prefix + src;

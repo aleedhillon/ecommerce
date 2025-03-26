@@ -16,14 +16,16 @@
                     </ButtonGroup>
                     <Button label="Bulk Delete" icon="pi pi-trash" class="mr-2" severity="danger" outlined
                         @click="confirmDeleteSelected"
-                        v-show="!(!selectedItems || !selectedItems?.length) && !isTrashedPage" v-if="vueProps.config.bulkRestoreRoute" />
+                        v-show="!(!selectedItems || !selectedItems?.length) && !isTrashedPage"
+                        v-if="vueProps.config.bulkRestoreRoute" />
                     <Button label="Bulk Restore" icon="pi pi-undo" class="mr-2" severity="warn" outlined
-                        @click="restoreSelected"
-                        v-show="!(!selectedItems || !selectedItems?.length) && isTrashedPage" v-if="vueProps.config.bulkRestoreRoute" />
+                        @click="restoreSelected" v-show="!(!selectedItems || !selectedItems?.length) && isTrashedPage"
+                        v-if="vueProps.config.bulkRestoreRoute" />
 
                     <Button label="Force Delete" icon="pi pi-trash" class="mr-2" severity="danger" outlined
                         @click="forceDeleteSelected"
-                        v-show="!(!selectedItems || !selectedItems?.length) && isTrashedPage" v-if="vueProps.config.bulkRestoreRoute" />
+                        v-show="!(!selectedItems || !selectedItems?.length) && isTrashedPage"
+                        v-if="vueProps.config.bulkRestoreRoute" />
                 </template>
                 <template #center>
                     <slot name="messages"></slot>
@@ -58,7 +60,8 @@
                         </IconField>
                     </div>
                 </template>
-                <Column selectionMode="multiple" style="width: 3rem" :exportable="false" header="" v-if="vueProps.config.bulkRestoreRoute"></Column>
+                <Column selectionMode="multiple" style="width: 3rem" :exportable="false" header=""
+                    v-if="vueProps.config.bulkRestoreRoute"></Column>
 
                 <slot name="columns"></slot>
 
@@ -175,7 +178,7 @@ const hideDialog = () => {
 
 const saveItem = (saveAndContinue = false) => {
     submitted.value = true;
-    if (form.ids !== undefined) { // Only `id` columns is enough compared to send entire row to the backend with request for multiple selection
+    if (form.ids) { // Only `id` columns (as array) is enough
         form.ids = form.ids.map(i => i.id);
     }
     form.post(vueProps.value.config.storeRoute, {
@@ -205,7 +208,9 @@ const updateItem = () => {
     submitted.value = true;
     const url = vueProps.value.config.updateRoute.replace('__ID__', editingId.value);
 
-    form.ids = form.ids.map(i => i.id);
+    if (form.ids) {
+        form.ids = form.ids.map(i => i.id);
+    }
 
     const data = {
         _method: 'put',

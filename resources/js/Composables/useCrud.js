@@ -21,7 +21,6 @@ export function useCrud(config) {
     const fetchItems = async () => {
         const configValue = config;
         if (!configValue?.endpoints?.list) {
-            console.error('Config endpoints.list is not defined');
             return;
         }
         router.get(configValue.endpoints.list, {
