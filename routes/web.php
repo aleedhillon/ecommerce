@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\TaskController;
 use App\Http\Controllers\Admin\TodoController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Frontend\WelcomePageController;
 use App\Utils\CrudRouter;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
     CrudRouter::setFor('payment-methods', PaymentMethodController::class);
     CrudRouter::setFor('todos', TodoController::class);
     CrudRouter::setFor('tasks', TaskController::class);
+    CrudRouter::setFor('users', UserController::class);
 
     Route::resource('roles', RoleController::class);
     Route::resource('permissions', PermissionController::class);

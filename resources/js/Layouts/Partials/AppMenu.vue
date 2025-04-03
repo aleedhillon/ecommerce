@@ -22,6 +22,7 @@ const model = ref([
         items: [
             { label: 'Role', icon: 'pi pi-fw pi-id-card', to: route('roles.index') },
             { label: 'Permission', icon: 'pi pi-fw pi-id-card', to: route('permissions.index') },
+            { label: 'User', icon: 'pi pi-fw pi-id-card', to: route('users.index') },
         ]
     },
 ]);
